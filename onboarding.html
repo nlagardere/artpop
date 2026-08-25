@@ -38,6 +38,11 @@
     
     .webcam-box { width: 280px; height: 210px; border: 1px solid #00f0ff; border-radius: 8px; overflow: hidden; background: #000; box-shadow: 0 0 15px rgba(0, 240, 255, 0.4); }
     #webcam-feed { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+
+    /* Écran de calcul de l'aura */
+    #aura-calc-overlay { position: absolute; z-index: 200; display: none; flex-direction: column; align-items: center; gap: 20px; background: rgba(0, 0, 0, 0.9); width: 100vw; height: 100vh; justify-content: center; text-align: center; }
+    .aura-calc-title { font-family: "Impact", "Arial Black", sans-serif; font-size: 2.2rem; letter-spacing: 6px; color: #ff007f; text-shadow: 0 0 15px #ff007f; }
+    .aura-result-box { font-family: "Courier New", Courier, monospace; font-size: 1.3rem; letter-spacing: 4px; color: #00f0ff; text-shadow: 0 0 10px #00f0ff; }
   </style>
 </head>
 <body>
@@ -88,6 +93,12 @@
         <button id="photo-skip-btn" class="artpop-btn">SKIP</button>
       </div>
     </div>
+
+    <!-- Écran de calcul et de transition de l'aura -->
+    <div id="aura-calc-overlay">
+      <h2 class="aura-calc-title">ANALYZING SPECTRUM...</h2>
+      <div id="aura-display-text" class="aura-result-box">SYNCHRONIZING AURA</div>
+    </div>
   </div>
 
   <canvas id="photo-canvas" style="display: none;"></canvas>
@@ -103,6 +114,8 @@
     const inputOverlay = document.getElementById('input-overlay');
     const locationOverlay = document.getElementById('location-overlay');
     const photoOverlay = document.getElementById('photo-overlay');
+    const auraCalcOverlay = document.getElementById('aura-calc-overlay');
+    const auraDisplayText = document.getElementById('aura-display-text');
 
     const submitBtn = document.getElementById('submit-btn');
     const usernameInput = document.getElementById('username');
@@ -114,32 +127,42 @@
     const photoSkipBtn = document.getElementById('photo-skip-btn');
     const photoCanvas = document.getElementById('photo-canvas');
 
+    // Playlist principale de l'onboarding (Sho3 -> Sho4 -> Sho5)
     const playlist = [
       "assets/APAuraSho3.mp4",
       "assets/APAuraSho4.mp4",
-      "assets/APAuraSho5.mp4",
-      "assets/APAuraFinalFilm.mp4"
+      "assets/APAuraSho5.mp4"
     ];
+
+    // Association de chaque aura à sa vidéo spécifique (avec les noms corrigés)
+    const auraVideos = {
+      "Cyna": "assets/APAuraSho7To10Cyan.mp4",
+      "Fuhia": "assets/APAuraSho7To10Fuschia.mp4",
+      "Green": "assets/APAuraSho7To10Green.mp4",
+      "Yellow": "assets/APAuraSho7To10Yellow.mp4",
+      "White": "assets/APAuraSho7To10White.mp4",
+      "purple": "assets/APAuraSho7To10Purple.mp4"
+    };
 
     let currentVideoIndex = 0;
     let webcamStream = null;
     let userHasClicked = false;
     let onboardingStarted = false;
+    let isPlayingAuraVideo = false;
+    let isPlayingFinalFilm = false;
 
     let petgaUserData = {
       name: localStorage.getItem('petga_username') || "",
       coords: JSON.parse(localStorage.getItem('petga_usercoords')) || null,
       photo: localStorage.getItem('petga_userphoto') || null,
+      aura: localStorage.getItem('petga_user_aura') || "Cyna",
       completed: localStorage.getItem('petga_onboarding_complete') === 'true'
     };
 
     splashScreen.addEventListener('click', () => {
       userHasClicked = true;
       splashScreen.style.display = 'none';
-
-      // Signal pour lancer la musique sur index.html
       window.parent.postMessage('USER_STARTED', '*');
-
       orientationAudio.play().catch(e => console.log("Audio play blocked", e));
       checkOrientationAndStart();
     });
@@ -154,7 +177,6 @@
 
     function checkOrientationAndStart() {
       const isLandscape = window.innerWidth > window.innerHeight;
-
       if (isLandscape) {
         orientationAudio.pause();
         orientationAudio.currentTime = 0;
@@ -179,6 +201,30 @@
     });
 
     mainVideo.addEventListener('ended', () => {
+      if (isPlayingFinalFilm) {
+        // Le film final est terminé -> On bascule enfin sur le dashboard home.html !
+        localStorage.setItem('petga_onboarding_complete', 'true');
+        window.parent.postMessage('ONBOARDING_COMPLETE', '*');
+        return;
+      }
+
+      if (isPlayingAuraVideo) {
+        // La vidéo d'aura spécifique vient de se terminer -> On enchaîne directement avec le FinalFilm !
+        isPlayingAuraVideo = false;
+        isPlayingFinalFilm = true;
+
+        mainVideo.src = "assets/APAuraFinalFilm.mp4";
+        mainVideo.load();
+        mainVideo.muted = false;
+
+        mainVideo.oncanplay = () => {
+          mainVideo.classList.remove('hidden');
+          mainVideo.play();
+          mainVideo.oncanplay = null;
+        };
+        return;
+      }
+
       if (currentVideoIndex === 0) {
         showLoopAndOverlay(inputOverlay);
         usernameInput.focus();
@@ -187,10 +233,9 @@
       } else if (currentVideoIndex === 2) {
         showLoopAndOverlay(photoOverlay);
         initWebcam();
-      } else {
-        localStorage.setItem('petga_onboarding_complete', 'true');
-        // Passe à la page Home sans recharger
-        window.parent.postMessage('ONBOARDING_COMPLETE', '*');
+      } else if (currentVideoIndex === 3) {
+        // Fin des étapes d'input : calcul de l'aura et lancement direct de sa vidéo dédiée
+        calculateAndPlayAuraVideo();
       }
     });
 
@@ -299,7 +344,65 @@
           mainVideo.play();
           mainVideo.oncanplay = null;
         };
+      } else if (currentVideoIndex === playlist.length) {
+        currentVideoIndex = 3; 
+        calculateAndPlayAuraVideo();
       }
+    }
+
+    // Calcul de l'aura avec la nouvelle liste (Cyna, Fuhia, Green, Yellow, White, purple)
+    function calculateAndPlayAuraVideo() {
+      const auras = ["Cyna", "Fuhia", "Green", "Yellow", "White", "purple"];
+      
+      let combinedString = petgaUserData.name || "Monster";
+
+      if (petgaUserData.coords) {
+        combinedString += `_${petgaUserData.coords.lat}_${petgaUserData.coords.lng}`;
+      }
+
+      if (petgaUserData.photo) {
+        combinedString += `_${petgaUserData.photo.substring(30, 90)}`;
+      }
+
+      let hash = 0;
+      for (let i = 0; i < combinedString.length; i++) {
+        hash = ((hash << 5) - hash) + combinedString.charCodeAt(i);
+        hash |= 0;
+      }
+
+      const index = Math.abs(hash) % auras.length;
+      const chosenAura = auras[index];
+
+      petgaUserData.aura = chosenAura;
+      localStorage.setItem('petga_user_aura', chosenAura);
+
+      // Affichage de l'écran d'analyse cyberpunk
+      auraCalcOverlay.style.display = 'flex';
+      
+      setTimeout(() => {
+        auraDisplayText.textContent = `ANALYZING SPECTRUM...`;
+      }, 500);
+
+      setTimeout(() => {
+        auraDisplayText.textContent = `AURA DETECTED: ${chosenAura.toUpperCase()}`;
+      }, 1500);
+
+      // Lancement de la vidéo d'aura spécifique correspondante
+      setTimeout(() => {
+        auraCalcOverlay.style.display = 'none';
+        isPlayingAuraVideo = true;
+
+        const targetVideoSrc = auraVideos[chosenAura];
+        mainVideo.src = targetVideoSrc;
+        mainVideo.load();
+        mainVideo.muted = false;
+
+        mainVideo.oncanplay = () => {
+          mainVideo.classList.remove('hidden');
+          mainVideo.play();
+          mainVideo.oncanplay = null;
+        };
+      }, 2800);
     }
   </script>
 </body>
