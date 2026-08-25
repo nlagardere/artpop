@@ -1,0 +1,266 @@
+[
+  {
+    "name": "Camera",
+    "type": "Camera",
+    "alpha": 0,
+    "animation": {
+      
+    },
+    "texture": null
+  },
+  {
+    "name": "Gazing Ball",
+    "type": "Reflection",
+    "tintColor": "0.000000 0.000000 1.000000 1.000000",
+    "skybox": [
+      "ArtHausMaterialGazingBallSkyboxRight.png",
+      "ArtHausMaterialGazingBallSkyboxLeft.png",
+      "ArtHausMaterialGazingBallSkyboxTop.png",
+      "ArtHausMaterialGazingBallSkyboxBottom.png",
+      "ArtHausMaterialGazingBallSkyboxBack.png",
+      "ArtHausMaterialGazingBallSkyboxFront.png"
+    ]
+  },
+  {
+    "specularColor": "1.000000 1.000000 1.000000",
+    "ambientColor": "0.67843137254902 0.84705882352941 0.78039215686275",
+    "type": "Blinn-Phong",
+    "animation": {
+      
+    },
+    "name": "Pastel Light Color",
+    "alpha": 1,
+    "lightDirection": "-1.000000 -1.000000 -1.000000",
+    "emissiveColor": "0.000000 0.000000 0.000000",
+    "diffuseColor": "0.67843137254902 0.84705882352941 0.78039215686275",
+    "shininess": 10
+  },
+  {
+    "ambientColor": "0.2 0.2 0.2",
+    "type": "Lambertian",
+    "animation": {
+      
+    },
+    "name": "Pastel Dark Color",
+    "alpha": 1,
+    "lightDirection": "-1.000000 -1.000000 -1.000000",
+    "diffuseColor": "0.94509803921 0.35686274509 0.25098039215"
+  },
+  {
+    "ambientColor": "0.000000 0.000000 0.000000",
+    "type": "Lambertian",
+    "animation": {
+      
+    },
+    "name": "Dark Color",
+    "alpha": 1,
+    "lightDirection": "-1.000000 -1.000000 -1.000000",
+    "diffuseColor": "0.500000 0.000000 0.500000"
+  },
+  {
+    "specularColor": "1.000000 1.000000 1.000000",
+    "ambientColor": "0.000000 0.000000 0.000000",
+    "type": "Blinn-Phong",
+    "animation": {
+      
+    },
+    "name": "Shiny ARTPOP Pink",
+    "alpha": 1,
+    "lightDirection": "-1.000000 -1.000000 -1.000000",
+    "emissiveColor": "0.000000 0.000000 0.000000",
+    "diffuseColor": "0.776470 0.172549 0.584314",
+    "shininess": 10
+  },
+  {
+    "specularColor": "1.000000 1.000000 1.000000",
+    "ambientColor": "0.000000 0.000000 0.000000",
+    "type": "Normal Map",
+    "animation": {
+      
+    },
+    "name": "Flesh",
+    "tintColor": "0.000000 0.000000 0.000000 0.000000",
+    "texture": "ArtHausMaterialFlesh.jpg",
+    "emissiveColor": "0.000000 0.000000 0.000000",
+    "normalMap": "ArtHausMaterialFleshNormalMap.png",
+    "lightDirection": "1.000000 -1.000000 -1.000000",
+    "shininess": 50
+  },
+  {
+    "specularColor": "1.000000 1.000000 1.000000",
+    "ambientColor": "0.000000 0.000000 0.000000",
+    "type": "Normal Map",
+    "animation": {
+      
+    },
+    "name": "Leather",
+    "tintColor": "0.000000 0.000000 0.000000 0.000000",
+    "texture": "ArtHausMaterialLeather.jpg",
+    "emissiveColor": "0.000000 0.000000 0.000000",
+    "normalMap": "ArtHausMaterialLeatherNormalMap.png",
+    "lightDirection": "1.000000 -1.000000 -1.000000",
+    "shininess": 50
+  },
+  {
+    "specularColor": "1.000000 1.000000 1.000000",
+    "ambientColor": "0.000000 0.000000 0.000000",
+    "type": "Normal Map",
+    "animation": {
+      
+    },
+    "name": "Brick",
+    "tintColor": "0.000000 0.000000 0.000000 0.000000",
+    "texture": "ArtHausMaterialBrick.jpg",
+    "emissiveColor": "0.000000 0.000000 0.000000",
+    "normalMap": "ArtHausMaterialBrickNormalMap.png",
+    "lightDirection": "1.000000 -1.000000 -1.000000",
+    "shininess": 50
+  },
+  {
+    "ambientColor": "0.000000 0.000000 0.000000",
+    "type": "Lambertian Texture",
+    "animation": {
+      
+    },
+    "name": "Fabric",
+    "tintColor": "0.000000 0.000000 0.000000 0.000000",
+    "texture": "ArtHausMaterialFabric.jpg",
+    "alpha": 1,
+    "lightDirection": "-1.000000 -1.000000 -1.000000"
+  },
+  {
+    "ambientColor": "0.000000 0.000000 0.000000",
+    "type": "Lambertian Texture",
+    "animation": {
+      
+    },
+    "name": "Gypsy",
+    "tintColor": "0.000000 0.000000 0.000000 0.000000",
+    "texture": "ArtHausMaterialGypsy.jpg",
+    "alpha": 1,
+    "lightDirection": "-1.000000 -1.000000 -1.000000"
+  },
+  {
+    "ambientColor": "0.000000 0.000000 0.000000",
+    "type": "Lambertian Texture",
+    "animation": {
+      
+    },
+    "name": "Eye",
+    "tintColor": "0.000000 0.000000 0.000000 0.000000",
+    "texture": "ArtHausMaterialEye.png",
+    "alpha": 1,
+    "lightDirection": "-1.000000 -1.000000 -1.000000"
+  },
+  {
+    "ambientColor": "0.000000 0.000000 0.000000",
+    "type": "Lambertian Texture",
+    "animation": {
+      
+    },
+    "name": "Painting",
+    "tintColor": "0.000000 0.000000 0.000000 0.000000",
+    "texture": "ArtHausMaterialPainting.png",
+    "alpha": 1,
+    "lightDirection": "-1.000000 -1.000000 -1.000000"
+  },
+  {
+    "ambientColor": "0.000000 0.000000 0.000000",
+    "type": "Lambertian Texture",
+    "animation": {
+      
+    },
+    "name": "Circuit",
+    "tintColor": "0.000000 0.000000 0.000000 0.000000",
+    "texture": "ArtHausSceneCircuit.jpg",
+    "alpha": 1,
+    "lightDirection": "-1.000000 -1.000000 -1.000000"
+  },
+  {
+    "specularColor": "1.000000 1.000000 1.000000",
+    "ambientColor": "0.000000 0.000000 0.000000",
+    "type": "Blinn-Phong Texture",
+    "animation": {
+      
+    },
+    "name": "Pearl",
+    "alpha": 1,
+    "lightDirection": "-1.000000 -1.000000 -1.000000",
+    "emissiveColor": "0.000000 0.000000 0.000000",
+    "tintColor": "0.000000 0.000000 0.000000 0.000000",
+    "texture": "ArtHausMaterialPearl.png",
+    "shininess": 10
+  },
+  {
+    "name": "Zebra",
+    "type": "Zebra",
+    "animation": {
+      
+    },
+    "color1": "1 0.25098039215 0.25098039215",
+    "color2": "0.20392156862 0.74117647058 0.70588235294",
+    "width": 0,
+    "lightDirection": "-1.000000 -1.000000 -1.000000"
+  },
+  {
+    "type": "Wireframe",
+    "animation": {
+      
+    },
+    "name": "Wireframe",
+    "lineWidth": 0.05,
+    "lightDirection": "-1.000000 -1.000000 -1.000000",
+    "diffuseColor": "0.000000 1.000000 0.000000",
+    "lineCount": 16
+  },
+  {
+    "type": "Waves",
+    "animation": {
+      
+    },
+    "name": "Waves",
+    "color1": "0.000000 1.000000 1.000000",
+    "color2": "1.000000 0.500000 0.000000",
+    "lightDirection": "-1.000000 -1.000000 -1.000000",
+    "blockWidth": 0.01
+  },
+  {
+    "ambientColor": "0.000000 0.000000 0.000000",
+    "type": "Lambertian Texture",
+    "animation": {
+      
+    },
+    "name": "Earth",
+    "tintColor": "0.000000 0.000000 0.000000 0.000000",
+    "texture": "ArtHausMaterialEarth.jpg",
+    "alpha": 1,
+    "lightDirection": "-1.000000 -1.000000 -1.000000"
+  },
+  {
+    "specularColor": "1.000000 1.000000 1.000000",
+    "ambientColor": "0.000000 0.000000 0.000000",
+    "type": "Normal Map",
+    "animation": {
+      
+    },
+    "name": "Moon",
+    "tintColor": "0.000000 0.000000 0.000000 0.000000",
+    "texture": "ArtHausMaterialMoon.jpg",
+    "emissiveColor": "0.000000 0.000000 0.000000",
+    "normalMap": "ArtHausMaterialMoonNormalMap.png",
+    "lightDirection": "1.000000 -1.000000 -1.000000",
+    "shininess": 50
+  },
+  {
+    "ambientColor": "0.000000 0.000000 0.000000",
+    "type": "Lambertian Texture",
+    "animation": {
+      
+    },
+    "name": "Venus",
+    "tintColor": "0.000000 0.000000 0.000000 0.000000",
+    "texture": "ArtHausMaterialVenus.jpg",
+    "alpha": 1,
+    "lightDirection": "-1.000000 -1.000000 -1.000000"
+  }
+]

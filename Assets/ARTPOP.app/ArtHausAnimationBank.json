@@ -1,0 +1,425 @@
+[
+  {
+    "Spiky" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0
+    },
+    "Scale" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    },
+    "Amount" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0
+    },
+    "Offset" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0
+    },
+    "Rotate Y" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    },
+    "Twist" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0
+    },
+    "Rotate X" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    },
+    "Move Y" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    },
+    "Move X" : {
+      "rate" : 1,
+      "clockType" : 3,
+      "linearValue" : 0
+    }
+  },
+  {
+    "Spiky" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0
+    },
+    "Scale" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    },
+    "Amount" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0
+    },
+    "Offset" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0
+    },
+    "Rotate Y" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    },
+    "Twist" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0
+    },
+    "Rotate X" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    },
+    "Move Y" : {
+      "rate" : 1,
+      "clockType" : 3,
+      "linearValue" : 0
+    },
+    "Move X" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    }
+  },
+  {
+    "Spiky" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0
+    },
+    "Scale" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    },
+    "Amount" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0
+    },
+    "Offset" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0
+    },
+    "Rotate Y" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    },
+    "Twist" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0
+    },
+    "Rotate X" : {
+      "rate" : 1,
+      "clockType" : 1,
+      "linearValue" : 0
+    },
+    "Move Y" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    },
+    "Move X" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    }
+  },
+  {
+    "Spiky" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0
+    },
+    "Scale" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    },
+    "Amount" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0
+    },
+    "Offset" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0
+    },
+    "Rotate Y" : {
+      "rate" : 1,
+      "clockType" : 1,
+      "linearValue" : 0
+    },
+    "Twist" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0
+    },
+    "Rotate X" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    },
+    "Move Y" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    },
+    "Move X" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    }
+  },
+  {
+    "Spiky" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0
+    },
+    "Scale" : {
+      "rate" : 1,
+      "clockType" : 6,
+      "linearValue" : 0
+    },
+    "Amount" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0
+    },
+    "Offset" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0
+    },
+    "Rotate Y" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    },
+    "Twist" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0
+    },
+    "Rotate X" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    },
+    "Move Y" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    },
+    "Move X" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    }
+  },
+  {
+    "Spiky" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0
+    },
+    "Scale" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    },
+    "Amount" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0
+    },
+    "Offset" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0
+    },
+    "Rotate Y" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    },
+    "Twist" : {
+      "rate" : 1,
+      "clockType" : 6,
+      "linearValue" : 0
+    },
+    "Rotate X" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    },
+    "Move Y" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    },
+    "Move X" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    }
+  },
+  {
+    "Spiky" : {
+      "rate" : 1,
+      "clockType" : 6,
+      "linearValue" : 0
+    },
+    "Scale" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    },
+    "Amount" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0
+    },
+    "Offset" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0
+    },
+    "Rotate Y" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    },
+    "Twist" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0
+    },
+    "Rotate X" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    },
+    "Move Y" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    },
+    "Move X" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    }
+  },
+  {
+    "Spiky" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0
+    },
+    "Scale" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    },
+    "Amount" : {
+      "rate" : 1,
+      "clockType" : 3,
+      "linearValue" : 0
+    },
+    "Offset" : {
+      "rate" : 1,
+      "clockType" : 3,
+      "linearValue" : 0
+    },
+    "Rotate Y" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    },
+    "Twist" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0
+    },
+    "Rotate X" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    },
+    "Move Y" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    },
+    "Move X" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    }
+  },
+  {
+    "Spiky" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0
+    },
+    "Scale" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    },
+    "Amount" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0
+    },
+    "Offset" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0
+    },
+    "Rotate Y" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    },
+    "Twist" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0
+    },
+    "Rotate X" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    },
+    "Move Y" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    },
+    "Move X" : {
+      "rate" : 1,
+      "clockType" : 0,
+      "linearValue" : 0.5
+    }
+  }
+]

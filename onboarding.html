@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ARTPOP - PetGA Onboarding</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body, html { width: 100%; height: 100%; background-color: #000; color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; overflow: hidden; }
+    .app-container { position: relative; width: 100vw; height: 100vh; background: #000; display: flex; justify-content: center; align-items: center; }
+    
+    #splash-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 150; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 15px; padding: 30px; text-align: center; cursor: pointer; }
+    #splash-screen h1 { font-family: "Impact", "Arial Black", sans-serif; font-size: 4.5rem; letter-spacing: 14px; text-transform: uppercase; color: #fff; text-shadow: 0 0 10px #ff007f, 0 0 20px #ff007f, 0 0 40px #ff007f, 0 0 80px #e00070; margin-bottom: 5px; }
+    #splash-screen p.quote { font-family: "Courier New", Courier, monospace; font-size: 1.1rem; letter-spacing: 4px; text-transform: uppercase; color: #00f0ff; text-shadow: 0 0 10px rgba(0, 240, 255, 0.8); }
+    #splash-screen .tap-start { margin-top: 40px; font-family: "Courier New", Courier, monospace; font-size: 0.85rem; letter-spacing: 4px; color: rgba(255, 255, 255, 0.6); animation: pulse 1.8s infinite; }
+    
+    #rotate-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 100; display: none; flex-direction: column; justify-content: center; align-items: center; gap: 25px; padding: 20px; text-align: center; }
+    .phone-icon { width: 60px; height: 100px; border: 3px solid #00f0ff; border-radius: 10px; animation: rotatePhone 2.5s ease-in-out infinite; box-shadow: 0 0 15px rgba(0, 240, 255, 0.6); }
+    @keyframes rotatePhone { 0%, 20% { transform: rotate(0deg); } 50%, 70% { transform: rotate(-90deg); } 100% { transform: rotate(0deg); } }
+    #rotate-screen p { font-family: "Courier New", Courier, monospace; font-size: 1.1rem; letter-spacing: 4px; text-transform: uppercase; color: #00f0ff; text-shadow: 0 0 10px rgba(0, 240, 255, 0.8); max-width: 320px; line-height: 1.5; }
+    @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+    
+    .bg-video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; transition: opacity 0.5s ease; }
+    #petga-video { z-index: 2; opacity: 1; }
+    #loop-video { z-index: 1; opacity: 0; }
+    #petga-video.hidden { opacity: 0; }
+    #loop-video.active { opacity: 1; }
+    
+    .artpop-overlay { position: absolute; z-index: 30; display: flex; flex-direction: column; align-items: center; gap: 22px; background: rgba(0, 0, 0, 0.55); padding: 40px 50px; border: 1px solid rgba(0, 240, 255, 0.6); border-radius: 12px; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 0 30px rgba(0, 240, 255, 0.25), inset 0 0 15px rgba(0, 240, 255, 0.1); opacity: 0; pointer-events: none; transform: scale(0.95); transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+    .artpop-overlay.active { opacity: 1; pointer-events: auto; transform: scale(1); }
+    .artpop-overlay label, .artpop-overlay p { font-family: "Courier New", Courier, monospace; font-size: 0.95rem; letter-spacing: 3px; text-transform: uppercase; color: #00f0ff; text-shadow: 0 0 8px rgba(0, 240, 255, 0.8); font-weight: bold; text-align: center; }
+    .artpop-input { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(0, 240, 255, 0.4); border-radius: 6px; padding: 14px 20px; color: #fff; font-family: "Courier New", Courier, monospace; font-size: 1.1rem; text-align: center; letter-spacing: 2px; outline: none; transition: all 0.3s ease; width: 270px; }
+    .artpop-input::placeholder { color: rgba(255, 255, 255, 0.4); letter-spacing: 1px; }
+    .artpop-input:focus { border-color: #00f0ff; box-shadow: 0 0 20px rgba(0, 240, 255, 0.7); background: rgba(0, 240, 255, 0.08); }
+    .artpop-btn { background: transparent; color: #00f0ff; border: 1px solid #00f0ff; padding: 12px 36px; font-family: "Courier New", Courier, monospace; font-size: 0.9rem; font-weight: bold; letter-spacing: 3px; text-transform: uppercase; cursor: pointer; border-radius: 4px; transition: all 0.3s ease; box-shadow: 0 0 12px rgba(0, 240, 255, 0.3); }
+    .artpop-btn:hover { background: #00f0ff; color: #000; box-shadow: 0 0 25px rgba(0, 240, 255, 0.9); transform: translateY(-2px); }
+    .btn-group { display: flex; gap: 15px; }
+    
+    .webcam-box { width: 280px; height: 210px; border: 1px solid #00f0ff; border-radius: 8px; overflow: hidden; background: #000; box-shadow: 0 0 15px rgba(0, 240, 255, 0.4); }
+    #webcam-feed { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+  </style>
+</head>
+<body>
+
+  <audio id="orientation-audio" src="assets/orientation_bgm.mp3" loop preload="auto"></audio>
+
+  <div class="app-container">
+    <div id="splash-screen">
+      <h1>ARTPOP</h1>
+      <p class="quote">"ART SHOULDN'T HAVE RULES"</p>
+      <span class="tap-start">TOUCH SCREEN TO START</span>
+    </div>
+
+    <div id="rotate-screen">
+      <div class="phone-icon"></div>
+      <p>ROTATE YOUR DEVICE TO LANDSCAPE MODE</p>
+    </div>
+
+    <video id="petga-video" class="bg-video" playsinline preload="auto">
+      <source src="assets/APAuraSho3.mp4" type="video/mp4">
+    </video>
+
+    <video id="loop-video" class="bg-video" playsinline loop muted preload="auto">
+      <source src="assets/APAuraSho4 wait.mp4" type="video/mp4">
+    </video>
+
+    <div id="input-overlay" class="artpop-overlay">
+      <label for="username">Connect Your Identity</label>
+      <input type="text" id="username" class="artpop-input" placeholder="Your Name" autocomplete="off">
+      <button id="submit-btn" class="artpop-btn">Transmit</button>
+    </div>
+
+    <div id="location-overlay" class="artpop-overlay">
+      <p>SYNC CURRENT POSITION WITH PETGA</p>
+      <div class="btn-group">
+        <button id="loc-allow-btn" class="artpop-btn">CONNECT</button>
+        <button id="loc-deny-btn" class="artpop-btn">SKIP</button>
+      </div>
+    </div>
+
+    <div id="photo-overlay" class="artpop-overlay">
+      <p>CAPTURE YOUR VISUAL AURA</p>
+      <div class="webcam-box">
+        <video id="webcam-feed" autoplay playsinline muted></video>
+      </div>
+      <div class="btn-group">
+        <button id="snap-btn" class="artpop-btn">CAPTURE</button>
+        <button id="photo-skip-btn" class="artpop-btn">SKIP</button>
+      </div>
+    </div>
+  </div>
+
+  <canvas id="photo-canvas" style="display: none;"></canvas>
+
+  <script>
+    const splashScreen = document.getElementById('splash-screen');
+    const rotateScreen = document.getElementById('rotate-screen');
+    const orientationAudio = document.getElementById('orientation-audio');
+
+    const mainVideo = document.getElementById('petga-video');
+    const loopVideo = document.getElementById('loop-video');
+
+    const inputOverlay = document.getElementById('input-overlay');
+    const locationOverlay = document.getElementById('location-overlay');
+    const photoOverlay = document.getElementById('photo-overlay');
+
+    const submitBtn = document.getElementById('submit-btn');
+    const usernameInput = document.getElementById('username');
+    const locAllowBtn = document.getElementById('loc-allow-btn');
+    const locDenyBtn = document.getElementById('loc-deny-btn');
+
+    const webcamFeed = document.getElementById('webcam-feed');
+    const snapBtn = document.getElementById('snap-btn');
+    const photoSkipBtn = document.getElementById('photo-skip-btn');
+    const photoCanvas = document.getElementById('photo-canvas');
+
+    const playlist = [
+      "assets/APAuraSho3.mp4",
+      "assets/APAuraSho4.mp4",
+      "assets/APAuraSho5.mp4",
+      "assets/APAuraFinalFilm.mp4"
+    ];
+
+    let currentVideoIndex = 0;
+    let webcamStream = null;
+    let userHasClicked = false;
+    let onboardingStarted = false;
+
+    let petgaUserData = {
+      name: localStorage.getItem('petga_username') || "",
+      coords: JSON.parse(localStorage.getItem('petga_usercoords')) || null,
+      photo: localStorage.getItem('petga_userphoto') || null,
+      completed: localStorage.getItem('petga_onboarding_complete') === 'true'
+    };
+
+    splashScreen.addEventListener('click', () => {
+      userHasClicked = true;
+      splashScreen.style.display = 'none';
+
+      // Signal pour lancer la musique sur index.html
+      window.parent.postMessage('USER_STARTED', '*');
+
+      orientationAudio.play().catch(e => console.log("Audio play blocked", e));
+      checkOrientationAndStart();
+    });
+
+    window.addEventListener('resize', () => {
+      if (userHasClicked && !onboardingStarted) checkOrientationAndStart();
+    });
+
+    window.addEventListener('orientationchange', () => {
+      if (userHasClicked && !onboardingStarted) checkOrientationAndStart();
+    });
+
+    function checkOrientationAndStart() {
+      const isLandscape = window.innerWidth > window.innerHeight;
+
+      if (isLandscape) {
+        orientationAudio.pause();
+        orientationAudio.currentTime = 0;
+        rotateScreen.style.display = 'none';
+        startPetgaExperience();
+      } else {
+        rotateScreen.style.display = 'flex';
+        if (orientationAudio.paused) orientationAudio.play().catch(() => {});
+      }
+    }
+
+    function startPetgaExperience() {
+      onboardingStarted = true;
+      mainVideo.muted = false;
+      mainVideo.play();
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && onboardingStarted && !mainVideo.ended) {
+        mainVideo.currentTime = mainVideo.duration - 0.1;
+      }
+    });
+
+    mainVideo.addEventListener('ended', () => {
+      if (currentVideoIndex === 0) {
+        showLoopAndOverlay(inputOverlay);
+        usernameInput.focus();
+      } else if (currentVideoIndex === 1) {
+        showLoopAndOverlay(locationOverlay);
+      } else if (currentVideoIndex === 2) {
+        showLoopAndOverlay(photoOverlay);
+        initWebcam();
+      } else {
+        localStorage.setItem('petga_onboarding_complete', 'true');
+        // Passe à la page Home sans recharger
+        window.parent.postMessage('ONBOARDING_COMPLETE', '*');
+      }
+    });
+
+    function showLoopAndOverlay(overlay) {
+      loopVideo.play();
+      loopVideo.classList.add('active');
+      mainVideo.classList.add('hidden');
+      overlay.classList.add('active');
+    }
+
+    submitBtn.addEventListener('click', validateName);
+    usernameInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') validateName(); });
+
+    function validateName() {
+      const name = usernameInput.value.trim();
+      if (name !== "") {
+        petgaUserData.name = name;
+        localStorage.setItem('petga_username', name);
+        inputOverlay.classList.remove('active');
+        playNextInPlaylist();
+      }
+    }
+
+    locAllowBtn.addEventListener('click', () => {
+      if (navigator.geolocation && location.protocol !== 'file:') {
+        let handled = false;
+        const timeoutId = setTimeout(() => { if (!handled) { handled = true; finishLocationStep(); } }, 2000);
+
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            if (!handled) {
+              handled = true;
+              clearTimeout(timeoutId);
+              const coords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+              petgaUserData.coords = coords;
+              localStorage.setItem('petga_usercoords', JSON.stringify(coords));
+              finishLocationStep();
+            }
+          },
+          () => { if (!handled) { handled = true; clearTimeout(timeoutId); finishLocationStep(); } },
+          { timeout: 2000 }
+        );
+      } else {
+        finishLocationStep();
+      }
+    });
+
+    locDenyBtn.addEventListener('click', finishLocationStep);
+
+    function finishLocationStep() {
+      locationOverlay.classList.remove('active');
+      playNextInPlaylist();
+    }
+
+    async function initWebcam() {
+      try {
+        webcamStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        webcamFeed.srcObject = webcamStream;
+      } catch (err) {
+        console.warn("Accès webcam impossible :", err);
+      }
+    }
+
+    function stopWebcam() {
+      if (webcamStream) {
+        webcamStream.getTracks().forEach(track => track.stop());
+        webcamStream = null;
+      }
+    }
+
+    snapBtn.addEventListener('click', () => {
+      if (webcamStream) {
+        photoCanvas.width = webcamFeed.videoWidth || 640;
+        photoCanvas.height = webcamFeed.videoHeight || 480;
+        const ctx = photoCanvas.getContext('2d');
+        ctx.translate(photoCanvas.width, 0);
+        ctx.scale(-1, 1);
+        ctx.drawImage(webcamFeed, 0, 0, photoCanvas.width, photoCanvas.height);
+        
+        const photoData = photoCanvas.toDataURL('image/png');
+        petgaUserData.photo = photoData;
+        localStorage.setItem('petga_userphoto', photoData);
+      }
+      finishPhotoStep();
+    });
+
+    photoSkipBtn.addEventListener('click', finishPhotoStep);
+
+    function finishPhotoStep() {
+      stopWebcam();
+      photoOverlay.classList.remove('active');
+      playNextInPlaylist();
+    }
+
+    function playNextInPlaylist() {
+      currentVideoIndex++;
+      if (currentVideoIndex < playlist.length) {
+        mainVideo.src = playlist[currentVideoIndex];
+        mainVideo.load();
+        mainVideo.muted = false;
+
+        mainVideo.oncanplay = () => {
+          mainVideo.classList.remove('hidden');
+          loopVideo.pause();
+          loopVideo.classList.remove('active');
+          mainVideo.play();
+          mainVideo.oncanplay = null;
+        };
+      }
+    }
+  </script>
+</body>
+</html>

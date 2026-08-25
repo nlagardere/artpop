@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ARTPOP - PetGA Experience</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body, html { width: 100%; height: 100%; overflow: hidden; background: #050508; color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+
+    /* --- ÉCRAN DE BLOCAGE SI PAS EN MODE PWA --- */
+    #pwa-lock-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #050508;
+      z-index: 3000;
+      display: none; /* Caché par défaut, activé si pas en PWA */
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      text-align: center;
+      padding: 30px;
+    }
+
+    .lock-title {
+      font-family: "Impact", "Arial Black", sans-serif;
+      font-size: 2.5rem;
+      letter-spacing: 6px;
+      color: #ff007f;
+      text-shadow: 0 0 15px rgba(255, 0, 127, 0.8);
+    }
+
+    .lock-subtitle {
+      font-family: "Courier New", Courier, monospace;
+      font-size: 0.95rem;
+      letter-spacing: 2px;
+      color: #a0a0b0;
+      max-width: 380px;
+      line-height: 1.6;
+    }
+
+    .lock-box {
+      background: rgba(20, 20, 30, 0.8);
+      border: 1px solid #00f0ff;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 10px;
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+      font-family: "Courier New", Courier, monospace;
+      font-size: 0.85rem;
+      color: #00f0ff;
+      max-width: 350px;
+      line-height: 1.5;
+    }
+
+    /* --- WELCOME / MAGICAL PRISM SCREEN --- */
+    #welcome-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #050508;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      text-align: center;
+      padding: 20px;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+    }
+
+    #welcome-overlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .welcome-title {
+      font-family: "Impact", "Arial Black", sans-serif;
+      font-size: 3rem;
+      letter-spacing: 8px;
+      text-transform: uppercase;
+      color: #fff;
+      text-shadow: 0 0 15px #ff007f, 0 0 30px #ff007f;
+      animation: pulseTitle 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulseTitle {
+      0% { text-shadow: 0 0 15px #ff007f, 0 0 30px #ff007f; }
+      100% { text-shadow: 0 0 25px #00f0ff, 0 0 40px #00f0ff; }
+    }
+
+    .welcome-subtitle {
+      font-family: "Courier New", Courier, monospace;
+      font-size: 1rem;
+      letter-spacing: 3px;
+      color: #00f0ff;
+      text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
+      max-width: 420px;
+      line-height: 1.5;
+    }
+
+    .enter-btn {
+      margin-top: 15px;
+      background: transparent;
+      border: 2px solid #ff007f;
+      color: #fff;
+      padding: 15px 40px;
+      font-family: "Courier New", Courier, monospace;
+      font-size: 1.1rem;
+      font-weight: bold;
+      letter-spacing: 4px;
+      cursor: pointer;
+      border-radius: 30px;
+      box-shadow: 0 0 15px rgba(255, 0, 127, 0.4);
+      transition: all 0.3s ease;
+    }
+
+    .enter-btn:hover {
+      background: #ff007f;
+      box-shadow: 0 0 30px rgba(255, 0, 127, 0.9);
+      transform: scale(1.05);
+    }
+
+    iframe { width: 100vw; height: 100vh; border: none; display: block; }
+  </style>
+</head>
+<body>
+
+  <!-- Écran de blocage si ouvert dans un navigateur classique -->
+  <div id="pwa-lock-screen">
+    <h1 class="lock-title">ACCESS DENIED</h1>
+    <p class="lock-subtitle">The PetGA universe can only be unlocked through the installed application.</p>
+    <div class="lock-box">
+      ⚡ Please add this site to your Home Screen from your browser menu to enter the prism.
+      (Click the share icon and select "Add to Home Screen" on iOS, or "Install" on Android.)
+    </div>
+  </div>
+
+  <!-- Écran magique d'entrée (The Prism) -->
+  <div id="welcome-overlay">
+    <h1 class="welcome-title">WELCOME TO THE PRISM</h1>
+    <p class="welcome-subtitle">The stars align, the sound waves awaken. Step through the veil into pure imagination.</p>
+    <button id="enter-btn" class="enter-btn">UNLOCK THE MAGIC ✨</button>
+  </div>
+
+  <!-- Musique globale qui tourne en fond -->
+  <audio id="global-bgm" src="assets/Chromatica I.mp3" loop></audio>
+
+  <!-- Charge au départ l'onboarding -->
+  <iframe id="app-frame" src="onboarding.html"></iframe>
+
+  <script>
+    const pwaLockScreen = document.getElementById('pwa-lock-screen');
+    const welcomeOverlay = document.getElementById('welcome-overlay');
+    const enterBtn = document.getElementById('enter-btn');
+    const bgm = document.getElementById('global-bgm');
+    const appFrame = document.getElementById('app-frame');
+
+    // Vérification du mode PWA (Standalone)
+    // Astuce pour tester sur PC : mets des slashs '//' devant le if si tu veux désactiver le blocage temporairement
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+    if (!isStandalone) {
+      pwaLockScreen.style.display = 'flex';
+      welcomeOverlay.style.display = 'none';
+    }
+
+    // Clic sur le bouton magique d'entrée
+    enterBtn.addEventListener('click', () => {
+      welcomeOverlay.classList.add('hidden');
+
+      // Lancement de la musique
+      bgm.volume = 0.3;
+      bgm.play().catch(e => console.log("Audio play error:", e));
+
+      // Optionnel : envoie un signal à l'iframe si besoin
+      appFrame.contentWindow.postMessage('USER_STARTED', '*');
+    });
+
+    window.addEventListener('message', (event) => {
+      // Passe sur la page Home quand l'onboarding est fini
+      if (event.data === 'ONBOARDING_COMPLETE') {
+        appFrame.src = 'home.html';
+      }
+    });
+  </script>
+</body>
+</html>

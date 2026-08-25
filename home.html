@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ARTPOP - PetGA Dashboard</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body, html { width: 100%; height: 100%; background: #050508; color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; overflow-x: hidden; }
+
+    /* --- ÉCRAN D'ACCUEIL / WELCOME SCREEN --- */
+    #welcome-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #050508;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      text-align: center;
+      padding: 20px;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+    }
+
+    #welcome-overlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .welcome-title {
+      font-family: "Impact", "Arial Black", sans-serif;
+      font-size: 3rem;
+      letter-spacing: 8px;
+      text-transform: uppercase;
+      color: #fff;
+      text-shadow: 0 0 15px #ff007f, 0 0 30px #ff007f;
+      animation: pulseTitle 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulseTitle {
+      0% { text-shadow: 0 0 15px #ff007f, 0 0 30px #ff007f; }
+      100% { text-shadow: 0 0 25px #00f0ff, 0 0 40px #00f0ff; }
+    }
+
+    .welcome-subtitle {
+      font-family: "Courier New", Courier, monospace;
+      font-size: 1rem;
+      letter-spacing: 3px;
+      color: #00f0ff;
+      text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
+      max-width: 400px;
+      line-height: 1.5;
+    }
+
+    .enter-btn {
+      margin-top: 15px;
+      background: transparent;
+      border: 2px solid #ff007f;
+      color: #fff;
+      padding: 15px 40px;
+      font-family: "Courier New", Courier, monospace;
+      font-size: 1.1rem;
+      font-weight: bold;
+      letter-spacing: 4px;
+      cursor: pointer;
+      border-radius: 30px;
+      box-shadow: 0 0 15px rgba(255, 0, 127, 0.4);
+      transition: all 0.3s ease;
+    }
+
+    .enter-btn:hover {
+      background: #ff007f;
+      box-shadow: 0 0 30px rgba(255, 0, 127, 0.9);
+      transform: scale(1.05);
+    }
+
+    /* --- ÉCRAN DE BLOCAGE PAYSAGE --- */
+    #rotate-home-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #000;
+      z-index: 999;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 25px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .phone-portrait-icon {
+      width: 60px;
+      height: 100px;
+      border: 3px solid #ff007f;
+      border-radius: 10px;
+      animation: rotateToPortrait 2.5s ease-in-out infinite;
+      box-shadow: 0 0 15px rgba(255, 0, 127, 0.6);
+    }
+
+    @keyframes rotateToPortrait {
+      0%, 20% { transform: rotate(-90deg); }
+      50%, 70% { transform: rotate(0deg); }
+      100% { transform: rotate(-90deg); }
+    }
+
+    #rotate-home-screen p {
+      font-family: "Courier New", Courier, monospace;
+      font-size: 1.1rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: #ff007f;
+      text-shadow: 0 0 10px rgba(255, 0, 127, 0.8);
+      max-width: 340px;
+      line-height: 1.5;
+    }
+
+    /* --- STYLES HOME DASHBOARD --- */
+    .bg-aura { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 600px; height: 600px; background: radial-gradient(circle, rgba(255, 0, 127, 0.25) 0%, rgba(0, 240, 255, 0.15) 45%, rgba(0, 0, 0, 0) 70%); z-index: 0; pointer-events: none; filter: blur(50px); animation: floatAura 10s ease-in-out infinite alternate; }
+    @keyframes floatAura { 0% { transform: translate(-50%, -50%) scale(1); } 100% { transform: translate(-45%, -55%) scale(1.2); } }
+
+    .container { position: relative; z-index: 10; max-width: 1000px; margin: 0 auto; padding: 30px 20px; display: flex; flex-direction: column; gap: 30px; }
+    
+    header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; border-bottom: 1px solid rgba(0, 240, 255, 0.2); }
+    .logo { font-family: "Impact", "Arial Black", sans-serif; font-size: 2.2rem; letter-spacing: 6px; text-transform: uppercase; color: #fff; text-shadow: 0 0 10px #ff007f, 0 0 20px #ff007f; }
+    .user-profile { display: flex; align-items: center; gap: 15px; }
+    .user-avatar { width: 50px; height: 50px; border-radius: 50%; border: 2px solid #00f0ff; object-fit: cover; box-shadow: 0 0 10px rgba(0, 240, 255, 0.5); background: #111; }
+    .user-name { font-family: "Courier New", Courier, monospace; font-size: 1rem; letter-spacing: 2px; color: #00f0ff; text-shadow: 0 0 5px rgba(0, 240, 255, 0.5); font-weight: bold; }
+
+    .hero-card { background: rgba(10, 10, 15, 0.7); border: 1px solid rgba(0, 240, 255, 0.4); border-radius: 16px; padding: 30px; backdrop-filter: blur(12px); box-shadow: 0 0 25px rgba(0, 240, 255, 0.15); display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .hero-info h2 { font-family: "Courier New", Courier, monospace; font-size: 1.4rem; color: #ff007f; text-shadow: 0 0 8px rgba(255, 0, 127, 0.6); margin-bottom: 10px; letter-spacing: 2px; }
+    .hero-info p { font-family: "Courier New", Courier, monospace; color: #a0a0b0; font-size: 0.95rem; line-height: 1.5; }
+    .aura-status { padding: 10px 20px; border: 1px solid #00f0ff; border-radius: 30px; font-family: "Courier New", Courier, monospace; font-size: 0.85rem; color: #00f0ff; letter-spacing: 2px; box-shadow: 0 0 10px rgba(0, 240, 255, 0.3); white-space: nowrap; }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .card { background: rgba(15, 15, 25, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 25px; transition: all 0.3s ease; cursor: pointer; display: flex; flex-direction: column; gap: 15px; }
+    .card:hover { border-color: #ff007f; transform: translateY(-5px); box-shadow: 0 0 20px rgba(255, 0, 127, 0.3); background: rgba(25, 15, 30, 0.8); }
+    .card h3 { font-family: "Courier New", Courier, monospace; color: #00f0ff; letter-spacing: 2px; font-size: 1.1rem; }
+    .card p { font-size: 0.85rem; color: #8a8a9e; line-height: 1.4; }
+
+    .reset-btn { align-self: center; margin-top: 20px; background: transparent; border: 1px solid rgba(255, 0, 127, 0.5); color: #ff007f; padding: 10px 20px; font-family: "Courier New", Courier, monospace; font-size: 0.8rem; letter-spacing: 2px; cursor: pointer; border-radius: 6px; transition: all 0.3s ease; }
+    .reset-btn:hover { background: #ff007f; color: #fff; box-shadow: 0 0 15px rgba(255, 0, 127, 0.8); }
+  </style>
+</head>
+<body>
+
+  <!-- Écran de Welcome / Entrée -->
+  <div id="welcome-overlay">
+    <h1 class="welcome-title">WELCOME TO THE PRISM</h1>
+    <p class="welcome-subtitle">The stars align, the sound waves awaken. Step through the veil into pure imagination.</p>
+    <button id="enter-btn" class="enter-btn">UNLOCK THE MAGIC ✨</button>
+  </div>
+
+  <!-- Écran de demande de retour en Portrait -->
+  <div id="rotate-home-screen">
+    <div class="phone-portrait-icon"></div>
+    <p>ROTATE DEVICE TO PORTRAIT MODE TO VIEW DASHBOARD</p>
+  </div>
+
+  <div class="bg-aura"></div>
+
+  <div class="container">
+    <header>
+      <div class="logo">ARTPOP</div>
+      <div class="user-profile">
+        <img id="avatar-img" class="user-avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='50' height='50' viewBox='0 0 24 24' fill='none' stroke='%2300f0ff' stroke-width='2'><path d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/><circle cx='12' cy='7' r='4'/></svg>" alt="Aura Avatar">
+        <span id="display-name" class="user-name">LITTLE MONSTER</span>
+      </div>
+    </header>
+
+    <section class="hero-card">
+      <div class="hero-info">
+        <h2>PETGA ONLINE</h2>
+        <p>Aura transmise avec succès. Synchronisation artistique active.</p>
+      </div>
+      <div class="aura-status">AURA: SYNCHRONIZED</div>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <h3>01 // ARTHAUS</h3>
+        <p>Explore le laboratoire visuel et crée des auras personnalisées.</p>
+      </div>
+
+      <div class="card">
+        <h3>02 // MUSIC & SOUND</h3>
+        <p>Écoute l'album ARTPOP avec le visuel sonore interactif.</p>
+      </div>
+
+      <div class="card">
+        <h3>03 // COMMUNITY</h3>
+        <p>Partage tes créations avec les Little Monsters du monde entier.</p>
+      </div>
+    </section>
+
+    <button id="reset-btn" class="reset-btn">REINITIATE ONBOARDING</button>
+  </div>
+
+  <!-- Audio Chromatica I -->
+  <audio id="home-bgm" src="assets/Chromatica I.mp3" loop></audio>
+
+  <script>
+    const welcomeOverlay = document.getElementById('welcome-overlay');
+    const enterBtn = document.getElementById('enter-btn');
+    const bgm = document.getElementById('home-bgm');
+    const rotateHomeScreen = document.getElementById('rotate-home-screen');
+
+    // Clic sur "ENTER THE SYSTEM"
+    enterBtn.addEventListener('click', () => {
+      // 1. Masque l'écran d'accueil avec un fade out
+      welcomeOverlay.classList.add('hidden');
+
+      // 2. Lance la musique Chromatica I
+      bgm.volume = 0.3;
+      bgm.play().catch(e => console.log("Erreur audio :", e));
+    });
+
+    // Vérification de l'orientation (neutralisée pour tes tests PC)
+    function checkOrientation() {
+      return;
+      const isLandscape = window.innerWidth > window.innerHeight;
+      if (isLandscape) {
+        rotateHomeScreen.style.display = 'flex';
+      } else {
+        rotateHomeScreen.style.display = 'none';
+      }
+    }
+
+    window.addEventListener('resize', checkOrientation);
+    window.addEventListener('orientationchange', checkOrientation);
+    checkOrientation();
+
+    // Récupération des données utilisateur dans le localStorage
+    const username = localStorage.getItem('petga_username');
+    const userphoto = localStorage.getItem('petga_userphoto');
+
+    if (username) {
+      document.getElementById('display-name').textContent = username.toUpperCase();
+    }
+
+    if (userphoto) {
+      document.getElementById('avatar-img').src = userphoto;
+    }
+
+    document.getElementById('reset-btn').addEventListener('click', () => {
+      localStorage.clear();
+      window.parent.location.reload();
+    });
+  </script>
+</body>
+</html>
