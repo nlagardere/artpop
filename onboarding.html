@@ -62,19 +62,20 @@
     </div>
 
     <video id="petga-video" class="bg-video" playsinline preload="auto">
-      <source src="assets/APAuraSho3.mp4" type="video/mp4">
+      <source src="assets/OnBoarding1.mp4" type="video/mp4">
     </video>
 
-    <video id="loop-video" class="bg-video" playsinline loop muted preload="auto">
-      <source src="assets/APAuraSho4 wait.mp4" type="video/mp4">
-    </video>
+    <!-- Vidéo de boucle aléatoire enchaînée -->
+    <video id="loop-video" class="bg-video" playsinline muted preload="auto"></video>
 
+    <!-- Étape 1 : Nom -->
     <div id="input-overlay" class="artpop-overlay">
       <label for="username">Connect Your Identity</label>
       <input type="text" id="username" class="artpop-input" placeholder="Your Name" autocomplete="off">
       <button id="submit-btn" class="artpop-btn">Transmit</button>
     </div>
 
+    <!-- Étape 2 : Localisation -->
     <div id="location-overlay" class="artpop-overlay">
       <p>SYNC CURRENT POSITION WITH PETGA</p>
       <div class="btn-group">
@@ -83,6 +84,7 @@
       </div>
     </div>
 
+    <!-- Étape 3 : Photo / Webcam -->
     <div id="photo-overlay" class="artpop-overlay">
       <p>CAPTURE YOUR VISUAL AURA</p>
       <div class="webcam-box">
@@ -127,14 +129,20 @@
     const photoSkipBtn = document.getElementById('photo-skip-btn');
     const photoCanvas = document.getElementById('photo-canvas');
 
-    // Playlist principale de l'onboarding (Sho3 -> Sho4 -> Sho5)
     const playlist = [
-      "assets/APAuraSho3.mp4",
-      "assets/APAuraSho4.mp4",
-      "assets/APAuraSho5.mp4"
+      "assets/OnBoarding1.mp4",
+      "assets/OnBoarding2.mp4",
+      "assets/OnBoarding3.mp4",
+      "assets/OnBoarding4.mp4"
     ];
 
-    // Association de chaque aura à sa vidéo spécifique (avec les noms corrigés)
+    // Les 3 boucles aléatoires de 3s
+    const loopPlaylist = [
+      "assets/APAuraLoopSho3.mp4",
+      "assets/APAuraLoopSho4.mp4",
+      "assets/APAuraLoopSho5.mp4"
+    ];
+
     const auraVideos = {
       "Cyna": "assets/APAuraSho7To10Cyan.mp4",
       "Fuhia": "assets/APAuraSho7To10Fuschia.mp4",
@@ -149,7 +157,8 @@
     let userHasClicked = false;
     let onboardingStarted = false;
     let isPlayingAuraVideo = false;
-    let isPlayingFinalFilm = false;
+    let isPlayingFinalVideo = false;
+    let waitingForTouchToCalculate = false;
 
     let petgaUserData = {
       name: localStorage.getItem('petga_username') || "",
@@ -200,20 +209,27 @@
       }
     });
 
+    document.addEventListener('click', () => {
+      if (waitingForTouchToCalculate) {
+        waitingForTouchToCalculate = false;
+        calculateAndPlayAuraVideo();
+      }
+    });
+
+    // Gestion de la fin de chaque vidéo principale
     mainVideo.addEventListener('ended', () => {
-      if (isPlayingFinalFilm) {
-        // Le film final est terminé -> On bascule enfin sur le dashboard home.html !
+      if (isPlayingFinalVideo) {
         localStorage.setItem('petga_onboarding_complete', 'true');
         window.parent.postMessage('ONBOARDING_COMPLETE', '*');
+        window.location.href = 'OnBoardingDone.html';
         return;
       }
 
       if (isPlayingAuraVideo) {
-        // La vidéo d'aura spécifique vient de se terminer -> On enchaîne directement avec le FinalFilm !
         isPlayingAuraVideo = false;
-        isPlayingFinalFilm = true;
+        isPlayingFinalVideo = true;
 
-        mainVideo.src = "assets/APAuraFinalFilm.mp4";
+        mainVideo.src = "assets/OnBoardingFinal.mp4";
         mainVideo.load();
         mainVideo.muted = false;
 
@@ -234,16 +250,31 @@
         showLoopAndOverlay(photoOverlay);
         initWebcam();
       } else if (currentVideoIndex === 3) {
-        // Fin des étapes d'input : calcul de l'aura et lancement direct de sa vidéo dédiée
-        calculateAndPlayAuraVideo();
+        waitingForTouchToCalculate = true;
+        mainVideo.pause();
       }
     });
 
+    // Fonction pour lancer une vidéo de boucle aléatoire et enchaîner la suivante à la fin
+    function playRandomLoopVideo() {
+      if (!loopVideo.classList.contains('active')) return; // Stoppe si on a quitté les overlays
+      
+      const randomLoop = loopPlaylist[Math.floor(Math.random() * loopPlaylist.length)];
+      loopVideo.src = randomLoop;
+      loopVideo.load();
+      loopVideo.play().catch(e => console.log("Loop play blocked:", e));
+    }
+
+    // Dès qu'une vidéo de boucle de 3s se termine, on en relance une autre au hasard !
+    loopVideo.addEventListener('ended', playRandomLoopVideo);
+
     function showLoopAndOverlay(overlay) {
-      loopVideo.play();
       loopVideo.classList.add('active');
       mainVideo.classList.add('hidden');
       overlay.classList.add('active');
+      
+      // Lance la première vidéo aléatoire
+      playRandomLoopVideo();
     }
 
     submitBtn.addEventListener('click', validateName);
@@ -333,24 +364,22 @@
     function playNextInPlaylist() {
       currentVideoIndex++;
       if (currentVideoIndex < playlist.length) {
+        // On coupe l'effet de la boucle de fond pour laisser place à la nouvelle grande vidéo
+        loopVideo.classList.remove('active');
+        loopVideo.pause();
+
         mainVideo.src = playlist[currentVideoIndex];
         mainVideo.load();
         mainVideo.muted = false;
 
         mainVideo.oncanplay = () => {
           mainVideo.classList.remove('hidden');
-          loopVideo.pause();
-          loopVideo.classList.remove('active');
           mainVideo.play();
           mainVideo.oncanplay = null;
         };
-      } else if (currentVideoIndex === playlist.length) {
-        currentVideoIndex = 3; 
-        calculateAndPlayAuraVideo();
       }
     }
 
-    // Calcul de l'aura avec la nouvelle liste (Cyna, Fuhia, Green, Yellow, White, purple)
     function calculateAndPlayAuraVideo() {
       const auras = ["Cyna", "Fuhia", "Green", "Yellow", "White", "purple"];
       
@@ -376,7 +405,6 @@
       petgaUserData.aura = chosenAura;
       localStorage.setItem('petga_user_aura', chosenAura);
 
-      // Affichage de l'écran d'analyse cyberpunk
       auraCalcOverlay.style.display = 'flex';
       
       setTimeout(() => {
@@ -387,7 +415,6 @@
         auraDisplayText.textContent = `AURA DETECTED: ${chosenAura.toUpperCase()}`;
       }, 1500);
 
-      // Lancement de la vidéo d'aura spécifique correspondante
       setTimeout(() => {
         auraCalcOverlay.style.display = 'none';
         isPlayingAuraVideo = true;

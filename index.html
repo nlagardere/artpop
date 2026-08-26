@@ -17,7 +17,7 @@
       height: 100vh;
       background: #050508;
       z-index: 3000;
-      display: none; /* Passe en 'flex' si tu actives la vérif PWA */
+      display: none;
       flex-direction: column;
       justify-content: center;
       align-items: center;
@@ -63,6 +63,9 @@
 </head>
 <body>
 
+  <!-- Élément audio de fond global -->
+  <audio id="bgm-player" src="assets/orientation_bgm.mp3" preload="auto"></audio>
+
   <!-- Écran de blocage si ouvert dans un navigateur classique -->
   <div id="pwa-lock-screen">
     <h1 class="lock-title">ACCESS DENIED</h1>
@@ -78,23 +81,40 @@
   <script>
     const pwaLockScreen = document.getElementById('pwa-lock-screen');
     const appFrame = document.getElementById('app-frame');
+    const bgmPlayer = document.getElementById('bgm-player');
 
     // Vérification du mode PWA (Standalone)
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 
-    // Décommente les lignes suivantes si tu veux réactiver le blocage hors PWA :
-     if (!isStandalone) {
-     pwaLockScreen.style.display = 'flex';
-    } else {
-      pwaLockScreen.style.display = 'none';
-    }
-
-    // Écouteur pour basculer sur home.html une fois l'onboarding terminé
+    // Écouteur pour déclencher la musique quand on clique sur "TOUCH TO START" (uniquement si on est en mode portrait au départ)
     window.addEventListener('message', (event) => {
+      if (event.data === 'USER_STARTED') {
+        const isLandscapeNow = window.innerWidth > window.innerHeight;
+        
+        // Si l'appareil n'est PAS en paysage (donc en portrait), on lance la musique
+        if (!isLandscapeNow) {
+          bgmPlayer.play().catch(e => console.log("Lecture audio bloquée :", e));
+        }
+      }
+
       if (event.data === 'ONBOARDING_COMPLETE') {
-        appFrame.src = 'home.html';
+        // Redirige vers la page welcome.html au lieu de home.html
+        appFrame.src = 'welcome.html';
       }
     });
+
+    // On écoute aussi le changement d'orientation ou de taille de la fenêtre ici
+    function checkParentOrientation() {
+      const isLandscape = window.innerWidth > window.innerHeight;
+      if (isLandscape && !bgmPlayer.paused) {
+        // Dès qu'on passe en mode paysage et que la musique joue -> On coupe net ! ✂️
+        bgmPlayer.pause();
+        bgmPlayer.currentTime = 0;
+      }
+    }
+
+    window.addEventListener('resize', checkParentOrientation);
+    window.addEventListener('orientationchange', checkParentOrientation);
   </script>
 </body>
 </html>

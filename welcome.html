@@ -1,0 +1,2262 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>ARTPOP — Reveal Your Aura</title>
+
+  <style>
+
+    /* =========================================================
+       RESET
+    ========================================================= */
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+
+      background: #000;
+      color: #fff;
+
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
+    }
+
+
+    /* =========================================================
+       APPLICATION
+    ========================================================= */
+
+    .app-container {
+      position: relative;
+
+      width: 100vw;
+      height: 100vh;
+
+      overflow: hidden;
+
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      background:
+        radial-gradient(
+          ellipse at center,
+          #090014 0%,
+          #030006 42%,
+          #000 78%
+        );
+
+      perspective: 1600px;
+    }
+
+
+    /* =========================================================
+       FOND ARTPOP
+    ========================================================= */
+
+    .chromatica-bg {
+      position: absolute;
+
+      inset: -25%;
+
+      z-index: 1;
+
+      opacity: 0;
+
+      background:
+
+        radial-gradient(
+          circle at 50% 52%,
+          rgba(255, 0, 127, 0.42) 0%,
+          rgba(255, 0, 127, 0.20) 18%,
+          transparent 45%
+        ),
+
+        radial-gradient(
+          circle at 20% 75%,
+          rgba(0, 240, 255, 0.28) 0%,
+          transparent 38%
+        ),
+
+        radial-gradient(
+          circle at 82% 25%,
+          rgba(120, 0, 255, 0.24) 0%,
+          transparent 38%
+        );
+
+      transform: scale(0.8);
+
+      transition:
+        opacity 3s ease,
+        transform 8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .app-container.active-ambiance .chromatica-bg {
+
+      opacity: 1;
+
+      transform: scale(1.15);
+
+      animation:
+        backgroundBreathing
+        8s
+        ease-in-out
+        infinite
+        alternate;
+    }
+
+    @keyframes backgroundBreathing {
+
+      0% {
+        filter: blur(0px);
+        transform: scale(1.05);
+      }
+
+      100% {
+        filter: blur(18px);
+        transform: scale(1.22);
+      }
+
+    }
+
+
+    /* =========================================================
+       GRILLE
+    ========================================================= */
+
+    .app-container::before {
+
+      content: "";
+
+      position: absolute;
+      inset: 0;
+
+      z-index: 2;
+
+      pointer-events: none;
+
+      opacity: 0;
+
+      background:
+        linear-gradient(
+          rgba(255,255,255,0.025) 1px,
+          transparent 1px
+        ),
+        linear-gradient(
+          90deg,
+          rgba(255,255,255,0.025) 1px,
+          transparent 1px
+        );
+
+      background-size: 60px 60px;
+
+      transition:
+        opacity 3s ease;
+    }
+
+    .app-container.active-ambiance::before {
+      opacity: 1;
+    }
+
+
+    /* =========================================================
+       HALO CENTRAL
+    ========================================================= */
+
+    .app-container::after {
+
+      content: "";
+
+      position: absolute;
+
+      left: 50%;
+      top: 50%;
+
+      width: 45vw;
+      height: 45vw;
+
+      min-width: 320px;
+      min-height: 320px;
+
+      transform:
+        translate(-50%, -50%)
+        scale(0.15);
+
+      border-radius: 50%;
+
+      border:
+        1px solid rgba(0,240,255,0.12);
+
+      box-shadow:
+        0 0 100px rgba(0,240,255,0.08),
+        inset 0 0 100px rgba(255,0,127,0.08);
+
+      z-index: 3;
+
+      pointer-events: none;
+
+      opacity: 0;
+    }
+
+    .app-container.active-ambiance::after {
+
+      opacity: 1;
+
+      animation:
+        monumentalHalo
+        14s
+        cubic-bezier(0.16,1,0.3,1)
+        forwards;
+    }
+
+    @keyframes monumentalHalo {
+
+      0% {
+
+        transform:
+          translate(-50%, -50%)
+          scale(0.15)
+          rotate(0deg);
+
+        opacity: 0;
+      }
+
+      30% {
+        opacity: 0.2;
+      }
+
+      60% {
+        opacity: 0.55;
+      }
+
+      100% {
+
+        transform:
+          translate(-50%, -50%)
+          scale(1.8)
+          rotate(180deg);
+
+        opacity: 1;
+      }
+
+    }
+
+
+    /* =========================================================
+       ÉCRAN INITIAL
+    ========================================================= */
+
+    #reveal-screen {
+
+      position: absolute;
+
+      z-index: 50;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      gap: 28px;
+
+      transition:
+        opacity 1.2s ease,
+        transform 1.2s cubic-bezier(0.16,1,0.3,1),
+        filter 1.2s ease;
+    }
+
+    #reveal-screen.hidden {
+
+      opacity: 0;
+
+      transform:
+        translateY(-50px)
+        scale(1.15);
+
+      filter: blur(15px);
+
+      pointer-events: none;
+    }
+
+
+    /* =========================================================
+       TITRE
+    ========================================================= */
+
+    .reveal-title {
+
+      font-family:
+        Impact,
+        "Arial Black",
+        sans-serif;
+
+      font-size:
+        clamp(2rem, 5vw, 4rem);
+
+      letter-spacing: 10px;
+
+      text-transform: uppercase;
+
+      color: #fff;
+
+      text-align: center;
+
+      text-shadow:
+        0 0 8px #fff,
+        0 0 20px #ff007f,
+        0 0 45px #ff007f;
+
+      animation:
+        titlePulse
+        4s
+        ease-in-out
+        infinite;
+    }
+
+    @keyframes titlePulse {
+
+      0%,
+      100% {
+
+        text-shadow:
+          0 0 8px #fff,
+          0 0 20px #ff007f,
+          0 0 45px #ff007f;
+      }
+
+      50% {
+
+        text-shadow:
+          0 0 12px #fff,
+          0 0 35px #ff007f,
+          0 0 70px #ff007f;
+      }
+
+    }
+
+
+    /* =========================================================
+       BOUTONS
+    ========================================================= */
+
+    .artpop-btn {
+
+      position: relative;
+
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+
+      min-width: 255px;
+
+      padding: 16px 42px;
+
+      background:
+        rgba(0,0,0,0.55);
+
+      color: #00f0ff;
+
+      border:
+        1px solid #00f0ff;
+
+      border-radius: 3px;
+
+      font-family:
+        "Courier New",
+        monospace;
+
+      font-size: 1rem;
+      font-weight: bold;
+
+      letter-spacing: 4px;
+
+      text-transform: uppercase;
+
+      text-decoration: none;
+
+      cursor: pointer;
+
+      overflow: hidden;
+
+      box-shadow:
+        0 0 20px rgba(0,240,255,0.25),
+        inset 0 0 20px rgba(0,240,255,0.04);
+
+      transition:
+        transform 0.35s ease,
+        background 0.35s ease,
+        color 0.35s ease,
+        box-shadow 0.35s ease;
+    }
+
+    .artpop-btn::before {
+
+      content: "";
+
+      position: absolute;
+
+      top: 0;
+      left: -130%;
+
+      width: 80%;
+      height: 100%;
+
+      background:
+        linear-gradient(
+          90deg,
+          transparent,
+          rgba(255,255,255,0.65),
+          transparent
+        );
+
+      transform:
+        skewX(-25deg);
+
+      transition:
+        left 0.7s ease;
+    }
+
+    .artpop-btn:hover {
+
+      color: #000;
+
+      background: #00f0ff;
+
+      transform:
+        translateY(-4px)
+        scale(1.03);
+
+      box-shadow:
+        0 0 30px #00f0ff,
+        0 0 80px rgba(255,0,127,0.65);
+    }
+
+    .artpop-btn:hover::before {
+      left: 140%;
+    }
+
+
+    /* =========================================================
+       SCÈNE
+    ========================================================= */
+
+    .scene-container {
+
+      position: relative;
+
+      z-index: 20;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      opacity: 0;
+
+      pointer-events: none;
+
+      transform:
+        translateY(520px)
+        scale(0.55)
+        rotateX(20deg);
+
+      filter:
+        blur(25px);
+
+      transform-style: preserve-3d;
+
+      will-change:
+        transform,
+        opacity,
+        filter;
+    }
+
+
+    /* =========================================================
+       MONTÉE MONUMENTALE — 14 SECONDES
+       
+       Une interpolation continue.
+       Pas de rotation.
+       Pas de changement brutal de vitesse.
+    ========================================================= */
+
+    .scene-container.magical-reveal {
+
+      pointer-events: auto;
+
+      animation:
+        monumentalRise
+        14s
+        cubic-bezier(0.22, 0.85, 0.25, 1)
+        forwards;
+    }
+
+
+    @keyframes monumentalRise {
+
+      0% {
+
+        opacity: 0;
+
+        transform:
+          translateY(520px)
+          scale(0.55)
+          rotateX(20deg);
+
+        filter:
+          blur(25px);
+      }
+
+
+      30% {
+
+        opacity: 0.25;
+
+        transform:
+          translateY(365px)
+          scale(0.67)
+          rotateX(15deg);
+
+        filter:
+          blur(13px);
+      }
+
+
+      60% {
+
+        opacity: 0.70;
+
+        transform:
+          translateY(170px)
+          scale(0.84)
+          rotateX(7deg);
+
+        filter:
+          blur(5px);
+      }
+
+
+      80% {
+
+        opacity: 0.93;
+
+        transform:
+          translateY(55px)
+          scale(0.95)
+          rotateX(2deg);
+
+        filter:
+          blur(1.5px);
+      }
+
+
+      92% {
+
+        opacity: 1;
+
+        transform:
+          translateY(-8px)
+          scale(1.012)
+          rotateX(0.5deg);
+
+        filter:
+          blur(0);
+      }
+
+
+      100% {
+
+        opacity: 1;
+
+        transform:
+          translateY(0)
+          scale(1)
+          rotateX(0deg);
+
+        filter:
+          blur(0);
+      }
+
+    }
+
+
+    /* =========================================================
+       LUMIÈRE DU MONUMENT
+    ========================================================= */
+
+    .rotating-pedestal-content::before {
+
+      content: "";
+
+      position: absolute;
+
+      left: 50%;
+      top: 25%;
+
+      width: 420px;
+      height: 420px;
+
+      transform:
+        translate(-50%, -50%)
+        scale(0.15);
+
+      border-radius: 50%;
+
+      background:
+        radial-gradient(
+          circle,
+          rgba(255,0,127,0.4) 0%,
+          rgba(0,240,255,0.25) 30%,
+          transparent 72%
+        );
+
+      filter:
+        blur(35px);
+
+      opacity: 0;
+
+      z-index: -1;
+
+      pointer-events: none;
+
+      will-change:
+        transform,
+        opacity;
+    }
+
+
+    .scene-container.magical-reveal
+    .rotating-pedestal-content::before {
+
+      animation:
+        monumentLight
+        14s
+        cubic-bezier(0.22,0.85,0.25,1)
+        forwards;
+    }
+
+
+    @keyframes monumentLight {
+
+      0% {
+
+        opacity: 0;
+
+        transform:
+          translate(-50%, -50%)
+          scale(0.15);
+      }
+
+      30% {
+
+        opacity: 0.06;
+
+        transform:
+          translate(-50%, -50%)
+          scale(0.4);
+      }
+
+      60% {
+
+        opacity: 0.35;
+
+        transform:
+          translate(-50%, -50%)
+          scale(0.9);
+      }
+
+      80% {
+
+        opacity: 0.75;
+
+        transform:
+          translate(-50%, -50%)
+          scale(1.25);
+      }
+
+      100% {
+
+        opacity: 1;
+
+        transform:
+          translate(-50%, -50%)
+          scale(1.5);
+      }
+
+    }
+
+
+    /* =========================================================
+       FLASH
+    ========================================================= */
+
+    .reveal-flash {
+
+      position: absolute;
+
+      left: 50%;
+      top: 50%;
+
+      width: 10px;
+      height: 10px;
+
+      transform:
+        translate(-50%, -50%)
+        scale(0);
+
+      border-radius: 50%;
+
+      background: #fff;
+
+      box-shadow:
+        0 0 20px #fff,
+        0 0 60px #00f0ff,
+        0 0 130px #ff007f;
+
+      opacity: 0;
+
+      pointer-events: none;
+
+      z-index: 40;
+    }
+
+
+    .scene-container.magical-reveal
+    .reveal-flash {
+
+      animation:
+        revealFlash
+        3s
+        ease-out
+        0.2s
+        forwards;
+    }
+
+
+    @keyframes revealFlash {
+
+      0% {
+
+        opacity: 0;
+
+        transform:
+          translate(-50%, -50%)
+          scale(0);
+      }
+
+      15% {
+
+        opacity: 1;
+
+        transform:
+          translate(-50%, -50%)
+          scale(1);
+      }
+
+      28% {
+
+        opacity: 0.65;
+
+        transform:
+          translate(-50%, -50%)
+          scale(8);
+      }
+
+      100% {
+
+        opacity: 0;
+
+        transform:
+          translate(-50%, -50%)
+          scale(35);
+      }
+
+    }
+
+
+    /* =========================================================
+       CONTENU DU MONUMENT
+    ========================================================= */
+
+    .rotating-pedestal-content {
+
+      position: relative;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      gap: 25px;
+
+      transform-style: preserve-3d;
+
+      will-change: transform;
+    }
+
+
+    /* =========================================================
+       FLOTTEMENT FINAL
+       
+       Commence après la montée.
+    ========================================================= */
+
+    .scene-container.magical-reveal
+    .rotating-pedestal-content {
+
+      animation:
+        monumentFloat
+        5s
+        ease-in-out
+        14s
+        infinite;
+    }
+
+
+    @keyframes monumentFloat {
+
+      0%,
+      100% {
+        transform:
+          translateY(0);
+      }
+
+      50% {
+        transform:
+          translateY(-8px);
+      }
+
+    }
+
+
+    /* =========================================================
+       CARTE
+    ========================================================= */
+
+    .monolith-card {
+
+      position: relative;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      gap: 20px;
+
+      width:
+        min(420px, 88vw);
+
+      padding:
+        32px 42px 35px;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(17,17,32,0.96),
+          rgba(3,3,10,0.97)
+        );
+
+      border:
+        1px solid rgba(0,240,255,0.55);
+
+      border-radius: 12px;
+
+      backdrop-filter:
+        blur(20px);
+
+      -webkit-backdrop-filter:
+        blur(20px);
+
+      box-shadow:
+
+        0 0 30px
+        rgba(0,240,255,0.18),
+
+        0 0 80px
+        rgba(255,0,127,0.13),
+
+        inset 0 0 30px
+        rgba(255,0,127,0.08);
+
+      overflow: hidden;
+
+      transform-style: preserve-3d;
+
+      transition:
+        transform 0.7s cubic-bezier(0.16,1,0.3,1);
+    }
+
+
+    /* =========================================================
+       LIGNE DE SCAN
+    ========================================================= */
+
+    .monolith-card::before {
+
+      content: "";
+
+      position: absolute;
+
+      top: 0;
+      left: -120%;
+
+      width: 100%;
+      height: 1px;
+
+      background:
+        linear-gradient(
+          90deg,
+          transparent,
+          #00f0ff,
+          #fff,
+          #ff007f,
+          transparent
+        );
+
+      box-shadow:
+        0 0 15px #00f0ff,
+        0 0 30px #ff007f;
+    }
+
+
+    .scene-container.magical-reveal
+    .monolith-card::before {
+
+      animation:
+        scanCard
+        3.5s
+        ease-in-out
+        2s
+        infinite;
+    }
+
+
+    @keyframes scanCard {
+
+      0% {
+        left: -120%;
+      }
+
+      45% {
+        left: 120%;
+      }
+
+      100% {
+        left: 120%;
+      }
+
+    }
+
+
+    /* =========================================================
+       REFLET
+    ========================================================= */
+
+    .monolith-card::after {
+
+      content: "";
+
+      position: absolute;
+
+      inset: 0;
+
+      background:
+        linear-gradient(
+          125deg,
+          transparent 20%,
+          rgba(255,255,255,0.04) 48%,
+          transparent 52%
+        );
+
+      transform:
+        translateX(-120%);
+
+      pointer-events: none;
+    }
+
+
+    .scene-container.magical-reveal
+    .monolith-card::after {
+
+      animation:
+        cardReflection
+        5s
+        ease-in-out
+        2s
+        infinite;
+    }
+
+
+    @keyframes cardReflection {
+
+      0% {
+        transform:
+          translateX(-120%);
+      }
+
+      40% {
+        transform:
+          translateX(120%);
+      }
+
+      100% {
+        transform:
+          translateX(120%);
+      }
+
+    }
+
+
+    /* =========================================================
+       PHOTO
+    ========================================================= */
+
+    .photo-frame {
+
+      position: relative;
+
+      width: 125px;
+      height: 125px;
+
+      border-radius: 50%;
+
+      border:
+        2px solid #ff007f;
+
+      overflow: hidden;
+
+      background: #000;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      box-shadow:
+
+        0 0 20px #ff007f,
+
+        0 0 50px
+        rgba(255,0,127,0.4),
+
+        0 0 90px
+        rgba(0,240,255,0.18);
+    }
+
+
+    .photo-frame::before {
+
+      content: "";
+
+      position: absolute;
+
+      inset: -5px;
+
+      border-radius: 50%;
+
+      border:
+        1px solid
+        rgba(0,240,255,0.9);
+
+      animation:
+        photoRing
+        4s
+        linear
+        infinite;
+    }
+
+
+    @keyframes photoRing {
+
+      from {
+        transform:
+          rotate(0deg);
+      }
+
+      to {
+        transform:
+          rotate(360deg);
+      }
+
+    }
+
+
+    .photo-frame img {
+
+      position: relative;
+
+      z-index: 2;
+
+      width: 100%;
+      height: 100%;
+
+      object-fit: cover;
+
+      transform:
+        scaleX(-1);
+    }
+
+
+    /* =========================================================
+       NOM
+    ========================================================= */
+
+    .user-title {
+
+      font-family:
+        Impact,
+        "Arial Black",
+        sans-serif;
+
+      font-size:
+        clamp(1.8rem, 6vw, 2.5rem);
+
+      letter-spacing: 7px;
+
+      text-transform: uppercase;
+
+      color: #fff;
+
+      text-align: center;
+
+      word-break: break-word;
+
+      text-shadow:
+
+        0 0 8px #fff,
+
+        0 0 18px #ff007f,
+
+        0 0 40px #ff007f;
+    }
+
+
+    /* =========================================================
+       INFOS
+    ========================================================= */
+
+    .user-info-box {
+
+      display: flex;
+      flex-direction: column;
+
+      gap: 8px;
+
+      font-family:
+        "Courier New",
+        monospace;
+
+      font-size: 0.9rem;
+
+      letter-spacing: 3px;
+
+      color: #00f0ff;
+
+      text-align: center;
+
+      text-shadow:
+        0 0 10px
+        rgba(0,240,255,0.8);
+
+      text-transform: uppercase;
+    }
+
+
+    .user-city {
+
+      font-size: 0.75rem;
+
+      color:
+        rgba(255,255,255,0.65);
+
+      letter-spacing: 2px;
+    }
+
+
+    /* =========================================================
+       SOCLE
+    ========================================================= */
+
+    .greek-pedestal {
+
+      width: 280px;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      transform:
+        translateZ(10px);
+
+      filter:
+        drop-shadow(
+          0 15px 25px
+          rgba(0,240,255,0.18)
+        );
+    }
+
+
+    .pedestal-top {
+
+      width: 100%;
+      height: 18px;
+
+      background:
+        linear-gradient(
+          90deg,
+          #08080e,
+          #303047,
+          #08080e
+        );
+
+      border-top:
+        2px solid #00f0ff;
+
+      border-bottom:
+        1px solid
+        rgba(0,240,255,0.5);
+
+      border-radius: 4px;
+    }
+
+
+    .pedestal-body {
+
+      position: relative;
+
+      width: 80%;
+      height: 55px;
+
+      background:
+        linear-gradient(
+          90deg,
+          #0b0b12 0%,
+          #29293b 20%,
+          #11111a 40%,
+          #303044 60%,
+          #11111a 80%,
+          #29293b 100%
+        );
+
+      border-left:
+        1px solid
+        rgba(0,240,255,0.3);
+
+      border-right:
+        1px solid
+        rgba(0,240,255,0.3);
+
+      box-shadow:
+        inset 0 0 25px
+        rgba(0,0,0,0.7);
+    }
+
+
+    .pedestal-body::after {
+
+      content: "";
+
+      position: absolute;
+
+      top: 50%;
+      left: 50%;
+
+      width: 55px;
+      height: 5px;
+
+      transform:
+        translate(-50%, -50%);
+
+      background:
+        linear-gradient(
+          90deg,
+          transparent,
+          #ff007f,
+          #fff,
+          #00f0ff,
+          transparent
+        );
+
+      box-shadow:
+        0 0 15px #ff007f,
+        0 0 25px #00f0ff;
+    }
+
+
+    .pedestal-base {
+
+      width: 115%;
+      height: 24px;
+
+      background:
+        linear-gradient(
+          90deg,
+          #08080e,
+          #303047,
+          #08080e
+        );
+
+      border-top:
+        1px solid
+        rgba(0,240,255,0.4);
+
+      border-bottom:
+        2px solid #ff007f;
+
+      border-radius: 4px;
+
+      box-shadow:
+
+        0 10px 30px
+        rgba(255,0,127,0.3),
+
+        0 0 20px
+        rgba(0,240,255,0.15);
+    }
+
+
+    /* =========================================================
+       PARTICULES
+    ========================================================= */
+
+    .particles {
+
+      position: absolute;
+
+      inset: 0;
+
+      z-index: 15;
+
+      pointer-events: none;
+
+      opacity: 0;
+    }
+
+
+    .scene-container.magical-reveal
+    .particles {
+
+      opacity: 1;
+    }
+
+
+    .particle {
+
+      position: absolute;
+
+      width: 3px;
+      height: 3px;
+
+      border-radius: 50%;
+
+      background: #fff;
+
+      box-shadow:
+        0 0 8px #fff,
+        0 0 16px #00f0ff;
+
+      opacity: 0;
+    }
+
+
+    .scene-container.magical-reveal
+    .particle {
+
+      animation:
+        particleRise
+        var(--duration)
+        ease-out
+        var(--delay)
+        infinite;
+    }
+
+
+    @keyframes particleRise {
+
+      0% {
+
+        opacity: 0;
+
+        transform:
+          translate3d(
+            0,
+            180px,
+            0
+          )
+          scale(0.1);
+      }
+
+      20% {
+        opacity: 1;
+      }
+
+      75% {
+        opacity: 0.8;
+      }
+
+      100% {
+
+        opacity: 0;
+
+        transform:
+          translate3d(
+            var(--x),
+            -350px,
+            0
+          )
+          scale(1.2);
+      }
+
+    }
+
+
+    .particle:nth-child(1) {
+      left: 10%;
+      top: 75%;
+      --x: -100px;
+      --duration: 6s;
+      --delay: 0s;
+    }
+
+    .particle:nth-child(2) {
+      left: 20%;
+      top: 80%;
+      --x: 80px;
+      --duration: 5s;
+      --delay: 0.7s;
+    }
+
+    .particle:nth-child(3) {
+      left: 30%;
+      top: 72%;
+      --x: -60px;
+      --duration: 7s;
+      --delay: 1.2s;
+    }
+
+    .particle:nth-child(4) {
+      left: 43%;
+      top: 82%;
+      --x: 110px;
+      --duration: 5.5s;
+      --delay: 0.5s;
+    }
+
+    .particle:nth-child(5) {
+      left: 57%;
+      top: 78%;
+      --x: -120px;
+      --duration: 6.5s;
+      --delay: 1.7s;
+    }
+
+    .particle:nth-child(6) {
+      left: 68%;
+      top: 74%;
+      --x: 90px;
+      --duration: 5s;
+      --delay: 2s;
+    }
+
+    .particle:nth-child(7) {
+      left: 80%;
+      top: 82%;
+      --x: -70px;
+      --duration: 7s;
+      --delay: 0.9s;
+    }
+
+    .particle:nth-child(8) {
+      left: 90%;
+      top: 70%;
+      --x: 100px;
+      --duration: 6s;
+      --delay: 2.4s;
+    }
+
+
+    /* =========================================================
+       ENTER KINGDOM
+    ========================================================= */
+
+    #home-btn-container {
+
+      position: relative;
+
+      z-index: 30;
+
+      margin-top: 18px;
+
+      opacity: 0;
+
+      transform:
+        translateY(50px)
+        scale(0.8);
+
+      filter:
+        blur(12px);
+
+      pointer-events: none;
+
+      transition:
+        opacity 1.5s ease,
+        transform 1.5s cubic-bezier(0.16,1,0.3,1),
+        filter 1.5s ease;
+    }
+
+
+    #home-btn-container.visible {
+
+      opacity: 1;
+
+      transform:
+        translateY(0)
+        scale(1);
+
+      filter:
+        blur(0);
+
+      pointer-events: auto;
+    }
+
+
+    #home-btn-container::before {
+
+      content: "";
+
+      position: absolute;
+
+      inset: -22px;
+
+      border:
+        1px solid
+        rgba(255,0,127,0.3);
+
+      border-radius: 8px;
+
+      box-shadow:
+        0 0 35px
+        rgba(255,0,127,0.2);
+
+      opacity: 0;
+    }
+
+
+    #home-btn-container.visible::before {
+
+      animation:
+        kingdomPulse
+        2.5s
+        ease-in-out
+        infinite;
+    }
+
+
+    @keyframes kingdomPulse {
+
+      0%,
+      100% {
+
+        transform:
+          scale(0.94);
+
+        opacity: 0.15;
+      }
+
+      50% {
+
+        transform:
+          scale(1.06);
+
+        opacity: 0.75;
+      }
+
+    }
+
+
+    /* =========================================================
+       MOBILE
+    ========================================================= */
+
+    @media (max-width: 500px) {
+
+      .reveal-title {
+        letter-spacing: 6px;
+      }
+
+      .monolith-card {
+
+        width: 88vw;
+
+        padding:
+          25px 24px 28px;
+      }
+
+      .photo-frame {
+
+        width: 105px;
+        height: 105px;
+      }
+
+      .greek-pedestal {
+        width: 230px;
+      }
+
+    }
+
+
+    /* =========================================================
+       PETITS ÉCRANS EN HAUTEUR
+    ========================================================= */
+
+    @media (max-height: 700px) {
+
+      .monolith-card {
+
+        padding:
+          18px 28px 20px;
+
+        gap: 10px;
+      }
+
+      .photo-frame {
+
+        width: 85px;
+        height: 85px;
+      }
+
+      .user-title {
+        font-size: 1.65rem;
+      }
+
+      .greek-pedestal {
+        width: 210px;
+      }
+
+      .pedestal-body {
+        height: 35px;
+      }
+
+      .pedestal-base {
+        height: 18px;
+      }
+
+    }
+
+  </style>
+</head>
+
+
+<body>
+
+
+  <!-- =========================================================
+       AUDIO
+  ========================================================= -->
+
+  <audio
+    id="chromatica-audio"
+    src="assets/Chromatica I.mp3"
+    preload="auto">
+  </audio>
+
+
+  <!-- =========================================================
+       APPLICATION
+  ========================================================= -->
+
+  <div
+    id="app-container"
+    class="app-container">
+
+
+    <!-- FOND -->
+
+    <div class="chromatica-bg"></div>
+
+
+    <!-- =======================================================
+         ÉCRAN INITIAL
+    ======================================================= -->
+
+    <div id="reveal-screen">
+
+      <h1 class="reveal-title">
+        SPECTRUM READY
+      </h1>
+
+      <button
+        id="reveal-btn"
+        class="artpop-btn">
+
+        REVEAL MY AURA
+
+      </button>
+
+    </div>
+
+
+    <!-- =======================================================
+         SCÈNE MONUMENTALE
+    ======================================================= -->
+
+    <div
+      id="scene-container"
+      class="scene-container">
+
+
+      <!-- FLASH -->
+
+      <div class="reveal-flash"></div>
+
+
+      <!-- =====================================================
+           PARTICULES
+      ====================================================== -->
+
+      <div class="particles">
+
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+
+      </div>
+
+
+      <!-- =====================================================
+           MONUMENT
+      ====================================================== -->
+
+      <div
+        class="rotating-pedestal-content">
+
+
+        <!-- =================================================
+             CARTE
+        ================================================== -->
+
+        <div class="monolith-card">
+
+
+          <!-- PHOTO -->
+
+          <div class="photo-frame">
+
+            <img
+              id="user-photo"
+              src=""
+              alt="User Aura">
+
+          </div>
+
+
+          <!-- NOM -->
+
+          <h1
+            id="user-name"
+            class="user-title">
+
+            MONSTER
+
+          </h1>
+
+
+          <!-- INFORMATIONS -->
+
+          <div class="user-info-box">
+
+            <span id="user-aura">
+              AURA: CYAN
+            </span>
+
+            <span
+              id="user-city"
+              class="user-city">
+
+              LOCATING...
+
+            </span>
+
+          </div>
+
+
+        </div>
+
+
+        <!-- =================================================
+             SOCLE
+        ================================================== -->
+
+        <div class="greek-pedestal">
+
+          <div class="pedestal-top"></div>
+
+          <div class="pedestal-body"></div>
+
+          <div class="pedestal-base"></div>
+
+        </div>
+
+
+      </div>
+
+    </div>
+
+
+    <!-- =======================================================
+         ENTER KINGDOM
+    ======================================================= -->
+
+    <div id="home-btn-container">
+
+      <a
+        href="home.html"
+        class="artpop-btn">
+
+        ENTER KINGDOM
+
+      </a>
+
+    </div>
+
+
+  </div>
+
+
+  <!-- =========================================================
+       JAVASCRIPT
+  ========================================================= -->
+
+  <script>
+
+
+    /* =========================================================
+       ELEMENTS
+    ========================================================= */
+
+    const chromaticaAudio =
+      document.getElementById(
+        "chromatica-audio"
+      );
+
+    const appContainer =
+      document.getElementById(
+        "app-container"
+      );
+
+    const revealScreen =
+      document.getElementById(
+        "reveal-screen"
+      );
+
+    const revealBtn =
+      document.getElementById(
+        "reveal-btn"
+      );
+
+    const sceneContainer =
+      document.getElementById(
+        "scene-container"
+      );
+
+    const homeBtnContainer =
+      document.getElementById(
+        "home-btn-container"
+      );
+
+    const userNameEl =
+      document.getElementById(
+        "user-name"
+      );
+
+    const userPhotoEl =
+      document.getElementById(
+        "user-photo"
+      );
+
+    const userAuraEl =
+      document.getElementById(
+        "user-aura"
+      );
+
+    const userCityEl =
+      document.getElementById(
+        "user-city"
+      );
+
+
+    /* =========================================================
+       LOCAL STORAGE
+    ========================================================= */
+
+    const savedName =
+      localStorage.getItem(
+        "petga_username"
+      );
+
+    const savedPhoto =
+      localStorage.getItem(
+        "petga_userphoto"
+      );
+
+    const savedAura =
+      localStorage.getItem(
+        "petga_user_aura"
+      );
+
+
+    let savedCoords = null;
+
+
+    try {
+
+      savedCoords =
+        JSON.parse(
+          localStorage.getItem(
+            "petga_usercoords"
+          )
+        );
+
+    }
+
+    catch (error) {
+
+      savedCoords = null;
+
+    }
+
+
+    /* =========================================================
+       NOM
+    ========================================================= */
+
+    if (savedName) {
+
+      userNameEl.textContent =
+        savedName;
+
+    }
+
+
+    /* =========================================================
+       PHOTO
+    ========================================================= */
+
+    if (savedPhoto) {
+
+      userPhotoEl.src =
+        savedPhoto;
+
+    }
+
+    else {
+
+      userPhotoEl.src =
+        "assets/default_avatar.png";
+
+    }
+
+
+    /* =========================================================
+       AURA
+    ========================================================= */
+
+    if (savedAura) {
+
+      userAuraEl.textContent =
+        `AURA: ${savedAura.toUpperCase()}`;
+
+    }
+
+
+    /* =========================================================
+       GÉOLOCALISATION
+    ========================================================= */
+
+    async function fetchCityFromCoordinates(
+      coords
+    ) {
+
+      if (
+        !coords ||
+        typeof coords.lat !== "number" ||
+        typeof coords.lng !== "number"
+      ) {
+
+        userCityEl.textContent =
+          "LOCATION: UNKNOWN REALM";
+
+        return;
+
+      }
+
+
+      try {
+
+        const response =
+          await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${coords.lat}&lon=${coords.lng}&zoom=10`,
+            {
+              headers: {
+                "Accept-Language": "fr"
+              }
+            }
+          );
+
+
+        if (!response.ok) {
+
+          throw new Error(
+            "Network error"
+          );
+
+        }
+
+
+        const data =
+          await response.json();
+
+
+        const address =
+          data.address || {};
+
+
+        const city =
+          address.city ||
+          address.town ||
+          address.village ||
+          address.municipality ||
+          address.county ||
+          "UNKNOWN REALM";
+
+
+        userCityEl.textContent =
+          `LOCATION: ${city.toUpperCase()}`;
+
+      }
+
+
+      catch (error) {
+
+        console.warn(
+          "Erreur de géocodage inverse :",
+          error
+        );
+
+        userCityEl.textContent =
+          "LOCATION: CONNECTED";
+
+      }
+
+    }
+
+
+    fetchCityFromCoordinates(
+      savedCoords
+    );
+
+
+    /* =========================================================
+       REVEAL
+    ========================================================= */
+
+    let revealStarted = false;
+
+
+    revealBtn.addEventListener(
+      "click",
+      () => {
+
+
+        if (revealStarted) {
+          return;
+        }
+
+
+        revealStarted = true;
+
+
+        /* -----------------------------------------------------
+           MUSIQUE
+        ----------------------------------------------------- */
+
+        chromaticaAudio.currentTime = 0;
+
+        chromaticaAudio
+          .play()
+          .catch(error => {
+
+            console.log(
+              "Lecture audio bloquée :",
+              error
+            );
+
+          });
+
+
+        /* -----------------------------------------------------
+           AMBIANCE
+        ----------------------------------------------------- */
+
+        appContainer.classList.add(
+          "active-ambiance"
+        );
+
+
+        /* -----------------------------------------------------
+           DISPARITION DU BOUTON
+        ----------------------------------------------------- */
+
+        revealScreen.classList.add(
+          "hidden"
+        );
+
+
+        /* -----------------------------------------------------
+           DÉBUT DE LA MONTÉE
+           
+           Petit délai pour laisser le noir
+           s'installer avant que le monument
+           commence à apparaître.
+        ----------------------------------------------------- */
+
+        setTimeout(
+          () => {
+
+            sceneContainer.classList.add(
+              "magical-reveal"
+            );
+
+          },
+          600
+        );
+
+
+        /* -----------------------------------------------------
+           ENTER KINGDOM
+           
+           14 secondes d'animation
+           + 1 seconde de respiration
+        ----------------------------------------------------- */
+
+        setTimeout(
+          () => {
+
+            homeBtnContainer.classList.add(
+              "visible"
+            );
+
+          },
+          15600
+        );
+
+      }
+    );
+
+
+    /* =========================================================
+       PARALLAXE SOURIS
+       
+       Très léger.
+       Aucun tour complet.
+    ========================================================= */
+
+    document.addEventListener(
+      "mousemove",
+      event => {
+
+
+        if (
+          !sceneContainer.classList.contains(
+            "magical-reveal"
+          )
+        ) {
+
+          return;
+
+        }
+
+
+        const x =
+          (
+            event.clientX /
+            window.innerWidth
+          ) - 0.5;
+
+
+        const y =
+          (
+            event.clientY /
+            window.innerHeight
+          ) - 0.5;
+
+
+        const card =
+          document.querySelector(
+            ".monolith-card"
+          );
+
+
+        if (!card) {
+          return;
+        }
+
+
+        card.style.transform =
+          `
+            rotateY(${x * 4}deg)
+            rotateX(${y * -3}deg)
+          `;
+
+      }
+    );
+
+
+    /* =========================================================
+       RESET PARALLAXE
+    ========================================================= */
+
+    document.addEventListener(
+      "mouseleave",
+      () => {
+
+
+        const card =
+          document.querySelector(
+            ".monolith-card"
+          );
+
+
+        if (card) {
+
+          card.style.transform =
+            "rotateY(0deg) rotateX(0deg)";
+
+        }
+
+      }
+    );
+
+
+  </script>
+
+</body>
+</html>
