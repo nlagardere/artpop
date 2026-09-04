@@ -5,7 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>CHROMATICA - Lady Gaga Player</title>
+<!-- Manifest PWA -->
+<link rel="manifest" href="../../manifest.json">
+<meta name="theme-color" content="#000000">
 
+<!-- Activation du Service Worker -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('../../sw.js')
+        .then(reg => console.log('Service Worker enregistré !', reg))
+        .catch(err => console.error('Erreur SW:', err));
+    });
+  }
+</script>
     <style>
 
         :root {
