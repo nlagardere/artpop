@@ -1,483 +1,1499 @@
 <!DOCTYPE html>
-<html lang="fr">
+
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MAYHEM - Lady Gaga Player</title>
-    <style>
-        :root {
-            --bg-color: #000000;
-            --accent-orange: #ff7700;
-            --accent-orange-light: rgba(255, 119, 0, 0.18);
-            --border-orange: rgba(255, 119, 0, 0.6);
-            --text-main: #ffffff;
-            --text-sub: #8e8e93;
-            --card-bg: rgba(0, 0, 0, 0.45);
-            --card-border: rgba(255, 255, 255, 0.05);
-        }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            user-select: none;
-        }
+ 
+<title>THE FAME MONSTER - Lady Gaga Player</title>
 
-        /* Déclaration de ta police locale .ttf */
-@font-face {
-    font-family: 'MayhemFont';
-    src: url('assets/Gaga_mayhem-Regular.ttf') format('truetype'); /* Ajuste le chemin si ton fichier est dans un dossier, ex: 'assets/fonts/mayhem.ttf' */
-    font-weight: normal;
-    font-style: normal;
-}
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow: hidden;
-        }
+<style>
 
-        /* Container principal style smartphone */
+    :root {
+        --bg-color: #020305;
+
+        --accent: #dcecff;
+        --accent-blue: #8fc7ff;
+        --accent-light: rgba(143, 199, 255, 0.16);
+        --border: rgba(180, 220, 255, 0.55);
+
+        --text-main: #ffffff;
+        --text-sub: #8e949d;
+
+        --card-bg: rgba(5, 10, 16, 0.58);
+        --card-border: rgba(180, 220, 255, 0.10);
+    }
+
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+
+        font-family:
+            -apple-system,
+            BlinkMacSystemFont,
+            "Segoe UI",
+            Roboto,
+            Helvetica,
+            Arial,
+            sans-serif;
+
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+
+    body {
+
+        background:
+            radial-gradient(
+                circle at 50% 15%,
+                #182638 0%,
+                #070b10 45%,
+                #000 100%
+            );
+
+        color: var(--text-main);
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        min-height: 100vh;
+
+        overflow: hidden;
+    }
+
+
+    /* MAIN PLAYER */
+
+    .player-container {
+
+        position: relative;
+
+        width: 100%;
+        max-width: 420px;
+
+        height: 100vh;
+        max-height: 880px;
+
+        background:
+            radial-gradient(
+                circle at 50% 15%,
+                #172536,
+                #06090d 55%,
+                #000
+            );
+
+        overflow: hidden;
+
+        display: flex;
+        flex-direction: column;
+
+        box-shadow:
+            0 20px 50px rgba(0,0,0,0.9);
+    }
+
+
+    @media (min-width: 440px) {
+
         .player-container {
-            position: relative;
-            width: 100%;
-            max-width: 420px;
-            height: 100vh;
-            max-height: 880px;
-            background-color: #050505;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+
+            height: 90vh;
+
+            border-radius: 36px;
+
+            border:
+                1px solid
+                rgba(180,220,255,0.14);
+        }
+    }
+
+
+    /* BACKGROUND */
+
+    .background {
+
+        position: absolute;
+
+        inset: 0;
+
+        background:
+            radial-gradient(
+                circle at 50% 15%,
+                rgba(170,215,255,0.18),
+                transparent 34%
+            ),
+
+            radial-gradient(
+                circle at 15% 80%,
+                rgba(70,120,180,0.10),
+                transparent 35%
+            );
+
+        pointer-events: none;
+
+        z-index: 1;
+    }
+
+
+    .background::after {
+
+        content: "";
+
+        position: absolute;
+
+        inset: 0;
+
+        background:
+            linear-gradient(
+                180deg,
+                rgba(0,0,0,0.05),
+                rgba(0,0,0,0.78)
+            );
+    }
+
+
+    .content {
+
+        position: relative;
+
+        z-index: 2;
+
+        display: flex;
+
+        flex-direction: column;
+
+        height: 100%;
+    }
+
+
+    /* HEADER */
+
+    .header {
+
+        text-align: center;
+
+        padding:
+            24px
+            0
+            12px;
+    }
+
+
+    .header h1 {
+
+        font-size: 35px;
+
+        letter-spacing: 5px;
+
+        color: var(--accent);
+
+        font-weight: 900;
+
+        text-shadow:
+            0 0 7px rgba(180,220,255,0.8),
+            0 0 22px rgba(100,170,255,0.3);
+    }
+
+
+    .header p {
+
+        font-family: monospace;
+
+        font-size: 10px;
+
+        font-weight: bold;
+
+        color: var(--text-sub);
+
+        letter-spacing: 4px;
+
+        margin-top: 6px;
+    }
+
+
+    /* TRACK LIST */
+
+    .track-list {
+
+        flex: 1;
+
+        overflow-y: auto;
+
+        padding:
+            10px
+            16px
+            120px;
+
+        display: flex;
+
+        flex-direction: column;
+
+        gap: 10px;
+
+        scrollbar-width: none;
+    }
+
+
+    .track-list::-webkit-scrollbar {
+
+        display: none;
+    }
+
+
+    /* TRACK CARD */
+
+    .track-card {
+
+        display: flex;
+
+        align-items: center;
+
+        padding:
+            12px
+            16px;
+
+        background:
+            var(--card-bg);
+
+        border:
+            1px solid
+            var(--card-border);
+
+        border-radius: 14px;
+
+        cursor: pointer;
+
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+
+        transition:
+            all 0.25s ease;
+    }
+
+
+    .track-card:hover {
+
+        background:
+            rgba(150,200,255,0.08);
+
+        border-color:
+            rgba(180,220,255,0.28);
+    }
+
+
+    .track-card:active {
+
+        transform: scale(0.98);
+    }
+
+
+    .track-card.selected {
+
+        background:
+            linear-gradient(
+                110deg,
+                rgba(143,199,255,0.17),
+                rgba(143,199,255,0.045)
+            );
+
+        border-color:
+            var(--border);
+
+        box-shadow:
+            0 0 22px
+            rgba(100,170,255,0.10);
+    }
+
+
+    /* NUMBER */
+
+    .track-num {
+
+        width: 28px;
+
+        font-family: monospace;
+
+        font-size: 13px;
+
+        font-weight: bold;
+
+        color:
+            var(--text-sub);
+
+        flex-shrink: 0;
+    }
+
+
+    .track-card.selected
+    .track-num {
+
+        color:
+            var(--accent-blue);
+    }
+
+
+    /* TRACK INFO */
+
+    .track-info {
+
+        flex: 1;
+
+        display: flex;
+
+        flex-direction: column;
+
+        gap: 3px;
+
+        margin-left: 8px;
+
+        min-width: 0;
+    }
+
+
+    .track-title {
+
+        font-size: 15px;
+
+        font-weight: 500;
+
+        color:
+            var(--text-main);
+
+        white-space: nowrap;
+
+        overflow: hidden;
+
+        text-overflow: ellipsis;
+    }
+
+
+    .track-card.selected
+    .track-title {
+
+        font-weight: 700;
+
+        color:
+            var(--accent);
+    }
+
+
+    .track-feat {
+
+        font-size: 11px;
+
+        color:
+            rgba(170,180,195,0.85);
+
+        white-space: nowrap;
+
+        overflow: hidden;
+
+        text-overflow: ellipsis;
+    }
+
+
+    .track-duration {
+
+        font-family: monospace;
+
+        font-size: 12px;
+
+        color:
+            var(--text-sub);
+
+        margin-left: 8px;
+
+        flex-shrink: 0;
+    }
+
+
+    /* WAVEFORM */
+
+    .waveform {
+
+        display: flex;
+
+        align-items: flex-end;
+
+        gap: 2px;
+
+        height: 16px;
+
+        width: 15px;
+    }
+
+
+    .waveform-bar {
+
+        width: 3px;
+
+        background:
+            var(--accent-blue);
+
+        border-radius: 2px;
+
+        animation:
+            bounce
+            0.4s
+            infinite
+            alternate
+            ease-in-out;
+    }
+
+
+    .waveform-bar:nth-child(1) {
+
+        height: 14px;
+
+        animation-delay: 0s;
+    }
+
+
+    .waveform-bar:nth-child(2) {
+
+        height: 8px;
+
+        animation-delay: 0.15s;
+    }
+
+
+    .waveform-bar:nth-child(3) {
+
+        height: 16px;
+
+        animation-delay: 0.3s;
+    }
+
+
+    @keyframes bounce {
+
+        0% {
+            transform: scaleY(0.3);
         }
 
-        @media (min-width: 440px) {
-            .player-container {
-                height: 90vh;
-                border-radius: 36px;
-                border: 1px solid rgba(255,255,255,0.1);
-            }
+        100% {
+            transform: scaleY(1);
         }
+    }
 
-        /* Texture d'arrière-plan */
-/* Texture d'arrière-plan avec image locale */
-.background-texture {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url('assets/texture_mayhem.jpg'); /* Modifie le nom et l'extension du fichier si besoin */
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    opacity: 0.5; /* Ajuste la transparence (0.1 à 1) pour laisser passer le fond noir */
-    z-index: 1;
-    pointer-events: none;
-}
-        .content {
-            position: relative;
-            z-index: 2;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
 
-        .main-title {
-            font-family: 'MayhemFont', sans-serif;
-            font-size: 38px;
-            letter-spacing: 2px;
-            color: var(--accent-orange);
-            text-shadow: 0 0 12px rgba(255, 119, 0, 0.8);
-            font-weight: 900;
-        }
+    /* BOTTOM PLAYER */
 
-        /* En-tête */
-        .header {
-            text-align: center;
-            padding: 24px 0 12px 0;
-        }
+    .bottom-bar {
 
-        .header h1 {
-            color: var(--accent-orange);
-            font-size: 38px;
-            letter-spacing: 2px;
-            text-shadow: 0 0 12px rgba(255, 119, 0, 0.8);
-            font-weight: 900;
-        }
+        position: absolute;
 
-        .header p {
-            font-family: monospace;
-            font-size: 11px;
-            font-weight: bold;
-            color: var(--text-sub);
-            letter-spacing: 4px;
-            margin-top: 4px;
-        }
+        bottom: 15px;
 
-        /* Liste des pistes */
-        .track-list {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px 16px 120px 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
+        left: 16px;
+        right: 16px;
 
-        .track-list::-webkit-scrollbar {
-            display: none;
-        }
+        background:
+            rgba(8,13,20,0.72);
 
-        .track-card {
-            display: flex;
-            align-items: center;
-            padding: 12px 16px;
-            background-color: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 14px;
-            cursor: pointer;
-            transition: all 0.25s ease;
-        }
+        backdrop-filter:
+            blur(25px);
 
-        .track-card.selected {
-            background-color: var(--accent-orange-light);
-            border-color: var(--border-orange);
-        }
+        -webkit-backdrop-filter:
+            blur(25px);
 
-        .track-num {
-            width: 28px;
-            font-family: monospace;
-            font-size: 13px;
-            font-weight: bold;
-            color: var(--text-sub);
-        }
+        border:
+            1px solid
+            rgba(150,205,255,0.35);
 
-        .track-card.selected .track-num {
-            color: var(--accent-orange);
-        }
+        border-radius: 22px;
 
-        .track-info {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-            margin-left: 8px;
-        }
+        padding:
+            14px
+            20px;
 
-        .track-title {
-            font-size: 15px;
-            font-weight: 500;
-            color: var(--text-main);
-        }
+        display: flex;
 
-        .track-card.selected .track-title {
-            font-weight: 700;
-            color: var(--accent-orange);
-        }
+        align-items: center;
 
-        .track-feat {
-            font-size: 11px;
-            color: rgba(142, 142, 147, 0.8);
-        }
+        justify-content: space-between;
 
-        .track-duration {
-            font-family: monospace;
-            font-size: 12px;
-            color: var(--text-sub);
-        }
+        box-shadow:
+            0 10px 30px
+            rgba(0,0,0,0.65),
 
-        /* Animation Waveform */
-        .waveform {
-            display: flex;
-            align-items: flex-end;
-            gap: 2px;
-            height: 16px;
-            width: 15px;
-        }
+            inset 0 1px 0
+            rgba(210,235,255,0.08);
 
-        .waveform-bar {
-            width: 3px;
-            background-color: var(--accent-orange);
-            border-radius: 2px;
-            animation: bounce 0.4s infinite alternate ease-in-out;
-        }
+        transition:
+            transform 0.12s ease;
 
-        .waveform-bar:nth-child(1) { height: 14px; animation-delay: 0s; }
-        .waveform-bar:nth-child(2) { height: 8px;  animation-delay: 0.15s; }
-        .waveform-bar:nth-child(3) { height: 16px; animation-delay: 0.3s; }
+        z-index: 10;
+    }
 
-        @keyframes bounce {
-            0% { transform: scaleY(0.3); }
-            100% { transform: scaleY(1); }
-        }
 
-        /* Barre de contrôle flottante */
-        .bottom-bar {
-            position: absolute;
-            bottom: 15px;
-            left: 16px;
-            right: 16px;
-            background: rgba(25, 25, 25, 0.65);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 119, 0, 0.4);
-            border-radius: 22px;
-            padding: 14px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            transition: transform 0.12s ease;
-            z-index: 10;
-        }
+    .bottom-bar.bounce {
 
-        .bottom-bar.bounce {
-            transform: scale(0.94);
-        }
+        transform:
+            scale(0.94);
+    }
 
-        .current-meta {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            max-width: 160px;
-        }
 
-        .current-title {
-            font-size: 15px;
-            font-weight: bold;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+    /* CURRENT TRACK */
 
-        .current-artist {
-            font-size: 12px;
-            font-weight: 500;
-            color: rgba(255, 119, 0, 0.9);
-        }
+    .current-meta {
 
-        .controls {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
+        display: flex;
 
-        .btn {
-            background: none;
-            border: none;
-            color: var(--accent-orange);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        flex-direction: column;
 
-        .btn-icon {
-            width: 20px;
-            height: 20px;
-            fill: var(--accent-orange);
-        }
+        gap: 2px;
 
-        .btn-play {
-            width: 44px;
-            height: 44px;
-            background-color: var(--accent-orange);
-            border-radius: 50%;
-            color: #000;
-            box-shadow: 0 0 16px rgba(255, 119, 0, 0.6);
-        }
+        max-width: 160px;
 
-        .btn-play svg {
-            width: 22px;
-            height: 22px;
-            fill: #000;
-        }
-    </style>
+        min-width: 0;
+    }
+
+
+    .current-title {
+
+        font-size: 15px;
+
+        font-weight: bold;
+
+        white-space: nowrap;
+
+        overflow: hidden;
+
+        text-overflow: ellipsis;
+    }
+
+
+    .current-artist {
+
+        font-size: 12px;
+
+        font-weight: 500;
+
+        color:
+            var(--accent-blue);
+    }
+
+
+    /* CONTROLS */
+
+    .controls {
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 16px;
+    }
+
+
+    .btn {
+
+        background: none;
+
+        border: none;
+
+        color:
+            var(--accent);
+
+        cursor: pointer;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        padding: 0;
+    }
+
+
+    .btn-icon {
+
+        width: 20px;
+
+        height: 20px;
+
+        fill:
+            var(--accent);
+    }
+
+
+    /* PLAY BUTTON */
+
+    .btn-play {
+
+        width: 44px;
+
+        height: 44px;
+
+        background:
+            linear-gradient(
+                145deg,
+                #e8f5ff,
+                #8fc7ff
+            );
+
+        border-radius: 50%;
+
+        color: #000;
+
+        box-shadow:
+            0 0 18px
+            rgba(120,190,255,0.55),
+
+            inset 0 1px 2px
+            rgba(255,255,255,0.9);
+    }
+
+
+    .btn-play:active {
+
+        transform:
+            scale(0.92);
+    }
+
+
+    .btn-play svg {
+
+        width: 22px;
+
+        height: 22px;
+
+        fill: #000;
+    }
+
+</style>
+ 
+
 </head>
+
 <body>
 
 <div class="player-container">
-    <div class="background-texture"></div>
 
-    <div class="content">
-        <div class="header">
-            <h1 class="main-title">MAYHEM</h1>
-            <p>LADY GAGA • TRACKLIST</p>
-        </div>
+ 
+<div class="background"></div>
 
-        <div class="track-list" id="trackList"></div>
 
-        <div class="bottom-bar" id="bottomBar">
-            <div class="current-meta">
-                <span class="current-title" id="currentTitle">Disease</span>
-                <span class="current-artist">Lady Gaga</span>
-            </div>
+<div class="content">
 
-            <div class="controls">
-                <button class="btn" id="prevBtn" aria-label="Précédent">
-                    <svg class="btn-icon" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
-                </button>
-                <button class="btn btn-play" id="playBtn" aria-label="Lecture/Pause">
-                    <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                </button>
-                <button class="btn" id="nextBtn" aria-label="Suivant">
-                    <svg class="btn-icon" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
-                </button>
-            </div>
-        </div>
+
+    <div class="header">
+
+        <h1>
+            THE FAME MONSTER
+        </h1>
+
+        <p>
+            LADY GAGA • TRACKLIST
+        </p>
+
     </div>
+
+
+    <div
+        class="track-list"
+        id="trackList">
+    </div>
+
+
+    <div
+        class="bottom-bar"
+        id="bottomBar">
+
+
+        <div class="current-meta">
+
+            <span
+                class="current-title"
+                id="currentTitle">
+
+                Alejandro
+
+            </span>
+
+
+            <span class="current-artist">
+
+                Lady Gaga
+
+            </span>
+
+        </div>
+
+
+        <div class="controls">
+
+
+            <button
+                class="btn"
+                id="prevBtn"
+                aria-label="Previous">
+
+                <svg
+                    class="btn-icon"
+                    viewBox="0 0 24 24">
+
+                    <path
+                        d="
+                        M6 6h2v12H6zm3.5
+                        6l8.5 6V6z
+                        "/>
+
+                </svg>
+
+            </button>
+
+
+            <button
+                class="btn btn-play"
+                id="playBtn"
+                aria-label="Play/Pause">
+
+                <svg
+                    id="playIcon"
+                    viewBox="0 0 24 24">
+
+                    <path
+                        d="
+                        M8 5v14l11-7z
+                        "/>
+
+                </svg>
+
+            </button>
+
+
+            <button
+                class="btn"
+                id="nextBtn"
+                aria-label="Next">
+
+                <svg
+                    class="btn-icon"
+                    viewBox="0 0 24 24">
+
+                    <path
+                        d="
+                        M6 18l8.5-6L6 6v12z
+                        M16 6v12h2V6h-2z
+                        "/>
+
+                </svg>
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+ 
+
 </div>
 
-<audio id="audioPlayer"></audio>
+<audio
+ id="audioPlayer"
+ preload="metadata"> </audio>
 
 <script>
-    const tracks = [
-        { id: 1, title: "Disease", fileName: "Disease", duration: "3:49", feat: null },
-        { id: 2, title: "Abracadabra", fileName: "Abracadabra", duration: "3:43", feat: null },
-        { id: 3, title: "Garden of Eden", fileName: "Garden Of Eden", duration: "3:59", feat: null },
-        { id: 4, title: "Perfect Celebrity", fileName: "Perfect Celebrity", duration: "3:49", feat: null },
-        { id: 5, title: "Vanish Into You", fileName: "Vanish Into You", duration: "4:04", feat: null },
-        { id: 6, title: "Killah", fileName: "Killah", duration: "3:30", feat: "feat. Gesaffelstein" },
-        { id: 7, title: "Zombieboy", fileName: "Zombieboy", duration: "3:33", feat: null },
-        { id: 8, title: "LoveDrug", fileName: "LoveDrug", duration: "3:13", feat: null },
-        { id: 9, title: "How Bad Do U Want Me", fileName: "How Bad Do U Want", duration: "3:58", feat: null },
-        { id: 10, title: "Don't Call Tonight", fileName: "Don't Call Tonight", duration: "3:45", feat: null },
-        { id: 11, title: "Shadow Of a Man", fileName: "Shadow Of a Man", duration: "3:19", feat: null },
-        { id: 12, title: "The Beast", fileName: "The Beast", duration: "3:54", feat: null },
-        { id: 13, title: "Blade of Grass", fileName: "Blade Of Grass", duration: "4:17", feat: null },
-        { id: 14, title: "Die With A Smile", fileName: "Die With A Smile", duration: "4:11", feat: "with Bruno Mars" }
-    ];
 
-    let currentTrackIndex = 0;
-    let isPlaying = false;
 
-    const audioPlayer = document.getElementById('audioPlayer');
-    const trackListContainer = document.getElementById('trackList');
-    const playBtn = document.getElementById('playBtn');
-    const playIcon = document.getElementById('playIcon');
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    const currentTitle = document.getElementById('currentTitle');
-    const bottomBar = document.getElementById('bottomBar');
+/* =========================================
+   THE FAME MONSTER
+========================================= */
 
-    function renderTracks() {
-        trackListContainer.innerHTML = '';
-        tracks.forEach((track, index) => {
-            const isSelected = index === currentTrackIndex;
-            const card = document.createElement('div');
-            card.className = `track-card ${isSelected ? 'selected' : ''}`;
-            
-            const numContent = (isSelected && isPlaying) 
-                ? `<div class="waveform"><div class="waveform-bar"></div><div class="waveform-bar"></div><div class="waveform-bar"></div></div>`
-                : String(track.id).padStart(2, '0');
+
+const tracks = [
+
+    {
+        id: 1,
+        title: "Alejandro",
+        fileName: "Lady Gaga - Alejandro",
+        duration: "4:34",
+        feat: null
+    },
+
+    {
+        id: 2,
+        title: "Bad Romance",
+        fileName: "Lady Gaga - Bad Romance",
+        duration: "4:54",
+        feat: null
+    },
+
+    {
+        id: 3,
+        title: "Beautiful, Dirty, Rich",
+        fileName: "Lady Gaga - Beautiful, Dirty, Rich",
+        duration: "2:52",
+        feat: null
+    },
+
+    {
+        id: 4,
+        title: "Boys Boys Boys",
+        fileName: "Lady Gaga - Boys Boys Boys",
+        duration: "3:20",
+        feat: null
+    },
+
+    {
+        id: 5,
+        title: "Brown Eyes",
+        fileName: "Lady Gaga - Brown Eyes",
+        duration: "4:03",
+        feat: null
+    },
+
+    {
+        id: 6,
+        title: "Dance In The Dark",
+        fileName: "Lady Gaga - Dance In The Dark",
+        duration: "4:49",
+        feat: null
+    },
+
+    {
+        id: 7,
+        title: "Eh, Eh (Nothing Else I Can Say)",
+        fileName: "Lady Gaga - Eh, Eh (Nothing Else I Can Say)",
+        duration: "2:57",
+        feat: null
+    },
+
+    {
+        id: 8,
+        title: "LoveGame",
+        fileName: "Lady Gaga - LoveGame",
+        duration: "3:36",
+        feat: null
+    },
+
+    {
+        id: 9,
+        title: "Money Honey",
+        fileName: "Lady Gaga - Money Honey",
+        duration: "3:08",
+        feat: null
+    },
+
+    {
+        id: 10,
+        title: "Monster",
+        fileName: "Lady Gaga - Monster",
+        duration: "4:09",
+        feat: null
+    },
+
+    {
+        id: 11,
+        title: "Paparazzi",
+        fileName: "Lady Gaga - Paparazzi",
+        duration: "3:28",
+        feat: null
+    },
+
+    {
+        id: 12,
+        title: "Paper Gangsta",
+        fileName: "Lady Gaga - Paper Gangsta",
+        duration: "4:23",
+        feat: null
+    },
+
+    {
+        id: 13,
+        title: "Poker Face",
+        fileName: "Lady Gaga - Poker Face",
+        duration: "3:57",
+        feat: null
+    },
+
+    {
+        id: 14,
+        title: "So Happy I Could Die",
+        fileName: "Lady Gaga - So Happy I Could Die",
+        duration: "3:55",
+        feat: null
+    },
+
+    {
+        id: 15,
+        title: "Speechless",
+        fileName: "Lady Gaga - Speechless",
+        duration: "4:30",
+        feat: null
+    },
+
+    {
+        id: 16,
+        title: "Teeth",
+        fileName: "Lady Gaga - Teeth",
+        duration: "3:41",
+        feat: null
+    },
+
+    {
+        id: 17,
+        title: "The Fame",
+        fileName: "Lady Gaga - The Fame",
+        duration: "3:42",
+        feat: null
+    },
+
+    {
+        id: 18,
+        title: "Telephone",
+        fileName: "Lady Gaga, Beyoncé - Telephone",
+        duration: "3:40",
+        feat: "feat. Beyoncé"
+    },
+
+    {
+        id: 19,
+        title: "Just Dance",
+        fileName: "Lady Gaga, Colby O'Donis - Just Dance",
+        duration: "4:01",
+        feat: "feat. Colby O'Donis"
+    }
+
+];
+
+
+let currentTrackIndex = 0;
+
+let isPlaying = false;
+
+
+/* ELEMENTS */
+
+
+const audioPlayer =
+    document.getElementById(
+        "audioPlayer"
+    );
+
+
+const trackListContainer =
+    document.getElementById(
+        "trackList"
+    );
+
+
+const playBtn =
+    document.getElementById(
+        "playBtn"
+    );
+
+
+const playIcon =
+    document.getElementById(
+        "playIcon"
+    );
+
+
+const prevBtn =
+    document.getElementById(
+        "prevBtn"
+    );
+
+
+const nextBtn =
+    document.getElementById(
+        "nextBtn"
+    );
+
+
+const currentTitle =
+    document.getElementById(
+        "currentTitle"
+    );
+
+
+const bottomBar =
+    document.getElementById(
+        "bottomBar"
+    );
+
+
+/* =========================================
+   RENDER
+========================================= */
+
+
+function renderTracks() {
+
+    trackListContainer.innerHTML = "";
+
+
+    tracks.forEach(
+        (track, index) => {
+
+            const isSelected =
+                index === currentTrackIndex;
+
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                `track-card ${
+                    isSelected
+                        ? "selected"
+                        : ""
+                }`;
+
+
+            const numContent =
+
+                isSelected && isPlaying
+
+                    ? `
+                        <div class="waveform">
+
+                            <div class="waveform-bar"></div>
+
+                            <div class="waveform-bar"></div>
+
+                            <div class="waveform-bar"></div>
+
+                        </div>
+                      `
+
+                    : String(
+                        track.id
+                    ).padStart(
+                        2,
+                        "0"
+                    );
+
 
             card.innerHTML = `
-                <div class="track-num">${numContent}</div>
-                <div class="track-info">
-                    <span class="track-title">${track.title}</span>
-                    ${track.feat ? `<span class="track-feat">${track.feat}</span>` : ''}
+
+                <div class="track-num">
+                    ${numContent}
                 </div>
-                <span class="track-duration">${track.duration}</span>
+
+
+                <div class="track-info">
+
+                    <span class="track-title">
+                        ${track.title}
+                    </span>
+
+
+                    ${
+                        track.feat
+
+                            ? `
+                                <span class="track-feat">
+                                    ${track.feat}
+                                </span>
+                              `
+
+                            : ""
+                    }
+
+                </div>
+
+
+                <span class="track-duration">
+                    ${track.duration}
+                </span>
+
             `;
 
-            card.addEventListener('click', () => {
-                triggerHaptic();
-                if (isSelected) {
-                    togglePlay();
-                } else {
-                    selectAndPlayTrack(index);
+
+            card.addEventListener(
+                "click",
+                () => {
+
+                    triggerHaptic();
+
+
+                    if (
+                        isSelected
+                    ) {
+
+                        togglePlay();
+
+                    } else {
+
+                        selectAndPlayTrack(
+                            index
+                        );
+
+                    }
+
                 }
+            );
+
+
+            trackListContainer.appendChild(
+                card
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   UPDATE UI
+========================================= */
+
+
+function updateControlsUI() {
+
+    const track =
+        tracks[currentTrackIndex];
+
+
+    currentTitle.textContent =
+        track.title;
+
+
+    if (isPlaying) {
+
+        playIcon.innerHTML = `
+            <path
+                d="
+                M6 19h4V5H6v14zm8-14v14h4V5h-4z
+                "
+            />
+        `;
+
+    } else {
+
+        playIcon.innerHTML = `
+            <path
+                d="
+                M8 5v14l11-7z
+                "
+            />
+        `;
+
+    }
+
+
+    renderTracks();
+
+}
+
+
+/* =========================================
+   SELECT + PLAY
+========================================= */
+
+
+function selectAndPlayTrack(
+    index
+) {
+
+    currentTrackIndex = index;
+
+
+    const track =
+        tracks[currentTrackIndex];
+
+
+    const encodedFileName =
+        encodeURIComponent(
+            track.fileName
+        );
+
+
+    audioPlayer.src =
+        `assets/audios/${encodedFileName}.mp3`;
+
+
+    audioPlayer.load();
+
+
+    audioPlayer.play()
+
+        .then(() => {
+
+            isPlaying = true;
+
+            updateControlsUI();
+
+        })
+
+        .catch(error => {
+
+            console.error(
+                "Unable to play track:",
+                error
+            );
+
+            isPlaying = false;
+
+            updateControlsUI();
+
+        });
+
+}
+
+
+/* =========================================
+   PLAY / PAUSE
+========================================= */
+
+
+function togglePlay() {
+
+    if (
+        !audioPlayer.src
+    ) {
+
+        selectAndPlayTrack(
+            currentTrackIndex
+        );
+
+        return;
+
+    }
+
+
+    if (isPlaying) {
+
+        audioPlayer.pause();
+
+    } else {
+
+        audioPlayer.play()
+            .catch(error => {
+
+                console.error(
+                    "Playback failed:",
+                    error
+                );
+
             });
 
-            trackListContainer.appendChild(card);
-        });
     }
 
-    function updateControlsUI() {
-        const track = tracks[currentTrackIndex];
-        currentTitle.textContent = track.title;
-        
-        if (isPlaying) {
-            playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'; // Pause
-        } else {
-            playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>'; // Play
-        }
-        renderTracks();
+}
+
+
+/* =========================================
+   NEXT
+========================================= */
+
+
+function playNext() {
+
+    currentTrackIndex =
+        (
+            currentTrackIndex + 1
+        )
+        % tracks.length;
+
+
+    selectAndPlayTrack(
+        currentTrackIndex
+    );
+
+}
+
+
+/* =========================================
+   PREVIOUS
+========================================= */
+
+
+function playPrev() {
+
+    currentTrackIndex =
+        (
+            currentTrackIndex - 1
+            + tracks.length
+        )
+        % tracks.length;
+
+
+    selectAndPlayTrack(
+        currentTrackIndex
+    );
+
+}
+
+
+/* =========================================
+   HAPTIC
+========================================= */
+
+
+function triggerHaptic() {
+
+    if (
+        navigator.vibrate
+    ) {
+
+        navigator.vibrate(
+            15
+        );
+
     }
 
-    function selectAndPlayTrack(index) {
-        currentTrackIndex = index;
-        const track = tracks[currentTrackIndex];
-        
-        // Ajuste le chemin ici selon l'emplacement de tes fichiers MP3 :
-        // - Si tes sons sont dans un sous-dossier audio : `assets/audio/${track.fileName}.mp3`
-        // - Si tes sons sont dans le même dossier que ce HTML : `${track.fileName}.mp3`
-        audioPlayer.src = `assets/audios/${track.fileName}.mp3`;
-        
-        audioPlayer.play().then(() => {
-            isPlaying = true;
-            updateControlsUI();
-        }).catch(err => {
-            console.log("Fichier mp3 non trouvé ou lecture bloquée :", err);
-            isPlaying = true;
-            updateControlsUI();
-        });
-    }
+}
 
-    function togglePlay() {
-        if (!audioPlayer.src) {
-            selectAndPlayTrack(currentTrackIndex);
+
+/* =========================================
+   BOUNCE
+========================================= */
+
+
+function triggerBounce() {
+
+    bottomBar.classList.add(
+        "bounce"
+    );
+
+
+    setTimeout(
+        () => {
+
+            bottomBar.classList.remove(
+                "bounce"
+            );
+
+        },
+        120
+    );
+
+}
+
+
+/* =========================================
+   BUTTON EVENTS
+========================================= */
+
+
+playBtn.addEventListener(
+    "click",
+    event => {
+
+        event.stopPropagation();
+
+        triggerHaptic();
+
+        togglePlay();
+
+    }
+);
+
+
+nextBtn.addEventListener(
+    "click",
+    event => {
+
+        event.stopPropagation();
+
+        triggerHaptic();
+
+        playNext();
+
+    }
+);
+
+
+prevBtn.addEventListener(
+    "click",
+    event => {
+
+        event.stopPropagation();
+
+        triggerHaptic();
+
+        playPrev();
+
+    }
+);
+
+
+bottomBar.addEventListener(
+    "click",
+    event => {
+
+        if (
+            event.target.closest(
+                "button"
+            )
+        ) {
+
             return;
+
         }
 
-        if (isPlaying) {
-            audioPlayer.pause();
-            isPlaying = false;
-        } else {
-            audioPlayer.play();
-            isPlaying = true;
-        }
-        updateControlsUI();
-    }
 
-    function playNext() {
-        currentTrackIndex = (currentTrackIndex + 1) % tracks.length;
-        selectAndPlayTrack(currentTrackIndex);
-    }
-
-    function playPrev() {
-        currentTrackIndex = (currentTrackIndex - 1 + tracks.length) % tracks.length;
-        selectAndPlayTrack(currentTrackIndex);
-    }
-
-    function triggerHaptic() {
-        if (navigator.vibrate) navigator.vibrate(15);
-    }
-
-    function triggerBounce() {
-        bottomBar.classList.add('bounce');
-        setTimeout(() => bottomBar.classList.remove('bounce'), 120);
-    }
-
-    // Événements
-    playBtn.addEventListener('click', (e) => { e.stopPropagation(); triggerHaptic(); togglePlay(); });
-    nextBtn.addEventListener('click', (e) => { e.stopPropagation(); triggerHaptic(); playNext(); });
-    prevBtn.addEventListener('click', (e) => { e.stopPropagation(); triggerHaptic(); playPrev(); });
-    
-    bottomBar.addEventListener('click', () => {
-        if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
         triggerBounce();
-    });
 
-    audioPlayer.addEventListener('ended', playNext);
+    }
+);
 
-    // Initialisation
-    renderTracks();
+
+/* =========================================
+   AUDIO EVENTS
+========================================= */
+
+
+audioPlayer.addEventListener(
+    "play",
+    () => {
+
+        isPlaying = true;
+
+        updateControlsUI();
+
+    }
+);
+
+
+audioPlayer.addEventListener(
+    "pause",
+    () => {
+
+        isPlaying = false;
+
+        updateControlsUI();
+
+    }
+);
+
+
+audioPlayer.addEventListener(
+    "ended",
+    () => {
+
+        playNext();
+
+    }
+);
+
+
+/* =========================================
+   INITIALIZATION
+========================================= */
+
+
+renderTracks();
+
+updateControlsUI();
+
+
 </script>
+
 </body>
 </html>

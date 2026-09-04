@@ -1,452 +1,774 @@
-
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE FAME - Lady Gaga Player</title>
 
-    <style>
-        :root {
-            --bg-color: #050505;
-            --accent: #f2f2f2;
-            --accent-light: rgba(255, 255, 255, 0.14);
-            --border: rgba(255, 255, 255, 0.45);
-            --text-main: #ffffff;
-            --text-sub: #8f8f8f;
-            --card-bg: rgba(10, 10, 10, 0.58);
-            --card-border: rgba(255, 255, 255, 0.10);
-        }
+<title>THE FAME - Lady Gaga Player</title>
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
-                Roboto, Helvetica, Arial, sans-serif;
-            user-select: none;
-        }
+<style>
 
-        /* THE FAME FONT */
-        @font-face {
-            font-family: 'FameFont';
-            src: url('assets/Gaga_the_fame-Regular.ttf') format('truetype');
-            font-weight: normal;
-            font-style: normal;
-        }
+    :root {
+        --bg-color: #050505;
+        --accent: #f2f2f2;
+        --accent-light: rgba(255,255,255,0.14);
+        --border: rgba(255,255,255,0.45);
 
-        body {
-            background:
-                radial-gradient(circle at 50% 20%, #252525 0%, #090909 45%, #000 100%);
-            color: var(--text-main);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow: hidden;
-        }
+        --text-main: #ffffff;
+        --text-sub: #8f8f8f;
 
-        /* MAIN PLAYER */
+        --card-bg: rgba(10,10,10,0.58);
+        --card-border: rgba(255,255,255,0.10);
+    }
+
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+
+        font-family:
+            -apple-system,
+            BlinkMacSystemFont,
+            "Segoe UI",
+            Roboto,
+            Helvetica,
+            Arial,
+            sans-serif;
+
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+
+    body {
+
+        background:
+            radial-gradient(
+                circle at 50% 15%,
+                #292929 0%,
+                #0b0b0b 45%,
+                #000000 100%
+            );
+
+        color: var(--text-main);
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        min-height: 100vh;
+
+        overflow: hidden;
+    }
+
+
+    /* PLAYER */
+
+    .player-container {
+
+        position: relative;
+
+        width: 100%;
+        max-width: 420px;
+
+        height: 100vh;
+        max-height: 880px;
+
+        background:
+            radial-gradient(
+                circle at 50% 10%,
+                #303030,
+                #090909 55%,
+                #000
+            );
+
+        overflow: hidden;
+
+        display: flex;
+        flex-direction: column;
+
+        box-shadow:
+            0 20px 50px rgba(0,0,0,0.9);
+    }
+
+
+    @media (min-width: 440px) {
+
         .player-container {
-            position: relative;
-            width: 100%;
-            max-width: 420px;
-            height: 100vh;
-            max-height: 880px;
-            background-color: #050505;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+
+            height: 90vh;
+
+            border-radius: 36px;
+
+            border:
+                1px solid
+                rgba(255,255,255,0.14);
+        }
+    }
+
+
+    /* SUBTLE BACKGROUND */
+
+    .background {
+
+        position: absolute;
+
+        inset: 0;
+
+        background:
+            radial-gradient(
+                circle at 50% 20%,
+                rgba(255,255,255,0.12),
+                transparent 35%
+            );
+
+        opacity: 0.8;
+
+        pointer-events: none;
+
+        z-index: 1;
+    }
+
+
+    .background::after {
+
+        content: "";
+
+        position: absolute;
+
+        inset: 0;
+
+        background:
+            linear-gradient(
+                180deg,
+                rgba(0,0,0,0.05),
+                rgba(0,0,0,0.75)
+            );
+    }
+
+
+    .content {
+
+        position: relative;
+
+        z-index: 2;
+
+        display: flex;
+        flex-direction: column;
+
+        height: 100%;
+    }
+
+
+    /* HEADER */
+
+    .header {
+
+        text-align: center;
+
+        padding:
+            25px
+            0
+            12px;
+    }
+
+
+    .header h1 {
+
+        font-size: 43px;
+
+        letter-spacing: 7px;
+
+        color: #ffffff;
+
+        font-weight: 900;
+
+        text-shadow:
+            0 0 5px rgba(255,255,255,0.8),
+            0 0 18px rgba(255,255,255,0.25);
+    }
+
+
+    .header p {
+
+        font-family: monospace;
+
+        font-size: 10px;
+
+        font-weight: bold;
+
+        color: #999;
+
+        letter-spacing: 4px;
+
+        margin-top: 6px;
+    }
+
+
+    /* TRACK LIST */
+
+    .track-list {
+
+        flex: 1;
+
+        overflow-y: auto;
+
+        padding:
+            10px
+            16px
+            120px;
+
+        display: flex;
+
+        flex-direction: column;
+
+        gap: 10px;
+
+        scrollbar-width: none;
+    }
+
+
+    .track-list::-webkit-scrollbar {
+
+        display: none;
+    }
+
+
+    /* TRACK CARD */
+
+    .track-card {
+
+        display: flex;
+
+        align-items: center;
+
+        padding:
+            12px
+            16px;
+
+        background:
+            var(--card-bg);
+
+        border:
+            1px solid
+            var(--card-border);
+
+        border-radius: 14px;
+
+        cursor: pointer;
+
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+
+        transition:
+            all 0.25s ease;
+    }
+
+
+    .track-card:hover {
+
+        background:
+            rgba(255,255,255,0.08);
+
+        border-color:
+            rgba(255,255,255,0.25);
+    }
+
+
+    .track-card:active {
+
+        transform: scale(0.98);
+    }
+
+
+    .track-card.selected {
+
+        background:
+            linear-gradient(
+                110deg,
+                rgba(255,255,255,0.17),
+                rgba(255,255,255,0.05)
+            );
+
+        border-color:
+            var(--border);
+
+        box-shadow:
+            0 0 20px
+            rgba(255,255,255,0.08);
+    }
+
+
+    /* NUMBER */
+
+    .track-num {
+
+        width: 28px;
+
+        font-family: monospace;
+
+        font-size: 13px;
+
+        font-weight: bold;
+
+        color:
+            var(--text-sub);
+
+        flex-shrink: 0;
+    }
+
+
+    .track-card.selected
+    .track-num {
+
+        color: #fff;
+    }
+
+
+    /* TRACK INFO */
+
+    .track-info {
+
+        flex: 1;
+
+        display: flex;
+
+        flex-direction: column;
+
+        gap: 3px;
+
+        margin-left: 8px;
+
+        min-width: 0;
+    }
+
+
+    .track-title {
+
+        font-size: 15px;
+
+        font-weight: 500;
+
+        color:
+            var(--text-main);
+
+        white-space: nowrap;
+
+        overflow: hidden;
+
+        text-overflow: ellipsis;
+    }
+
+
+    .track-card.selected
+    .track-title {
+
+        font-weight: 700;
+
+        color: #fff;
+    }
+
+
+    .track-feat {
+
+        font-size: 11px;
+
+        color:
+            rgba(160,160,160,0.9);
+
+        white-space: nowrap;
+
+        overflow: hidden;
+
+        text-overflow: ellipsis;
+    }
+
+
+    .track-duration {
+
+        font-family: monospace;
+
+        font-size: 12px;
+
+        color:
+            var(--text-sub);
+
+        margin-left: 8px;
+
+        flex-shrink: 0;
+    }
+
+
+    /* WAVEFORM */
+
+    .waveform {
+
+        display: flex;
+
+        align-items: flex-end;
+
+        gap: 2px;
+
+        height: 16px;
+
+        width: 15px;
+    }
+
+
+    .waveform-bar {
+
+        width: 3px;
+
+        background-color: #fff;
+
+        border-radius: 2px;
+
+        animation:
+            bounce
+            0.4s
+            infinite
+            alternate
+            ease-in-out;
+    }
+
+
+    .waveform-bar:nth-child(1) {
+
+        height: 14px;
+
+        animation-delay: 0s;
+    }
+
+
+    .waveform-bar:nth-child(2) {
+
+        height: 8px;
+
+        animation-delay: 0.15s;
+    }
+
+
+    .waveform-bar:nth-child(3) {
+
+        height: 16px;
+
+        animation-delay: 0.3s;
+    }
+
+
+    @keyframes bounce {
+
+        0% {
+            transform: scaleY(0.3);
         }
 
-        @media (min-width: 440px) {
-            .player-container {
-                height: 90vh;
-                border-radius: 36px;
-                border: 1px solid rgba(255,255,255,0.14);
-            }
+        100% {
+            transform: scaleY(1);
         }
+    }
 
-        /* BACKGROUND */
-        .background-texture {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('assets/texture_the_fame.jpg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            opacity: 0.42;
-            filter: grayscale(100%) contrast(115%);
-            z-index: 1;
-            pointer-events: none;
-        }
 
-        /* SUBTLE GLASS OVERLAY */
-        .background-texture::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background:
-                linear-gradient(
-                    180deg,
-                    rgba(0,0,0,0.15),
-                    rgba(0,0,0,0.65)
-                );
-        }
+    /* BOTTOM PLAYER */
 
-        .content {
-            position: relative;
-            z-index: 2;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
+    .bottom-bar {
 
-        /* HEADER */
-        .header {
-            text-align: center;
-            padding: 25px 0 12px;
-        }
+        position: absolute;
 
-        .header h1 {
-            font-family: 'FameFont', sans-serif;
-            font-size: 46px;
-            letter-spacing: 5px;
-            color: #ffffff;
+        bottom: 15px;
 
-            text-shadow:
-                0 0 5px rgba(255,255,255,0.8),
-                0 0 18px rgba(255,255,255,0.25);
+        left: 16px;
+        right: 16px;
 
-            font-weight: 900;
-        }
+        background:
+            rgba(20,20,20,0.68);
 
-        .header p {
-            font-family: monospace;
-            font-size: 10px;
-            font-weight: bold;
-            color: #999;
-            letter-spacing: 4px;
-            margin-top: 5px;
-        }
+        backdrop-filter:
+            blur(25px);
 
-        /* TRACK LIST */
-        .track-list {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px 16px 120px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
+        -webkit-backdrop-filter:
+            blur(25px);
 
-        .track-list::-webkit-scrollbar {
-            display: none;
-        }
+        border:
+            1px solid
+            rgba(255,255,255,0.22);
 
-        .track-card {
-            display: flex;
-            align-items: center;
-            padding: 12px 16px;
+        border-radius: 22px;
 
-            background-color: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 14px;
+        padding:
+            14px
+            20px;
 
-            cursor: pointer;
+        display: flex;
 
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+        align-items: center;
 
-            transition: all 0.25s ease;
-        }
+        justify-content: space-between;
 
-        .track-card:hover {
-            background-color: rgba(255,255,255,0.08);
-            border-color: rgba(255,255,255,0.25);
-        }
+        box-shadow:
+            0 10px 30px
+            rgba(0,0,0,0.65),
 
-        .track-card.selected {
-            background:
-                linear-gradient(
-                    110deg,
-                    rgba(255,255,255,0.17),
-                    rgba(255,255,255,0.05)
-                );
+            inset 0 1px 0
+            rgba(255,255,255,0.08);
 
-            border-color: var(--border);
+        transition:
+            transform 0.12s ease;
 
-            box-shadow:
-                0 0 20px rgba(255,255,255,0.08);
-        }
+        z-index: 10;
+    }
 
-        /* NUMBER */
-        .track-num {
-            width: 28px;
-            font-family: monospace;
-            font-size: 13px;
-            font-weight: bold;
-            color: var(--text-sub);
-        }
 
-        .track-card.selected .track-num {
-            color: #fff;
-        }
+    .bottom-bar.bounce {
 
-        /* TRACK INFO */
-        .track-info {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-            margin-left: 8px;
-        }
+        transform:
+            scale(0.94);
+    }
 
-        .track-title {
-            font-size: 15px;
-            font-weight: 500;
-            color: var(--text-main);
-        }
 
-        .track-card.selected .track-title {
-            font-weight: 700;
-            color: #fff;
-        }
+    /* CURRENT TRACK */
 
-        .track-feat {
-            font-size: 11px;
-            color: rgba(160,160,160,0.9);
-        }
+    .current-meta {
 
-        .track-duration {
-            font-family: monospace;
-            font-size: 12px;
-            color: var(--text-sub);
-        }
+        display: flex;
 
-        /* WAVEFORM */
-        .waveform {
-            display: flex;
-            align-items: flex-end;
-            gap: 2px;
-            height: 16px;
-            width: 15px;
-        }
+        flex-direction: column;
 
-        .waveform-bar {
-            width: 3px;
-            background-color: #fff;
-            border-radius: 2px;
-            animation: bounce 0.4s infinite alternate ease-in-out;
-        }
+        gap: 2px;
 
-        .waveform-bar:nth-child(1) {
-            height: 14px;
-            animation-delay: 0s;
-        }
+        max-width: 160px;
 
-        .waveform-bar:nth-child(2) {
-            height: 8px;
-            animation-delay: 0.15s;
-        }
+        min-width: 0;
+    }
 
-        .waveform-bar:nth-child(3) {
-            height: 16px;
-            animation-delay: 0.3s;
-        }
 
-        @keyframes bounce {
-            0% {
-                transform: scaleY(0.3);
-            }
+    .current-title {
 
-            100% {
-                transform: scaleY(1);
-            }
-        }
+        font-size: 15px;
 
-        /* BOTTOM PLAYER */
-        .bottom-bar {
-            position: absolute;
-            bottom: 15px;
-            left: 16px;
-            right: 16px;
+        font-weight: bold;
 
-            background: rgba(20,20,20,0.68);
+        white-space: nowrap;
 
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
+        overflow: hidden;
 
-            border: 1px solid rgba(255,255,255,0.22);
-            border-radius: 22px;
+        text-overflow: ellipsis;
+    }
 
-            padding: 14px 20px;
 
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+    .current-artist {
 
-            box-shadow:
-                0 10px 30px rgba(0,0,0,0.65),
-                inset 0 1px 0 rgba(255,255,255,0.08);
+        font-size: 12px;
 
-            transition: transform 0.12s ease;
+        font-weight: 500;
 
-            z-index: 10;
-        }
+        color: #aaa;
+    }
 
-        .bottom-bar.bounce {
-            transform: scale(0.94);
-        }
 
-        /* CURRENT TRACK */
-        .current-meta {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            max-width: 160px;
-        }
+    /* CONTROLS */
 
-        .current-title {
-            font-size: 15px;
-            font-weight: bold;
+    .controls {
 
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+        display: flex;
 
-        .current-artist {
-            font-size: 12px;
-            font-weight: 500;
-            color: #aaa;
-        }
+        align-items: center;
 
-        /* CONTROLS */
-        .controls {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
+        gap: 16px;
+    }
 
-        .btn {
-            background: none;
-            border: none;
-            color: #fff;
-            cursor: pointer;
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+    .btn {
 
-        .btn-icon {
-            width: 20px;
-            height: 20px;
-            fill: #fff;
-        }
+        background: none;
 
-        /* PLAY BUTTON */
-        .btn-play {
-            width: 44px;
-            height: 44px;
+        border: none;
 
-            background:
-                linear-gradient(
-                    145deg,
-                    #ffffff,
-                    #bdbdbd
-                );
+        color: #fff;
 
-            border-radius: 50%;
+        cursor: pointer;
 
-            color: #000;
+        display: flex;
 
-            box-shadow:
-                0 0 15px rgba(255,255,255,0.35),
-                inset 0 1px 2px rgba(255,255,255,0.8);
-        }
+        align-items: center;
 
-        .btn-play svg {
-            width: 22px;
-            height: 22px;
-            fill: #000;
-        }
-    </style>
+        justify-content: center;
+
+        padding: 0;
+    }
+
+
+    .btn-icon {
+
+        width: 20px;
+
+        height: 20px;
+
+        fill: #fff;
+    }
+
+
+    /* PLAY */
+
+    .btn-play {
+
+        width: 44px;
+
+        height: 44px;
+
+        background:
+            linear-gradient(
+                145deg,
+                #ffffff,
+                #bdbdbd
+            );
+
+        border-radius: 50%;
+
+        color: #000;
+
+        box-shadow:
+            0 0 15px
+            rgba(255,255,255,0.35),
+
+            inset 0 1px 2px
+            rgba(255,255,255,0.8);
+    }
+
+
+    .btn-play:active {
+
+        transform: scale(0.92);
+    }
+
+
+    .btn-play svg {
+
+        width: 22px;
+
+        height: 22px;
+
+        fill: #000;
+    }
+
+</style>
+
+
 </head>
 
 <body>
 
 <div class="player-container">
 
-    <div class="background-texture"></div>
 
-    <div class="content">
+<div class="background"></div>
 
-        <div class="header">
-            <h1>THE FAME</h1>
-            <p>LADY GAGA • TRACKLIST</p>
+
+<div class="content">
+
+
+    <div class="header">
+
+        <h1>THE FAME</h1>
+
+        <p>
+            LADY GAGA • TRACKLIST
+        </p>
+
+    </div>
+
+
+    <div
+        class="track-list"
+        id="trackList">
+    </div>
+
+
+    <div
+        class="bottom-bar"
+        id="bottomBar">
+
+
+        <div class="current-meta">
+
+            <span
+                class="current-title"
+                id="currentTitle">
+
+                Just Dance
+
+            </span>
+
+
+            <span class="current-artist">
+
+                Lady Gaga
+
+            </span>
+
         </div>
 
-        <div class="track-list" id="trackList"></div>
 
-        <div class="bottom-bar" id="bottomBar">
+        <div class="controls">
 
-            <div class="current-meta">
-                <span class="current-title" id="currentTitle">
-                    Just Dance
-                </span>
 
-                <span class="current-artist">
-                    Lady Gaga
-                </span>
-            </div>
+            <button
+                class="btn"
+                id="prevBtn"
+                aria-label="Previous">
 
-            <div class="controls">
+                <svg
+                    class="btn-icon"
+                    viewBox="0 0 24 24">
 
-                <button class="btn"
-                    id="prevBtn"
-                    aria-label="Previous">
+                    <path
+                        d="
+                        M6 6h2v12H6zm3.5
+                        6l8.5 6V6z
+                        "/>
 
-                    <svg class="btn-icon"
-                        viewBox="0 0 24 24">
+                </svg>
 
-                        <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
+            </button>
 
-                    </svg>
 
-                </button>
+            <button
+                class="btn btn-play"
+                id="playBtn"
+                aria-label="Play/Pause">
 
-                <button class="btn btn-play"
-                    id="playBtn"
-                    aria-label="Play/Pause">
+                <svg
+                    id="playIcon"
+                    viewBox="0 0 24 24">
 
-                    <svg id="playIcon"
-                        viewBox="0 0 24 24">
+                    <path
+                        d="M8 5v14l11-7z"/>
 
-                        <path d="M8 5v14l11-7z"/>
+                </svg>
 
-                    </svg>
+            </button>
 
-                </button>
 
-                <button class="btn"
-                    id="nextBtn"
-                    aria-label="Next">
+            <button
+                class="btn"
+                id="nextBtn"
+                aria-label="Next">
 
-                    <svg class="btn-icon"
-                        viewBox="0 0 24 24">
+                <svg
+                    class="btn-icon"
+                    viewBox="0 0 24 24">
 
-                        <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
+                    <path
+                        d="
+                        M6 18l8.5-6L6 6v12z
+                        M16 6v12h2V6h-2z
+                        "/>
 
-                    </svg>
+                </svg>
 
-                </button>
+            </button>
 
-            </div>
 
         </div>
 
@@ -454,16 +776,27 @@
 
 </div>
 
-<audio id="audioPlayer"></audio>
+
+</div>
+
+<audio
+ id="audioPlayer"
+ preload="metadata"> </audio>
 
 <script>
+
+
+/* =========================================
+   THE FAME TRACKLIST
+========================================= */
+
 
 const tracks = [
 
     {
         id: 1,
         title: "Just Dance",
-        fileName: "Just Dance",
+        fileName: "Lady Gaga, Colby O'Donis - Just Dance",
         duration: "4:01",
         feat: "feat. Colby O'Donis"
     },
@@ -471,7 +804,7 @@ const tracks = [
     {
         id: 2,
         title: "LoveGame",
-        fileName: "Lady Gaga - Poker Face",
+        fileName: "Lady Gaga - LoveGame",
         duration: "3:36",
         feat: null
     },
@@ -495,7 +828,7 @@ const tracks = [
     {
         id: 5,
         title: "Eh, Eh (Nothing Else I Can Say)",
-        fileName: "Lady Gaga - Eh Eh",
+        fileName: "Lady Gaga - Eh, Eh (Nothing Else I Can Say)",
         duration: "2:57",
         feat: null
     },
@@ -503,7 +836,7 @@ const tracks = [
     {
         id: 6,
         title: "Beautiful, Dirty, Rich",
-        fileName: "Lady Gaga - Beautiful Dirty Rich",
+        fileName: "Lady Gaga - Beautiful, Dirty, Rich",
         duration: "2:52",
         feat: null
     },
@@ -527,7 +860,7 @@ const tracks = [
     {
         id: 9,
         title: "Starstruck",
-        fileName: "Lady Gaga - Starstruck",
+        fileName: "Lady Gaga, Space Cowboy, Flo Rida - Starstruck",
         duration: "3:37",
         feat: "feat. Space Cowboy & Flo Rida"
     },
@@ -574,114 +907,193 @@ const tracks = [
 
 ];
 
+
 let currentTrackIndex = 0;
+
 let isPlaying = false;
 
+
+/* ELEMENTS */
+
+
 const audioPlayer =
-    document.getElementById('audioPlayer');
+    document.getElementById(
+        "audioPlayer"
+    );
+
 
 const trackListContainer =
-    document.getElementById('trackList');
+    document.getElementById(
+        "trackList"
+    );
+
 
 const playBtn =
-    document.getElementById('playBtn');
+    document.getElementById(
+        "playBtn"
+    );
+
 
 const playIcon =
-    document.getElementById('playIcon');
+    document.getElementById(
+        "playIcon"
+    );
+
 
 const prevBtn =
-    document.getElementById('prevBtn');
+    document.getElementById(
+        "prevBtn"
+    );
+
 
 const nextBtn =
-    document.getElementById('nextBtn');
+    document.getElementById(
+        "nextBtn"
+    );
+
 
 const currentTitle =
-    document.getElementById('currentTitle');
+    document.getElementById(
+        "currentTitle"
+    );
+
 
 const bottomBar =
-    document.getElementById('bottomBar');
+    document.getElementById(
+        "bottomBar"
+    );
+
+
+/* =========================================
+   RENDER TRACKS
+========================================= */
 
 
 function renderTracks() {
 
-    trackListContainer.innerHTML = '';
-
-    tracks.forEach((track, index) => {
-
-        const isSelected =
-            index === currentTrackIndex;
-
-        const card =
-            document.createElement('div');
-
-        card.className =
-            `track-card ${isSelected ? 'selected' : ''}`;
-
-        const numContent =
-            (isSelected && isPlaying)
-
-                ? `
-                    <div class="waveform">
-                        <div class="waveform-bar"></div>
-                        <div class="waveform-bar"></div>
-                        <div class="waveform-bar"></div>
-                    </div>
-                  `
-
-                : String(track.id).padStart(2, '0');
+    trackListContainer.innerHTML = "";
 
 
-        card.innerHTML = `
+    tracks.forEach(
+        (track, index) => {
 
-            <div class="track-num">
-                ${numContent}
-            </div>
 
-            <div class="track-info">
+            const isSelected =
+                index === currentTrackIndex;
 
-                <span class="track-title">
-                    ${track.title}
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                `track-card ${
+                    isSelected
+                        ? "selected"
+                        : ""
+                }`;
+
+
+            const numContent =
+
+                isSelected && isPlaying
+
+                    ? `
+                        <div class="waveform">
+
+                            <div class="waveform-bar"></div>
+
+                            <div class="waveform-bar"></div>
+
+                            <div class="waveform-bar"></div>
+
+                        </div>
+                      `
+
+                    : String(
+                        track.id
+                    ).padStart(
+                        2,
+                        "0"
+                    );
+
+
+            card.innerHTML = `
+
+                <div class="track-num">
+                    ${numContent}
+                </div>
+
+
+                <div class="track-info">
+
+                    <span class="track-title">
+                        ${track.title}
+                    </span>
+
+
+                    ${
+                        track.feat
+
+                            ? `
+                                <span class="track-feat">
+                                    ${track.feat}
+                                </span>
+                              `
+
+                            : ""
+                    }
+
+                </div>
+
+
+                <span class="track-duration">
+                    ${track.duration}
                 </span>
 
-                ${
-                    track.feat
-                    ? `<span class="track-feat">
-                        ${track.feat}
-                       </span>`
-                    : ''
+            `;
+
+
+            card.addEventListener(
+                "click",
+                () => {
+
+                    triggerHaptic();
+
+
+                    if (
+                        isSelected
+                    ) {
+
+                        togglePlay();
+
+                    } else {
+
+                        selectAndPlayTrack(
+                            index
+                        );
+
+                    }
+
                 }
-
-            </div>
-
-            <span class="track-duration">
-                ${track.duration}
-            </span>
-
-        `;
+            );
 
 
-        card.addEventListener('click', () => {
+            trackListContainer.appendChild(
+                card
+            );
 
-            triggerHaptic();
-
-            if (isSelected) {
-
-                togglePlay();
-
-            } else {
-
-                selectAndPlayTrack(index);
-
-            }
-
-        });
-
-
-        trackListContainer.appendChild(card);
-
-    });
+        }
+    );
 
 }
+
+
+/* =========================================
+   UI
+========================================= */
 
 
 function updateControlsUI() {
@@ -689,37 +1101,66 @@ function updateControlsUI() {
     const track =
         tracks[currentTrackIndex];
 
+
     currentTitle.textContent =
         track.title;
 
 
     if (isPlaying) {
 
-        playIcon.innerHTML =
-            '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+        playIcon.innerHTML = `
+            <path
+                d="
+                M6 19h4V5H6v14zm8-14v14h4V5h-4z
+                "
+            />
+        `;
 
     } else {
 
-        playIcon.innerHTML =
-            '<path d="M8 5v14l11-7z"/>';
+        playIcon.innerHTML = `
+            <path
+                d="
+                M8 5v14l11-7z
+                "
+            />
+        `;
 
     }
+
 
     renderTracks();
 
 }
 
 
-function selectAndPlayTrack(index) {
+/* =========================================
+   SELECT TRACK
+========================================= */
+
+
+function selectAndPlayTrack(
+    index
+) {
 
     currentTrackIndex = index;
+
 
     const track =
         tracks[currentTrackIndex];
 
 
+    const encodedFileName =
+        encodeURIComponent(
+            track.fileName
+        );
+
+
     audioPlayer.src =
-        `assets/audios/${track.fileName}.mp3`;
+        `assets/audios/${encodedFileName}.mp3`;
+
+
+    audioPlayer.load();
 
 
     audioPlayer.play()
@@ -732,14 +1173,14 @@ function selectAndPlayTrack(index) {
 
         })
 
-        .catch(err => {
+        .catch(error => {
 
-            console.log(
-                "MP3 file not found or playback blocked:",
-                err
+            console.error(
+                "Unable to play track:",
+                error
             );
 
-            isPlaying = true;
+            isPlaying = false;
 
             updateControlsUI();
 
@@ -748,11 +1189,21 @@ function selectAndPlayTrack(index) {
 }
 
 
+/* =========================================
+   PLAY / PAUSE
+========================================= */
+
+
 function togglePlay() {
 
-    if (!audioPlayer.src) {
 
-        selectAndPlayTrack(currentTrackIndex);
+    if (
+        !audioPlayer.src
+    ) {
+
+        selectAndPlayTrack(
+            currentTrackIndex
+        );
 
         return;
 
@@ -767,10 +1218,26 @@ function togglePlay() {
 
     } else {
 
-        audioPlayer.play();
+        audioPlayer.play()
 
-        isPlaying = true;
+            .then(() => {
 
+                isPlaying = true;
+
+                updateControlsUI();
+
+            })
+
+            .catch(error => {
+
+                console.error(
+                    "Playback failed:",
+                    error
+                );
+
+            });
+
+        return;
     }
 
 
@@ -779,58 +1246,105 @@ function togglePlay() {
 }
 
 
+/* =========================================
+   NEXT
+========================================= */
+
+
 function playNext() {
 
     currentTrackIndex =
-        (currentTrackIndex + 1) % tracks.length;
+        (
+            currentTrackIndex + 1
+        )
+        % tracks.length;
 
-    selectAndPlayTrack(currentTrackIndex);
+
+    selectAndPlayTrack(
+        currentTrackIndex
+    );
 
 }
+
+
+/* =========================================
+   PREVIOUS
+========================================= */
 
 
 function playPrev() {
 
     currentTrackIndex =
-        (currentTrackIndex - 1 + tracks.length)
+        (
+            currentTrackIndex - 1
+            + tracks.length
+        )
         % tracks.length;
 
-    selectAndPlayTrack(currentTrackIndex);
+
+    selectAndPlayTrack(
+        currentTrackIndex
+    );
 
 }
 
 
+/* =========================================
+   HAPTIC
+========================================= */
+
+
 function triggerHaptic() {
 
-    if (navigator.vibrate) {
+    if (
+        navigator.vibrate
+    ) {
 
-        navigator.vibrate(15);
+        navigator.vibrate(
+            15
+        );
 
     }
 
 }
 
 
+/* =========================================
+   BOUNCE
+========================================= */
+
+
 function triggerBounce() {
 
-    bottomBar.classList.add('bounce');
+    bottomBar.classList.add(
+        "bounce"
+    );
 
-    setTimeout(() => {
 
-        bottomBar.classList.remove('bounce');
+    setTimeout(
+        () => {
 
-    }, 120);
+            bottomBar.classList.remove(
+                "bounce"
+            );
+
+        },
+        120
+    );
 
 }
 
 
-/* EVENTS */
+/* =========================================
+   EVENTS
+========================================= */
+
 
 playBtn.addEventListener(
-    'click',
-    (e) => {
+    "click",
+    event => {
 
-        e.stopPropagation();
+        event.stopPropagation();
 
         triggerHaptic();
 
@@ -841,10 +1355,10 @@ playBtn.addEventListener(
 
 
 nextBtn.addEventListener(
-    'click',
-    (e) => {
+    "click",
+    event => {
 
-        e.stopPropagation();
+        event.stopPropagation();
 
         triggerHaptic();
 
@@ -855,10 +1369,10 @@ nextBtn.addEventListener(
 
 
 prevBtn.addEventListener(
-    'click',
-    (e) => {
+    "click",
+    event => {
 
-        e.stopPropagation();
+        event.stopPropagation();
 
         triggerHaptic();
 
@@ -869,16 +1383,19 @@ prevBtn.addEventListener(
 
 
 bottomBar.addEventListener(
-    'click',
-    () => {
+    "click",
+    event => {
 
-        if (navigator.vibrate) {
+        if (
+            event.target.closest(
+                "button"
+            )
+        ) {
 
-            navigator.vibrate(
-                [30, 50, 30]
-            );
+            return;
 
         }
+
 
         triggerBounce();
 
@@ -886,20 +1403,56 @@ bottomBar.addEventListener(
 );
 
 
-/* AUTO NEXT */
+/* =========================================
+   AUDIO EVENTS
+========================================= */
+
 
 audioPlayer.addEventListener(
-    'ended',
-    playNext
+    "play",
+    () => {
+
+        isPlaying = true;
+
+        updateControlsUI();
+
+    }
 );
 
 
-/* INITIALIZATION */
+audioPlayer.addEventListener(
+    "pause",
+    () => {
+
+        isPlaying = false;
+
+        updateControlsUI();
+
+    }
+);
+
+
+audioPlayer.addEventListener(
+    "ended",
+    () => {
+
+        playNext();
+
+    }
+);
+
+
+/* =========================================
+   INITIALIZATION
+========================================= */
+
 
 renderTracks();
+
+updateControlsUI();
+
 
 </script>
 
 </body>
 </html>
-
