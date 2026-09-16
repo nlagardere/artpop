@@ -4,15 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MAYHEM - Lady Gaga Player</title>
-    <!-- Manifest PWA -->
-<link rel="manifest" href="../../manifest.json">
+<!-- Manifest PWA -->
+<link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#000000">
+
+<!-- Optimisations iOS / Safari -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="artPOP:RX">
+<link rel="apple-touch-icon" href="assets/logos/ios/512.png">
 
 <!-- Activation du Service Worker -->
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('../../sw.js')
+      navigator.serviceWorker.register('./sw.js')
         .then(reg => console.log('Service Worker enregistré !', reg))
         .catch(err => console.error('Erreur SW:', err));
     });

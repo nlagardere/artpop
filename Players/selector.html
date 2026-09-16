@@ -1,33 +1,30 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
 
-  <meta name="theme-color" content="#080808">
+  <title>Haus of Gaga — Eras</title>
 
-  <title>Haus of Gaga — Choose Your Era</title>
-<!-- Manifest PWA -->
-<link rel="manifest" href="../manifest.json">
-<meta name="theme-color" content="#000000">
+  <!-- Manifest PWA -->
+  <link rel="manifest" href="../manifest.json">
 
-<!-- Activation du Service Worker -->
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('../../sw.js')
-        .then(reg => console.log('Service Worker enregistré !', reg))
-        .catch(err => console.error('Erreur SW:', err));
-    });
-  }
-</script>
+  <!-- Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('../../sw.js')
+          .then(reg => console.log('SW actif !', reg))
+          .catch(err => console.error('Erreur SW:', err));
+      });
+    }
+  </script>
+
   <style>
-
     /* =========================================================
-       RESET
+       RESET & BASE (OPTIMISÉ iPHONE)
     ========================================================= */
-
     * {
       box-sizing: border-box;
       margin: 0;
@@ -35,1148 +32,322 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    html {
-      scroll-behavior: smooth;
-    }
-
     body {
+      width: 100%;
       min-height: 100vh;
-      min-height: 100dvh;
-
-      font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "SF Pro Display",
-        "SF Pro Text",
-        "Segoe UI",
-        Roboto,
-        Helvetica,
-        Arial,
-        sans-serif;
-
-      color: #fff;
-
-      background:
-        radial-gradient(
-          circle at 50% -10%,
-          rgba(255, 45, 85, 0.16),
-          transparent 35%
-        ),
-        radial-gradient(
-          circle at 100% 40%,
-          rgba(105, 45, 255, 0.12),
-          transparent 35%
-        ),
-        linear-gradient(
-          180deg,
-          #050505 0%,
-          #0b0710 45%,
-          #12091c 100%
-        );
-
-      overflow-x: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+      color: #ffffff;
+      background-color: #050505;
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(255, 45, 85, 0.15), transparent 40%),
+        radial-gradient(circle at 100% 60%, rgba(147, 51, 234, 0.12), transparent 40%);
+      background-attachment: fixed;
+      padding: 
+        max(20px, env(safe-area-inset-top)) 
+        16px 
+        max(40px, env(safe-area-inset-bottom));
     }
-
-    body::before {
-      content: "";
-
-      position: fixed;
-      inset: 0;
-
-      pointer-events: none;
-
-      opacity: 0.035;
-
-      background-image:
-        url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
-
-      z-index: 100;
-    }
-
-
-    /* =========================================================
-       APP
-    ========================================================= */
 
     .app-container {
-      width: 100%;
-      max-width: 1100px;
-
+      max-width: 800px;
       margin: 0 auto;
-
-      padding:
-        max(28px, env(safe-area-inset-top))
-        0
-        max(50px, env(safe-area-inset-bottom));
-
-      position: relative;
     }
-
 
     /* =========================================================
-       HEADER
+       HEADER & FEATURED BANNER
     ========================================================= */
-
     .header {
-      padding: 24px 24px 0;
-      margin-bottom: 30px;
+      margin-bottom: 24px;
+      padding: 10px 4px 0;
     }
 
-    .eyebrow {
-      display: flex;
+    .tag {
+      display: inline-flex;
       align-items: center;
-      gap: 9px;
-
-      margin-bottom: 10px;
-
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: rgba(255, 55, 95, 0.15);
+      border: 1px solid rgba(255, 55, 95, 0.3);
       color: #ff375f;
-
-      font-size: 0.72rem;
-      font-weight: 800;
-
-      letter-spacing: 0.22em;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-    }
-
-    .eyebrow-dot {
-      width: 6px;
-      height: 6px;
-
-      border-radius: 50%;
-
-      background: #ff375f;
-
-      box-shadow:
-        0 0 12px rgba(255, 55, 95, 0.8);
+      margin-bottom: 12px;
     }
 
     .main-title {
-      max-width: 650px;
-
-      font-size: clamp(2.45rem, 9vw, 5rem);
-
-      line-height: 0.98;
-
-      letter-spacing: -0.055em;
-
+      font-size: clamp(2rem, 8vw, 3.2rem);
       font-weight: 900;
-    }
-
-    .main-title span {
-      background:
-        linear-gradient(
-          100deg,
-          #fff 15%,
-          #d9d1ff 50%,
-          #ff6b91 100%
-        );
-
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #ffffff 30%, rgba(255, 255, 255, 0.6));
       -webkit-background-clip: text;
       background-clip: text;
-
       color: transparent;
     }
 
-    .header-description {
-      max-width: 520px;
-
-      margin-top: 16px;
-
-      color: #98989f;
-
-      font-size: 0.96rem;
-      line-height: 1.5;
-    }
-
-
-    /* =========================================================
-       ERA SCROLLER
-    ========================================================= */
-
-    .eras-wrapper {
+    /* BANNIÈRE VEDETTE (Dernier Album) */
+    .featured-era {
+      display: block;
       position: relative;
-    }
-
-    .eras-scroll {
-      display: flex;
-
-      gap: 16px;
-
-      overflow-x: auto;
-      overflow-y: hidden;
-
-      padding:
-        4px 24px 25px;
-
-      scroll-snap-type: x mandatory;
-
-      overscroll-behavior-x: contain;
-
-      scrollbar-width: none;
-
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .eras-scroll::-webkit-scrollbar {
-      display: none;
-    }
-
-
-    /* =========================================================
-       ERA CARD
-    ========================================================= */
-
-    .album-link {
-      position: relative;
-
-      flex: 0 0 auto;
-
-      width: min(72vw, 275px);
-
-      aspect-ratio: 0.75;
-
-      text-decoration: none;
-
-      color: inherit;
-
-      scroll-snap-align: start;
-    }
-
-    .album-card {
       width: 100%;
-      height: 100%;
-
-      position: relative;
-
+      height: 200px;
+      border-radius: 24px;
       overflow: hidden;
+      margin-bottom: 28px;
+      text-decoration: none;
+      color: #fff;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
 
-      border-radius: 28px;
-
-      background-color: #111;
-
+    .featured-bg {
+      position: absolute;
+      inset: 0;
       background-size: cover;
       background-position: center;
-
-      box-shadow:
-        0 20px 50px rgba(0, 0, 0, 0.45),
-        inset 0 0 0 1px rgba(255,255,255,0.12);
-
-      transform: translateZ(0);
-
-      transition:
-        transform 0.35s cubic-bezier(.2,.8,.2,1),
-        box-shadow 0.35s ease;
+      transition: transform 0.5s ease;
     }
 
-
-    /* Cinematic gradient */
-
-    .album-card::after {
-      content: "";
-
+    .featured-overlay {
       position: absolute;
       inset: 0;
-
-      background:
-        linear-gradient(
-          180deg,
-          rgba(0,0,0,0.02) 25%,
-          rgba(0,0,0,0.12) 48%,
-          rgba(0,0,0,0.82) 100%
-        );
-
-      pointer-events: none;
+      background: linear-gradient(0deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 60%, transparent 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 20px;
     }
 
-
-    /* Soft shine */
-
-    .album-card::before {
-      content: "";
-
-      position: absolute;
-      inset: 0;
-
-      background:
-        linear-gradient(
-          125deg,
-          rgba(255,255,255,0.16),
-          transparent 28%,
-          transparent 70%,
-          rgba(255,255,255,0.04)
-        );
-
-      opacity: 0.65;
-
-      pointer-events: none;
+    .featured-badge {
+      font-size: 0.65rem;
+      font-weight: 800;
+      letter-spacing: 0.15em;
+      color: #ff375f;
+      text-transform: uppercase;
+      margin-bottom: 4px;
     }
 
-
-    /* Touch feedback */
-
-    .album-link:active .album-card {
-      transform: scale(0.965);
+    .featured-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 2px;
     }
 
-
-    /* Desktop hover */
-
-    @media (hover: hover) {
-
-      .album-link:hover .album-card {
-        transform:
-          translateY(-8px)
-          scale(1.015);
-
-        box-shadow:
-          0 30px 70px rgba(0,0,0,0.55),
-          0 0 0 1px rgba(255,255,255,0.16);
-      }
-
+    .featured-subtitle {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.7);
     }
-
 
     /* =========================================================
-       CARD CONTENT
+       GRID DES ÉRAS (2 COLONNES)
     ========================================================= */
+    .section-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: rgba(255, 255, 255, 0.5);
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      padding-left: 4px;
+    }
 
-    .card-content {
-      position: absolute;
+    .eras-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
 
-      z-index: 2;
-
-      left: 14px;
-      right: 14px;
-      bottom: 14px;
-
+    .era-card {
+      position: relative;
       display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      aspect-ratio: 0.85;
+      border-radius: 20px;
+      overflow: hidden;
+      text-decoration: none;
+      color: #fff;
+      background-color: #121212;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.2s ease;
+    }
 
+    .era-card:active {
+      transform: scale(0.96);
+    }
+
+    .era-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+
+    .era-card-overlay {
+      position: relative;
+      z-index: 2;
+      padding: 12px;
+      background: rgba(15, 15, 15, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
       align-items: center;
       justify-content: space-between;
-
-      gap: 12px;
-
-      padding: 13px 14px;
-
-      border-radius: 18px;
-
-      background:
-        rgba(20,20,20,0.38);
-
-      border:
-        1px solid rgba(255,255,255,0.15);
-
-      backdrop-filter:
-        blur(22px)
-        saturate(150%);
-
-      -webkit-backdrop-filter:
-        blur(22px)
-        saturate(150%);
-
-      box-shadow:
-        inset 0 1px rgba(255,255,255,0.08),
-        0 8px 25px rgba(0,0,0,0.18);
     }
 
-    .card-info {
-      min-width: 0;
-    }
-
-    .card-kicker {
-      display: block;
-
-      margin-bottom: 3px;
-
-      color:
-        rgba(255,255,255,0.58);
-
-      font-size: 0.63rem;
-
-      font-weight: 700;
-
-      letter-spacing: 0.12em;
-
-      text-transform: uppercase;
-    }
-
-    .card-title {
-      display: block;
-
+    .era-info {
+      display: flex;
+      flex-direction: column;
       overflow: hidden;
+    }
 
-      color: #fff;
+    .era-year {
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.6);
+      letter-spacing: 0.05em;
+    }
 
-      font-size: 1rem;
-
+    .era-name {
+      font-size: 0.85rem;
       font-weight: 750;
-
       white-space: nowrap;
-
+      overflow: hidden;
       text-overflow: ellipsis;
     }
 
-
-    /* =========================================================
-       PLAY BUTTON
-    ========================================================= */
-
-    .play-button {
-      flex: 0 0 auto;
-
-      width: 38px;
-      height: 38px;
-
-      display: grid;
-
-      place-items: center;
-
+    .play-icon {
+      width: 26px;
+      height: 26px;
       border-radius: 50%;
-
-      background: #fff;
-
-      color: #080808;
-
-      font-size: 0.72rem;
-
-      box-shadow:
-        0 4px 15px rgba(0,0,0,0.25);
-
-      transition:
-        transform 0.2s ease,
-        background 0.2s ease;
-    }
-
-    .album-link:active .play-button {
-      transform: scale(0.9);
-    }
-
-
-    /* =========================================================
-       HORIZONTAL SCROLL INDICATOR
-    ========================================================= */
-
-    .scroll-hint {
-      display: flex;
-
-      align-items: center;
-      justify-content: center;
-
-      gap: 8px;
-
-      padding: 0 24px;
-
-      color: #68686e;
-
-      font-size: 0.68rem;
-
-      font-weight: 700;
-
-      letter-spacing: 0.1em;
-
-      text-transform: uppercase;
-    }
-
-    .scroll-line {
-      width: 24px;
-      height: 1px;
-
-      background: #444449;
-    }
-
-    .scroll-arrow {
-      width: 20px;
-      height: 20px;
-
-      display: flex;
-
-      align-items: center;
-      justify-content: center;
-
-      flex: 0 0 auto;
-
-      color: #99999f;
-
-      font-size: 1.5rem;
-
-      line-height: 1;
-
-      animation:
-        arrowFloatRight
-        1.8s
-        ease-in-out
-        infinite;
-    }
-
-    .scroll-arrow.left {
-      animation:
-        arrowFloatLeft
-        1.8s
-        ease-in-out
-        infinite;
-    }
-
-
-    /* Left arrow animation */
-
-    @keyframes arrowFloatLeft {
-
-      0%,
-      100% {
-        transform: translateX(0);
-        opacity: 0.45;
-      }
-
-      50% {
-        transform: translateX(-4px);
-        opacity: 1;
-      }
-
-    }
-
-
-    /* Right arrow animation */
-
-    @keyframes arrowFloatRight {
-
-      0%,
-      100% {
-        transform: translateX(0);
-        opacity: 0.45;
-      }
-
-      50% {
-        transform: translateX(4px);
-        opacity: 1;
-      }
-
-    }
-
-
-    /* =========================================================
-       COMING SOON
-    ========================================================= */
-
-    .info-section {
-      padding: 48px 24px 0;
-    }
-
-    .section-heading {
-      display: flex;
-
-      align-items: baseline;
-
-      justify-content: space-between;
-
-      margin-bottom: 14px;
-    }
-
-    .section-title {
-      font-size: 1.45rem;
-
-      letter-spacing: -0.03em;
-
-      font-weight: 800;
-    }
-
-    .section-label {
-      color: #68686e;
-
-      font-size: 0.7rem;
-
-      font-weight: 700;
-
-      letter-spacing: 0.12em;
-
-      text-transform: uppercase;
-    }
-
-
-    /* =========================================================
-       BANNER
-    ========================================================= */
-
-    .banner-card {
-      position: relative;
-
-      display: flex;
-
-      align-items: center;
-
-      gap: 16px;
-
-      padding: 18px;
-
-      overflow: hidden;
-
-      border-radius: 24px;
-
-      background:
-        linear-gradient(
-          135deg,
-          rgba(255,255,255,0.11),
-          rgba(255,255,255,0.045)
-        );
-
-      border:
-        1px solid rgba(255,255,255,0.1);
-
-      backdrop-filter:
-        blur(25px);
-
-      -webkit-backdrop-filter:
-        blur(25px);
-    }
-
-    .banner-card::before {
-      content: "";
-
-      position: absolute;
-
-      width: 180px;
-      height: 180px;
-
-      right: -70px;
-      top: -100px;
-
-      border-radius: 50%;
-
-      background:
-        rgba(255,45,85,0.18);
-
-      filter: blur(35px);
-    }
-
-    .banner-icon {
-      position: relative;
-
-      z-index: 1;
-
-      width: 48px;
-      height: 48px;
-
-      flex: 0 0 auto;
-
+      background: #ffffff;
+      color: #000;
       display: grid;
-
       place-items: center;
-
-      border-radius: 15px;
-
-      background:
-        rgba(255,255,255,0.1);
-
-      border:
-        1px solid rgba(255,255,255,0.1);
-
-      font-size: 1.35rem;
+      font-size: 0.6rem;
+      flex-shrink: 0;
     }
 
-    .banner-text {
-      position: relative;
-
-      z-index: 1;
-
-      display: flex;
-
-      flex-direction: column;
-
-      gap: 4px;
+    /* Desktop Adjustments */
+    @media (min-width: 600px) {
+      .eras-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+      }
+      .featured-era {
+        height: 260px;
+      }
     }
-
-    .banner-headline {
-      font-size: 0.98rem;
-
-      font-weight: 750;
-    }
-
-    .banner-subheadline {
-      color: #8c8c93;
-
-      font-size: 0.82rem;
-
-      line-height: 1.4;
-    }
-
-
-    /* =========================================================
-       DESKTOP
-    ========================================================= */
-
-    @media (min-width: 700px) {
-
-      .app-container {
-        padding-top: 55px;
-      }
-
-      .header {
-        padding-left: 40px;
-        padding-right: 40px;
-      }
-
-      .eras-scroll {
-        padding-left: 40px;
-        padding-right: 40px;
-
-        gap: 20px;
-      }
-
-      .album-link {
-        width: 275px;
-      }
-
-      .scroll-hint {
-        padding-left: 40px;
-        padding-right: 40px;
-      }
-
-      .info-section {
-        padding-left: 40px;
-        padding-right: 40px;
-      }
-
-    }
-
-
-    /* =========================================================
-       REDUCED MOTION
-    ========================================================= */
-
-    @media (prefers-reduced-motion: reduce) {
-
-      *,
-      *::before,
-      *::after {
-
-        scroll-behavior: auto !important;
-
-        animation: none !important;
-
-        transition: none !important;
-      }
-
-    }
-
   </style>
 </head>
-
 
 <body>
 
   <main class="app-container">
 
-
-    <!-- =======================================================
-         HEADER
-    ======================================================== -->
-
+    <!-- HEADER -->
     <header class="header">
-
-      <div class="eyebrow">
-
-        <span class="eyebrow-dot"></span>
-
-        Haus of Gaga
-
-      </div>
-
-
-      <h1 class="main-title">
-
-        Choose your<br>
-
-        <span>era.</span>
-
-      </h1>
-
-
-      <p class="header-description">
-
-        Step into Lady Gaga's world and explore each era,
-        from The Fame to MAYHEM.
-
-      </p>
-
+      <div class="tag">✦ Discography</div>
+      <h1 class="main-title">Haus of Gaga</h1>
     </header>
 
-
-
-    <!-- =======================================================
-         ERAS
-    ======================================================== -->
-
-    <section class="eras-wrapper">
-
-
-      <div class="eras-scroll">
-
-
-        <!-- THE FAME -->
-
-        <a
-          href="TheFame/main.html"
-          class="album-link"
-          aria-label="Explore The Fame era"
-        >
-
-          <article
-            class="album-card"
-            style="background-image: url('assets/TheFame.jpg');"
-          >
-
-            <div class="card-content">
-
-              <div class="card-info">
-
-                <span class="card-kicker">
-                  2008
-                </span>
-
-                <span class="card-title">
-                  The Fame
-                </span>
-
-              </div>
-
-
-              <span class="play-button">
-                ▶
-              </span>
-
-            </div>
-
-          </article>
-
-        </a>
-
-
-
-        <!-- THE FAME MONSTER -->
-
-        <a
-          href="TheFameMonster/main.html"
-          class="album-link"
-          aria-label="Explore The Fame Monster era"
-        >
-
-          <article
-            class="album-card"
-            style="background-image: url('assets/TheFameMonster2.jpg');"
-          >
-
-            <div class="card-content">
-
-              <div class="card-info">
-
-                <span class="card-kicker">
-                  2009
-                </span>
-
-                <span class="card-title">
-                  The Fame Monster
-                </span>
-
-              </div>
-
-
-              <span class="play-button">
-                ▶
-              </span>
-
-            </div>
-
-          </article>
-
-        </a>
-
-
-
-        <!-- BORN THIS WAY -->
-
-        <a
-          href="bornthisway/main.html"
-          class="album-link"
-          aria-label="Explore Born This Way era"
-        >
-
-          <article
-            class="album-card"
-            style="background-image: url('assets/bornthisway.jpg');"
-          >
-
-            <div class="card-content">
-
-              <div class="card-info">
-
-                <span class="card-kicker">
-                  2011
-                </span>
-
-                <span class="card-title">
-                  Born This Way
-                </span>
-
-              </div>
-
-
-              <span class="play-button">
-                ▶
-              </span>
-
-            </div>
-
-          </article>
-
-        </a>
-
-
-
-        <!-- ARTPOP -->
-
-        <a
-          href="artpop/main.html"
-          class="album-link"
-          aria-label="Explore ARTPOP era"
-        >
-
-          <article
-            class="album-card"
-            style="background-image: url('assets/artpop.jpg');"
-          >
-
-            <div class="card-content">
-
-              <div class="card-info">
-
-                <span class="card-kicker">
-                  2013
-                </span>
-
-                <span class="card-title">
-                  ARTPOP
-                </span>
-
-              </div>
-
-
-              <span class="play-button">
-                ▶
-              </span>
-
-            </div>
-
-          </article>
-
-        </a>
-
-
-
-        <!-- JOANNE -->
-
-        <a
-          href="joanne/main.html"
-          class="album-link"
-          aria-label="Explore Joanne era"
-        >
-
-          <article
-            class="album-card"
-            style="background-image: url('assets/joanne.jpg');"
-          >
-
-            <div class="card-content">
-
-              <div class="card-info">
-
-                <span class="card-kicker">
-                  2016
-                </span>
-
-                <span class="card-title">
-                  Joanne
-                </span>
-
-              </div>
-
-
-              <span class="play-button">
-                ▶
-              </span>
-
-            </div>
-
-          </article>
-
-        </a>
-
-
-
-        <!-- CHROMATICA -->
-
-        <a
-          href="chromatica/main.html"
-          class="album-link"
-          aria-label="Explore Chromatica era"
-        >
-
-          <article
-            class="album-card"
-            style="background-image: url('assets/chromatica.jpg');"
-          >
-
-            <div class="card-content">
-
-              <div class="card-info">
-
-                <span class="card-kicker">
-                  2020
-                </span>
-
-                <span class="card-title">
-                  Chromatica
-                </span>
-
-              </div>
-
-
-              <span class="play-button">
-                ▶
-              </span>
-
-            </div>
-
-          </article>
-
-        </a>
-
-
-
-        <!-- MAYHEM -->
-
-        <a
-          href="mayhem/main.html"
-          class="album-link"
-          aria-label="Explore MAYHEM era"
-        >
-
-          <article
-            class="album-card"
-            style="background-image: url('assets/mayhem.jpg');"
-          >
-
-            <div class="card-content">
-
-              <div class="card-info">
-
-                <span class="card-kicker">
-                  2025
-                </span>
-
-                <span class="card-title">
-                  MAYHEM
-                </span>
-
-              </div>
-
-
-              <span class="play-button">
-                ▶
-              </span>
-
-            </div>
-
-          </article>
-
-        </a>
-
-
+    <!-- BANNIÈRE FEATURED (MAYHEM 2025) -->
+    <a href="Mayhem/main.html" class="featured-era" aria-label="Découvrir l'ère MAYHEM">
+      <div class="featured-bg" style="background-image: url('assets/mayhem.jpg');"></div>
+      <div class="featured-overlay">
+        <span class="featured-badge">Dernière Ère • 2025</span>
+        <h2 class="featured-title">MAYHEM</h2>
+        <p class="featured-subtitle">Plonge dans la toute nouvelle ère musicale.</p>
       </div>
+    </a>
 
+    <!-- GRILLE DES ÈRES -->
+    <p class="section-label">Toutes les ères</p>
+    
+    <div class="eras-grid">
 
-
-      <!-- =====================================================
-           SCROLL INDICATOR
-      ====================================================== -->
-
-      <div class="scroll-hint">
-
-        <span class="scroll-arrow left">
-          ‹
-        </span>
-
-        <span class="scroll-line"></span>
-
-        <span>
-          Swipe to explore
-        </span>
-
-        <span class="scroll-line"></span>
-
-        <span class="scroll-arrow right">
-          ›
-        </span>
-
-      </div>
-
-
-    </section>
-
-
-
-    <!-- =======================================================
-         COMING SOON
-    ======================================================== -->
-
-    <section class="info-section">
-
-
-      <div class="section-heading">
-
-        <h2 class="section-title">
-          Coming Soon
-        </h2>
-
-        <span class="section-label">
-          Haus of Gaga
-        </span>
-
-      </div>
-
-
-
-      <div class="banner-card">
-
-
-        <div class="banner-icon">
-          ✦
+      <!-- THE FAME -->
+      <a href="TheFame/main.html" class="era-card">
+        <img src="assets/TheFame.jpg" alt="The Fame" class="era-img">
+        <div class="era-card-overlay">
+          <div class="era-info">
+            <span class="era-year">2008</span>
+            <span class="era-name">The Fame</span>
+          </div>
+          <span class="play-icon">▶</span>
         </div>
+      </a>
 
-
-        <div class="banner-text">
-
-          <p class="banner-headline">
-            The world of Lady Gaga
-          </p>
-
-
-          <p class="banner-subheadline">
-
-            Explore visuals, stories, iconic moments
-            and essential tracks from every era.
-
-          </p>
-
+      <!-- THE FAME MONSTER -->
+      <a href="TheFameMonster/main.html" class="era-card">
+        <img src="assets/TheFameMonster2.jpg" alt="The Fame Monster" class="era-img">
+        <div class="era-card-overlay">
+          <div class="era-info">
+            <span class="era-year">2009</span>
+            <span class="era-name">The Fame Monster</span>
+          </div>
+          <span class="play-icon">▶</span>
         </div>
+      </a>
 
+      <!-- BORN THIS WAY -->
+      <a href="BornThisWay/main.html" class="era-card">
+        <img src="assets/bornthisway.jpg" alt="Born This Way" class="era-img">
+        <div class="era-card-overlay">
+          <div class="era-info">
+            <span class="era-year">2011</span>
+            <span class="era-name">Born This Way</span>
+          </div>
+          <span class="play-icon">▶</span>
+        </div>
+      </a>
 
-      </div>
+      <!-- ARTPOP -->
+      <a href="ArtPop/main.html" class="era-card">
+        <img src="assets/artpop.jpg" alt="ARTPOP" class="era-img">
+        <div class="era-card-overlay">
+          <div class="era-info">
+            <span class="era-year">2013</span>
+            <span class="era-name">ARTPOP</span>
+          </div>
+          <span class="play-icon">▶</span>
+        </div>
+      </a>
 
+      <!-- JOANNE -->
+      <a href="Joanne/main.html" class="era-card">
+        <img src="assets/joanne.jpg" alt="Joanne" class="era-img">
+        <div class="era-card-overlay">
+          <div class="era-info">
+            <span class="era-year">2016</span>
+            <span class="era-name">Joanne</span>
+          </div>
+          <span class="play-icon">▶</span>
+        </div>
+      </a>
 
-    </section>
+      <!-- CHROMATICA -->
+      <a href="Chromatica/main.html" class="era-card">
+        <img src="assets/chromatica.jpg" alt="Chromatica" class="era-img">
+        <div class="era-card-overlay">
+          <div class="era-info">
+            <span class="era-year">2020</span>
+            <span class="era-name">Chromatica</span>
+          </div>
+          <span class="play-icon">▶</span>
+        </div>
+      </a>
 
+    </div>
 
   </main>
 
 </body>
 </html>
- 

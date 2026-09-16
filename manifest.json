@@ -4,7 +4,7 @@
   "icons": [
     {
       "src": "assets/logos/ios/512.png",
-      "type": "image/jpeg",
+      "type": "image/png",
       "sizes": "512x512"
     }
   ],
