@@ -2,269 +2,278 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ARTPOP - PetGA Dashboard</title>
-  <!-- Manifest PWA -->
-<link rel="manifest" href="./manifest.json">
-<meta name="theme-color" content="#000000">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>ARTPOP — Dashboard</title>
 
-<!-- Activation du Service Worker -->
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js')
-        .then(reg => console.log('Service Worker enregistré !', reg))
-        .catch(err => console.error('Erreur SW:', err));
-    });
-  }
-</script>
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#000000">
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('Service Worker enregistré !', reg))
+          .catch(err => console.error('Erreur SW:', err));
+      });
+    }
+  </script>
+
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body, html { width: 100%; height: 100%; background: #050508; color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; overflow-x: hidden; }
+    :root {
+      --gaga-pink: #ff007f;
+      --gaga-blue: #00f0ff;
+      --gaga-purple: #9d00ff;
+      --bg-dark: #050508;
+      --card-bg: rgba(20, 15, 35, 0.65);
+      --card-border: rgba(255, 255, 255, 0.15);
+      --text-secondary: rgba(255, 255, 255, 0.7);
+    }
 
-    /* --- ÉCRAN D'ACCUEIL / WELCOME SCREEN --- */
-    #welcome-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: #050508;
-      z-index: 1000;
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    
+    body, html { 
+      width: 100%; 
+      min-height: 100vh; 
+      background: var(--bg-dark); 
+      color: #fff; 
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif; 
+      overflow-x: hidden; 
+    }
+
+    /* Arrière-plan Aura ARTPOP coloré */
+    .aura-bg-1 { 
+      position: fixed; 
+      top: -10%; 
+      right: -20%; 
+      width: 350px; 
+      height: 350px; 
+      background: radial-gradient(circle, rgba(255, 0, 127, 0.35) 0%, rgba(0, 0, 0, 0) 70%); 
+      z-index: 0; 
+      pointer-events: none; 
+      filter: blur(60px); 
+    }
+
+    .aura-bg-2 { 
+      position: fixed; 
+      bottom: 10%; 
+      left: -20%; 
+      width: 400px; 
+      height: 400px; 
+      background: radial-gradient(circle, rgba(0, 240, 255, 0.3) 0%, rgba(157, 0, 255, 0.25) 50%, rgba(0, 0, 0, 0) 70%); 
+      z-index: 0; 
+      pointer-events: none; 
+      filter: blur(70px); 
+    }
+
+    .container { 
+      position: relative; 
+      z-index: 10; 
+      max-width: 440px; 
+      margin: 0 auto; 
+      padding: max(30px, env(safe-area-inset-top)) 20px max(40px, env(safe-area-inset-bottom)); 
+      display: flex; 
+      flex-direction: column; 
+      gap: 28px; 
+    }
+    
+    /* Header Électrique */
+    header { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: flex-end; 
+      padding-bottom: 10px;
+    }
+
+    .brand {
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      gap: 20px;
-      text-align: center;
-      padding: 20px;
-      transition: opacity 0.8s ease, visibility 0.8s ease;
+      gap: 2px;
     }
 
-    #welcome-overlay.hidden {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-
-    .welcome-title {
-      font-family: "Impact", "Arial Black", sans-serif;
-      font-size: 3rem;
-      letter-spacing: 8px;
+    .brand-tag {
+      font-size: 11px;
+      font-weight: 800;
       text-transform: uppercase;
-      color: #fff;
-      text-shadow: 0 0 15px #ff007f, 0 0 30px #ff007f;
-      animation: pulseTitle 2s ease-in-out infinite alternate;
+      letter-spacing: 0.25em;
+      color: var(--gaga-blue);
+      text-shadow: 0 0 10px rgba(0, 240, 255, 0.6);
     }
 
-    @keyframes pulseTitle {
-      0% { text-shadow: 0 0 15px #ff007f, 0 0 30px #ff007f; }
-      100% { text-shadow: 0 0 25px #00f0ff, 0 0 40px #00f0ff; }
+    .logo { 
+      font-size: 40px; 
+      font-weight: 900;
+      letter-spacing: -1px; 
+      background: linear-gradient(135deg, #ffffff 0%, var(--gaga-pink) 50%, var(--gaga-blue) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 15px rgba(255, 0, 127, 0.4));
     }
 
-    .welcome-subtitle {
-      font-family: "Courier New", Courier, monospace;
-      font-size: 1rem;
-      letter-spacing: 3px;
-      color: #00f0ff;
-      text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
-      max-width: 400px;
-      line-height: 1.5;
+    .app-version {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: rgba(255, 0, 127, 0.15);
+      color: var(--gaga-pink);
+      border: 1px solid rgba(255, 0, 127, 0.4);
+      box-shadow: 0 0 10px rgba(255, 0, 127, 0.2);
     }
 
-    .enter-btn {
-      margin-top: 15px;
-      background: transparent;
-      border: 2px solid #ff007f;
-      color: #fff;
-      padding: 15px 40px;
-      font-family: "Courier New", Courier, monospace;
-      font-size: 1.1rem;
-      font-weight: bold;
-      letter-spacing: 4px;
-      cursor: pointer;
-      border-radius: 30px;
-      box-shadow: 0 0 15px rgba(255, 0, 127, 0.4);
-      transition: all 0.3s ease;
-    }
-
-    .enter-btn:hover {
-      background: #ff007f;
-      box-shadow: 0 0 30px rgba(255, 0, 127, 0.9);
-      transform: scale(1.05);
-    }
-
-    /* --- ÉCRAN DE BLOCAGE PAYSAGE --- */
-    #rotate-home-screen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: #000;
-      z-index: 999;
-      display: none;
+    /* Grille de cartes */
+    .grid { 
+      display: flex;
       flex-direction: column;
-      justify-content: center;
+      gap: 16px; 
+    }
+
+    .card-link {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .card { 
+      background: var(--card-bg); 
+      border: 1px solid var(--card-border); 
+      border-radius: 24px; 
+      padding: 24px; 
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1); 
+      display: flex; 
+      flex-direction: column; 
+      gap: 12px; 
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Carte active (Music & Sound) */
+    .card.active-card {
+      border-color: rgba(0, 240, 255, 0.4);
+      box-shadow: 0 10px 30px rgba(0, 240, 255, 0.15), inset 0 0 15px rgba(255, 0, 127, 0.1);
+    }
+
+    /* Effet néon latéral sur la carte active */
+    .card.active-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 4px;
+      background: linear-gradient(180deg, var(--gaga-pink), var(--gaga-blue));
+      box-shadow: 0 0 12px var(--gaga-blue);
+    }
+
+    .card-link:active .card.active-card {
+      transform: scale(0.97);
+      border-color: var(--gaga-pink);
+      box-shadow: 0 15px 35px rgba(255, 0, 127, 0.3);
+    }
+
+    /* Cartes désactivées */
+    .card.disabled-card {
+      opacity: 0.45;
+      border-color: rgba(255, 255, 255, 0.08);
+      background: rgba(10, 10, 18, 0.4);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 25px;
-      padding: 20px;
-      text-align: center;
     }
 
-    .phone-portrait-icon {
-      width: 60px;
-      height: 100px;
-      border: 3px solid #ff007f;
-      border-radius: 10px;
-      animation: rotateToPortrait 2.5s ease-in-out infinite;
-      box-shadow: 0 0 15px rgba(255, 0, 127, 0.6);
+    .card h3 { 
+      font-size: 18px; 
+      font-weight: 800;
+      color: #fff; 
+      letter-spacing: -0.3px;
     }
 
-    @keyframes rotateToPortrait {
-      0%, 20% { transform: rotate(-90deg); }
-      50%, 70% { transform: rotate(0deg); }
-      100% { transform: rotate(-90deg); }
+    .card p { 
+      font-size: 13.5px; 
+      color: var(--text-secondary); 
+      line-height: 1.45; 
     }
 
-    #rotate-home-screen p {
-      font-family: "Courier New", Courier, monospace;
-      font-size: 1.1rem;
-      letter-spacing: 4px;
+    /* Badges ARTPOP */
+    .badge {
+      font-size: 10px;
+      font-weight: 800;
+      padding: 6px 12px;
+      border-radius: 14px;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
-      color: #ff007f;
-      text-shadow: 0 0 10px rgba(255, 0, 127, 0.8);
-      max-width: 340px;
-      line-height: 1.5;
     }
 
-    /* --- STYLES HOME DASHBOARD --- */
-    .bg-aura { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 600px; height: 600px; background: radial-gradient(circle, rgba(255, 0, 127, 0.25) 0%, rgba(0, 240, 255, 0.15) 45%, rgba(0, 0, 0, 0) 70%); z-index: 0; pointer-events: none; filter: blur(50px); animation: floatAura 10s ease-in-out infinite alternate; }
-    @keyframes floatAura { 0% { transform: translate(-50%, -50%) scale(1); } 100% { transform: translate(-45%, -55%) scale(1.2); } }
+    .badge-available {
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.25), rgba(255, 0, 127, 0.25));
+      color: #fff;
+      border: 1px solid var(--gaga-blue);
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+    }
 
-    .container { position: relative; z-index: 10; max-width: 1000px; margin: 0 auto; padding: 30px 20px; display: flex; flex-direction: column; gap: 30px; }
-    
-    header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; border-bottom: 1px solid rgba(0, 240, 255, 0.2); }
-    .logo { font-family: "Impact", "Arial Black", sans-serif; font-size: 2.2rem; letter-spacing: 6px; text-transform: uppercase; color: #fff; text-shadow: 0 0 10px #ff007f, 0 0 20px #ff007f; }
-    .user-profile { display: flex; align-items: center; gap: 15px; }
-    .user-avatar { width: 50px; height: 50px; border-radius: 50%; border: 2px solid #00f0ff; object-fit: cover; box-shadow: 0 0 10px rgba(0, 240, 255, 0.5); background: #111; }
-    .user-name { font-family: "Courier New", Courier, monospace; font-size: 1rem; letter-spacing: 2px; color: #00f0ff; text-shadow: 0 0 5px rgba(0, 240, 255, 0.5); font-weight: bold; }
-
-    .hero-card { background: rgba(10, 10, 15, 0.7); border: 1px solid rgba(0, 240, 255, 0.4); border-radius: 16px; padding: 30px; backdrop-filter: blur(12px); box-shadow: 0 0 25px rgba(0, 240, 255, 0.15); display: flex; align-items: center; justify-content: space-between; gap: 20px; }
-    .hero-info h2 { font-family: "Courier New", Courier, monospace; font-size: 1.4rem; color: #ff007f; text-shadow: 0 0 8px rgba(255, 0, 127, 0.6); margin-bottom: 10px; letter-spacing: 2px; }
-    .hero-info p { font-family: "Courier New", Courier, monospace; color: #a0a0b0; font-size: 0.95rem; line-height: 1.5; }
-    .aura-status { padding: 10px 20px; border: 1px solid #00f0ff; border-radius: 30px; font-family: "Courier New", Courier, monospace; font-size: 0.85rem; color: #00f0ff; letter-spacing: 2px; box-shadow: 0 0 10px rgba(0, 240, 255, 0.3); white-space: nowrap; }
-
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
-    .card { background: rgba(15, 15, 25, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 25px; transition: all 0.3s ease; cursor: pointer; display: flex; flex-direction: column; gap: 15px; }
-    .card:hover { border-color: #ff007f; transform: translateY(-5px); box-shadow: 0 0 20px rgba(255, 0, 127, 0.3); background: rgba(25, 15, 30, 0.8); }
-    .card h3 { font-family: "Courier New", Courier, monospace; color: #00f0ff; letter-spacing: 2px; font-size: 1.1rem; }
-    .card p { font-size: 0.85rem; color: #8a8a9e; line-height: 1.4; }
-
-    .reset-btn { align-self: center; margin-top: 20px; background: transparent; border: 1px solid rgba(255, 0, 127, 0.5); color: #ff007f; padding: 10px 20px; font-family: "Courier New", Courier, monospace; font-size: 0.8rem; letter-spacing: 2px; cursor: pointer; border-radius: 6px; transition: all 0.3s ease; }
-    .reset-btn:hover { background: #ff007f; color: #fff; box-shadow: 0 0 15px rgba(255, 0, 127, 0.8); }
+    .badge-soon {
+      background: rgba(255, 255, 255, 0.05);
+      color: rgba(255, 255, 255, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
   </style>
 </head>
 <body>
 
-
-  <!-- Écran de demande de retour en Portrait -->
-  <div id="rotate-home-screen">
-    <div class="phone-portrait-icon"></div>
-    <p>ROTATE DEVICE TO PORTRAIT MODE TO VIEW DASHBOARD</p>
-  </div>
-
-  <div class="bg-aura"></div>
+  <div class="aura-bg-1"></div>
+  <div class="aura-bg-2"></div>
 
   <div class="container">
     <header>
-      <div class="logo">ARTPOP</div>
-      <div class="user-profile">
-        <img id="avatar-img" class="user-avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='50' height='50' viewBox='0 0 24 24' fill='none' stroke='%2300f0ff' stroke-width='2'><path d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/><circle cx='12' cy='7' r='4'/></svg>" alt="Aura Avatar">
-        <span id="display-name" class="user-name">LITTLE MONSTER</span>
+      <div class="brand">
+        <span class="brand-tag">System</span>
+        <h1 class="logo">ARTPOP</h1>
       </div>
+      <span class="app-version">PWA v1.0</span>
     </header>
 
-    <section class="hero-card">
-      <div class="hero-info">
-        <h2>PETGA ONLINE</h2>
-        <p>Aura transmise avec succès. Synchronisation artistique active.</p>
-      </div>
-      <div class="aura-status">AURA: SYNCHRONIZED</div>
-    </section>
-
     <section class="grid">
-      <div class="card">
-        <h3>01 // ARTHAUS</h3>
-        <p>Explore le laboratoire visuel et crée des auras personnalisées.</p>
-      </div>
-
-      <div class="card">
-        <a href="Players/selector.html" class="album-link"> 
-        <h3>02 // MUSIC & SOUND</h3>
-        <p>Écoute l'album ARTPOP avec le visuel sonore interactif.</p> 
+      <!-- 01 // MUSIC & SOUND (Disponible) -->
+      <a href="players.html" class="card-link">
+        <div class="card active-card">
+          <div class="card-header">
+            <h3>01 // Music & Sound</h3>
+            <span class="badge badge-available">Disponible</span>
+          </div>
+          <p>Écoute la discographie complète avec les lecteurs interactifs.</p>
+        </div>
       </a>
+
+      <!-- 02 // ARTHAUS (Coming Soon) -->
+      <div class="card disabled-card">
+        <div class="card-header">
+          <h3>02 // ArtHaus</h3>
+          <span class="badge badge-soon">Bientôt</span>
+        </div>
+        <p>Laboratoire visuel et créateur d'expériences interactives.</p>
       </div>
 
-      <div class="card">
-        <h3>03 // COMMUNITY</h3>
-        <p>Partage tes créations avec les Little Monsters du monde entier.</p>
+      <!-- 03 // COMMUNITY (Coming Soon) -->
+      <div class="card disabled-card">
+        <div class="card-header">
+          <h3>03 // Community</h3>
+          <span class="badge badge-soon">Bientôt</span>
+        </div>
+        <p>Espace d'échange et de partage pour la communauté.</p>
       </div>
     </section>
-
-    <button id="reset-btn" class="reset-btn">REINITIATE ONBOARDING</button>
   </div>
 
-  <!-- Audio Chromatica I -->
-
-
-  <script>
-    const welcomeOverlay = document.getElementById('welcome-overlay');
-    const enterBtn = document.getElementById('enter-btn');
-    const bgm = document.getElementById('home-bgm');
-    const rotateHomeScreen = document.getElementById('rotate-home-screen');
-
-    // Clic sur "ENTER THE SYSTEM"
-    enterBtn.addEventListener('click', () => {
-      // 1. Masque l'écran d'accueil avec un fade out
-      welcomeOverlay.classList.add('hidden');
-
-      // 2. Lance la musique Chromatica I
-      bgm.volume = 0.3;
-      bgm.play().catch(e => console.log("Erreur audio :", e));
-    });
-
-    // Vérification de l'orientation (neutralisée pour tes tests PC)
-    function checkOrientation() {
-      return;
-      const isLandscape = window.innerWidth > window.innerHeight;
-      if (isLandscape) {
-        rotateHomeScreen.style.display = 'flex';
-      } else {
-        rotateHomeScreen.style.display = 'none';
-      }
-    }
-
-    window.addEventListener('resize', checkOrientation);
-    window.addEventListener('orientationchange', checkOrientation);
-    checkOrientation();
-
-    // Récupération des données utilisateur dans le localStorage
-    const username = localStorage.getItem('petga_username');
-    const userphoto = localStorage.getItem('petga_userphoto');
-
-    if (username) {
-      document.getElementById('display-name').textContent = username.toUpperCase();
-    }
-
-    if (userphoto) {
-      document.getElementById('avatar-img').src = userphoto;
-    }
-
-    document.getElementById('reset-btn').addEventListener('click', () => {
-      localStorage.clear();
-      window.parent.location.reload();
-    });
-  </script>
 </body>
 </html>

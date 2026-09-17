@@ -1,34 +1,42 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ARTPOP - PetGA Experience</title>
-<!-- Manifest PWA -->
-<link rel="manifest" href="./manifest.json">
-<meta name="theme-color" content="#000000">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>ARTPOP</title>
 
-<!-- Optimisations iOS / Safari -->
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="artPOP:RX">
-<link rel="apple-touch-icon" href="assets/logos/ios/512.png">
+  <!-- Manifest PWA -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#000000">
 
-<!-- Activation du Service Worker -->
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js')
-        .then(reg => console.log('Service Worker enregistré !', reg))
-        .catch(err => console.error('Erreur SW:', err));
-    });
-  }
-</script>
+  <!-- Optimisations iOS / Safari -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="ARTPOP">
+  <link rel="apple-touch-icon" href="assets/logos/ios/512.png">
+
+  <!-- Activation du Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('Service Worker enregistré !', reg))
+          .catch(err => console.error('Erreur SW:', err));
+      });
+    }
+  </script>
+
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body, html { width: 100%; height: 100%; overflow: hidden; background: #000; }
+    body, html { 
+      width: 100%; 
+      height: 100%; 
+      overflow: hidden; 
+      background: #000; 
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+    }
 
-    /* --- ÉCRAN DE BLOCAGE SI PAS EN MODE PWA --- */
+    /* Écran de blocage hors PWA (Style iOS / ARTPOP) */
     #pwa-lock-screen {
       position: fixed;
       top: 0;
@@ -48,34 +56,34 @@
     }
 
     .lock-title {
-      font-family: "Impact", "Arial Black", sans-serif;
-      font-size: 2.5rem;
-      letter-spacing: 6px;
-      color: #ff007f;
-      text-shadow: 0 0 15px rgba(255, 0, 127, 0.8);
+      font-size: 2.2rem;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #ffffff 0%, #ff007f 50%, #00f0ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
     .lock-subtitle {
-      font-family: "Courier New", Courier, monospace;
       font-size: 0.95rem;
-      letter-spacing: 2px;
-      color: #a0a0b0;
-      max-width: 380px;
-      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.7);
+      max-width: 360px;
+      line-height: 1.5;
     }
 
     .lock-box {
-      background: rgba(20, 20, 30, 0.8);
-      border: 1px solid #00f0ff;
-      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      border-radius: 18px;
       padding: 20px;
       margin-top: 10px;
-      box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
-      font-family: "Courier New", Courier, monospace;
+      box-shadow: 0 10px 30px rgba(0, 240, 255, 0.15);
       font-size: 0.85rem;
       color: #00f0ff;
-      max-width: 350px;
+      max-width: 340px;
       line-height: 1.5;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
     }
 
     iframe { width: 100vw; height: 100vh; border: none; display: block; }
@@ -83,58 +91,27 @@
 </head>
 <body>
 
-  <!-- Élément audio de fond global -->
-  <audio id="bgm-player" src="Assets/orientation_bgm.mp3" preload="auto"></audio>
-
   <!-- Écran de blocage si ouvert dans un navigateur classique -->
   <div id="pwa-lock-screen">
-    <h1 class="lock-title">ACCESS DENIED</h1>
-    <p class="lock-subtitle">The PetGA universe can only be unlocked through the installed application.</p>
+    <h1 class="lock-title">ACCÈS RESTREINT</h1>
+    <p class="lock-subtitle">L'application ARTPOP doit être installée sur votre écran d'accueil pour être utilisée.</p>
     <div class="lock-box">
-      ⚡ Please add this site to your Home Screen from your browser menu to enter the prism.
+      ⚡ Ajoutez cette page à votre écran d'accueil depuis le menu de votre navigateur pour ouvrir l'application.
     </div>
   </div>
 
-  <!-- Charge directement l'onboarding en plein écran -->
+  <!-- Charge directement le Dashboard (home.html) -->
   <iframe id="app-frame" src="home.html"></iframe>
 
   <script>
     const pwaLockScreen = document.getElementById('pwa-lock-screen');
     const appFrame = document.getElementById('app-frame');
-    const bgmPlayer = document.getElementById('bgm-player');
 
     // Vérification du mode PWA (Standalone)
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 
-    // Écouteur pour déclencher la musique quand on clique sur "TOUCH TO START" (uniquement si on est en mode portrait au départ)
-    window.addEventListener('message', (event) => {
-      if (event.data === 'USER_STARTED') {
-        const isLandscapeNow = window.innerWidth > window.innerHeight;
-        
-        // Si l'appareil n'est PAS en paysage (donc en portrait), on lance la musique
-        if (!isLandscapeNow) {
-          bgmPlayer.play().catch(e => console.log("Lecture audio bloquée :", e));
-        }
-      }
-
-      if (event.data === 'ONBOARDING_COMPLETE') {
-        // Redirige vers la page welcome.html au lieu de home.html
-        appFrame.src = 'welcome.html';
-      }
-    });
-
-    // On écoute aussi le changement d'orientation ou de taille de la fenêtre ici
-    function checkParentOrientation() {
-      const isLandscape = window.innerWidth > window.innerHeight;
-      if (isLandscape && !bgmPlayer.paused) {
-        // Dès qu'on passe en mode paysage et que la musique joue -> On coupe net ! ✂️
-        bgmPlayer.pause();
-        bgmPlayer.currentTime = 0;
-      }
-    }
-
-    window.addEventListener('resize', checkParentOrientation);
-    window.addEventListener('orientationchange', checkParentOrientation);
+    // Si tu souhaites forcer le blocage hors PWA sur Safari/Chrome, décommente la ligne ci-dessous :
+    // if (!isStandalone) { pwaLockScreen.style.display = 'flex'; appFrame.style.display = 'none'; }
   </script>
 </body>
 </html>
