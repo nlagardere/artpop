@@ -123,22 +123,23 @@
         .btn-icon-mini { width: 24px; height: 24px; fill: #ffffff; }
         .btn-icon-full { width: 34px; height: 34px; fill: #ffffff; }
 
-        /* MINI PLAYER BANDEAU (Fix Safe Area & Style d'origine) */
+        /* MINI PLAYER BANDEAU (Rehaussé pour éviter la safe area) */
         .mini-player {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(18, 18, 22, 0.95);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            bottom: 16px;
+            left: 12px;
+            right: 12px;
+            background: rgba(22, 22, 26, 0.92);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 10px 16px;
-            padding-bottom: max(10px, env(safe-area-inset-bottom));
+            padding: 10px 14px;
             z-index: 999;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
         }
 
         .mini-cover { width: 48px; height: 48px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); flex-shrink: 0; }
@@ -487,7 +488,6 @@ function renderHome() {
     });
 }
 
-// Gestion de l'historique SPA (pour que le swipe gauche/bouton retour natif referme l'album)
 function openAlbum(key, pushHistory = true) {
     activeAlbumKey = key;
     const alb = albumsData[key];
@@ -515,7 +515,6 @@ function showHome(pushHistory = true) {
     }
 }
 
-// Écouteur pour intercepter le retour arrière / swipe de l'appareil
 window.addEventListener('popstate', (e) => {
     if (e.state && e.state.view === 'album') {
         openAlbum(e.state.key, false);
@@ -560,6 +559,7 @@ function applyTheme(albumKey) {
     document.documentElement.style.setProperty('--player-bg', theme.bg);
 }
 
+// Mise à jour de la MediaSession avec support du Seeking (Écran verrouillé)
 function updateMediaSession(track, alb) {
     if ('mediaSession' in navigator) {
         const coverUrl = new URL(alb.cover, window.location.href).href;
@@ -578,15 +578,46 @@ function updateMediaSession(track, alb) {
             ]
         });
 
-        try {
-            navigator.mediaSession.setActionHandler('seekbackward', null);
-            navigator.mediaSession.setActionHandler('seekforward', null);
-        } catch (e) {}
-
         navigator.mediaSession.setActionHandler('play', () => togglePlay());
         navigator.mediaSession.setActionHandler('pause', () => togglePlay());
         navigator.mediaSession.setActionHandler('previoustrack', () => prevTrack());
         navigator.mediaSession.setActionHandler('nexttrack', () => nextTrack());
+
+        // Gestion du seek depuis l'écran verrouillé / centre de contrôle iOS
+        try {
+            navigator.mediaSession.setActionHandler('seekto', (details) => {
+                if (details.seekTime !== undefined && !isNaN(details.seekTime)) {
+                    audio.currentTime = details.seekTime;
+                    updatePositionState();
+                }
+            });
+            
+            navigator.mediaSession.setActionHandler('seekbackward', (details) => {
+                const skipTime = details.seekOffset || 10;
+                audio.currentTime = Math.max(audio.currentTime - skipTime, 0);
+                updatePositionState();
+            });
+
+            navigator.mediaSession.setActionHandler('seekforward', (details) => {
+                const skipTime = details.seekOffset || 10;
+                audio.currentTime = Math.min(audio.currentTime + skipTime, audio.duration || 0);
+                updatePositionState();
+            });
+        } catch (error) {
+            console.log("Erreur configuration handlers seek", error);
+        }
+    }
+}
+
+function updatePositionState() {
+    if ('mediaSession' in navigator && 'setPositionState' in navigator.mediaSession && !isNaN(audio.duration)) {
+        try {
+            navigator.mediaSession.setPositionState({
+                duration: audio.duration,
+                playbackRate: audio.playbackRate,
+                position: audio.currentTime
+            });
+        } catch (e) {}
     }
 }
 
@@ -607,6 +638,7 @@ function playTrack(albumKey, index) {
         isPlaying = true;
         updatePlayerUI();
         updateMediaSession(track, alb);
+        updatePositionState();
     }).catch(err => console.error("Erreur audio :", err));
 
     if (activeAlbumKey === albumKey) renderTracklist();
@@ -627,6 +659,7 @@ function togglePlay() {
         isPlaying = true;
     }
     updatePlayerUI();
+    updatePositionState();
 }
 
 function prevTrack() {
@@ -733,6 +766,7 @@ function stopScrubbing(e) {
     const pct = getPercentageFromEvent(e.changedTouches ? e.changedTouches[0] : e);
     if (audio.duration) {
         audio.currentTime = pct * audio.duration;
+        updatePositionState();
     }
 }
 
