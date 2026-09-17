@@ -123,7 +123,7 @@
         .btn-icon-mini { width: 24px; height: 24px; fill: #ffffff; }
         .btn-icon-full { width: 34px; height: 34px; fill: #ffffff; }
 
-        /* MINI PLAYER BANDEAU */
+        /* MINI PLAYER BANDEAU (Fix Safe Area & Style d'origine) */
         .mini-player {
             position: fixed;
             bottom: 0;
@@ -474,7 +474,7 @@ function renderHome() {
         const alb = albumsData[key];
         const card = document.createElement('div');
         card.className = 'album-card';
-        card.onclick = () => openAlbum(key);
+        card.onclick = () => openAlbum(key, true);
         card.innerHTML = `
             <div class="cover-container"><img src="${alb.cover}" alt="${alb.title}"></div>
             <div class="album-info">
@@ -487,22 +487,42 @@ function renderHome() {
     });
 }
 
-function showHome() {
-    document.getElementById('view-album').classList.remove('active');
-    document.getElementById('view-home').classList.add('active');
-}
-
-function openAlbum(key) {
+// Gestion de l'historique SPA (pour que le swipe gauche/bouton retour natif referme l'album)
+function openAlbum(key, pushHistory = true) {
     activeAlbumKey = key;
     const alb = albumsData[key];
     document.getElementById('detail-img').src = alb.cover;
     document.getElementById('detail-title').textContent = alb.title;
     document.getElementById('detail-subtitle').textContent = `${alb.year} • ${alb.tracks.length} titres`;
     renderTracklist();
+    
     document.getElementById('view-home').classList.remove('active');
     document.getElementById('view-album').classList.add('active');
     window.scrollTo(0,0);
+
+    if (pushHistory) {
+        history.pushState({ view: 'album', key: key }, '', `#album-${key}`);
+    }
 }
+
+function showHome(pushHistory = true) {
+    activeAlbumKey = null;
+    document.getElementById('view-album').classList.remove('active');
+    document.getElementById('view-home').classList.add('active');
+
+    if (pushHistory) {
+        history.pushState({ view: 'home' }, '', window.location.pathname);
+    }
+}
+
+// Écouteur pour intercepter le retour arrière / swipe de l'appareil
+window.addEventListener('popstate', (e) => {
+    if (e.state && e.state.view === 'album') {
+        openAlbum(e.state.key, false);
+    } else {
+        showHome(false);
+    }
+});
 
 function renderTracklist() {
     const container = document.getElementById('tracklist');
@@ -542,7 +562,6 @@ function applyTheme(albumKey) {
 
 function updateMediaSession(track, alb) {
     if ('mediaSession' in navigator) {
-        // Obtenir le chemin absolu de la pochette d'album pour les navigateurs mobiles
         const coverUrl = new URL(alb.cover, window.location.href).href;
 
         navigator.mediaSession.metadata = new MediaMetadata({
@@ -559,7 +578,6 @@ function updateMediaSession(track, alb) {
             ]
         });
 
-        // Supprime les contrôles de saut rapide pour laisser la place aux pistes précédente/suivante
         try {
             navigator.mediaSession.setActionHandler('seekbackward', null);
             navigator.mediaSession.setActionHandler('seekforward', null);
