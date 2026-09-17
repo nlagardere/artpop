@@ -1,4 +1,4 @@
-const CACHE_NAME = 'artpop-revive-v1';
+const CACHE_NAME = 'artpop-revive-v2';
 
 // Liste des pages et ressources principales à mettre en cache au démarrage
 const STATIC_ASSETS = [
