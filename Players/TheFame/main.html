@@ -1,1471 +1,763 @@
 <!DOCTYPE html>
-
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- Manifest PWA -->
-<link rel="manifest" href="../../manifest.json">
-<meta name="theme-color" content="#000000">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#000000">
+    <title>THE FAME - Lady Gaga Player</title>
 
-<!-- Activation du Service Worker -->
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('../../sw.js')
-        .then(reg => console.log('Service Worker enregistré !', reg))
-        .catch(err => console.error('Erreur SW:', err));
-    });
-  }
-</script>
-<title>THE FAME - Lady Gaga Player</title>
+    <!-- Manifest PWA -->
+    <link rel="manifest" href="../../manifest.json">
 
-<style>
+    <!-- Service Worker (D'origine) -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('../../sw.js')
+            .then(reg => console.log('Service Worker enregistré !', reg))
+            .catch(err => console.error('Erreur SW:', err));
+        });
+      }
+    </script>
 
-    :root {
-        --bg-color: #050505;
-        --accent: #f2f2f2;
-        --accent-light: rgba(255,255,255,0.14);
-        --border: rgba(255,255,255,0.45);
+    <style>
+        :root {
+            --accent-red: #ff003c;
+            --accent-glow: rgba(255, 0, 60, 0.4);
+            --bg-card: rgba(22, 22, 26, 0.7);
+            --border-card: rgba(255, 255, 255, 0.1);
+            --text-main: #ffffff;
+            --text-sub: #a1a1a6;
+        }
 
-        --text-main: #ffffff;
-        --text-sub: #8f8f8f;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-        --card-bg: rgba(10,10,10,0.58);
-        --card-border: rgba(255,255,255,0.10);
-    }
-
-
-    * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-
-        font-family:
-            -apple-system,
-            BlinkMacSystemFont,
-            "Segoe UI",
-            Roboto,
-            Helvetica,
-            Arial,
-            sans-serif;
-
-        user-select: none;
-        -webkit-tap-highlight-color: transparent;
-    }
-
-
-    body {
-
-        background:
-            radial-gradient(
-                circle at 50% 15%,
-                #292929 0%,
-                #0b0b0b 45%,
-                #000000 100%
-            );
-
-        color: var(--text-main);
-
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        min-height: 100vh;
-
-        overflow: hidden;
-    }
-
-
-    /* PLAYER */
-
-    .player-container {
-
-        position: relative;
-
-        width: 100%;
-        max-width: 420px;
-
-        height: 100vh;
-        max-height: 880px;
-
-        background:
-            radial-gradient(
-                circle at 50% 10%,
-                #303030,
-                #090909 55%,
-                #000
-            );
-
-        overflow: hidden;
-
-        display: flex;
-        flex-direction: column;
-
-        box-shadow:
-            0 20px 50px rgba(0,0,0,0.9);
-    }
-
-
-    @media (min-width: 440px) {
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            background-color: #000;
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(255, 0, 60, 0.25), transparent 60%),
+                radial-gradient(circle at 10% 90%, rgba(30, 30, 35, 0.8), transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
 
         .player-container {
-
-            height: 90vh;
-
-            border-radius: 36px;
-
-            border:
-                1px solid
-                rgba(255,255,255,0.14);
-        }
-    }
-
-
-    /* SUBTLE BACKGROUND */
-
-    .background {
-
-        position: absolute;
-
-        inset: 0;
-
-        background:
-            radial-gradient(
-                circle at 50% 20%,
-                rgba(255,255,255,0.12),
-                transparent 35%
-            );
-
-        opacity: 0.8;
-
-        pointer-events: none;
-
-        z-index: 1;
-    }
-
-
-    .background::after {
-
-        content: "";
-
-        position: absolute;
-
-        inset: 0;
-
-        background:
-            linear-gradient(
-                180deg,
-                rgba(0,0,0,0.05),
-                rgba(0,0,0,0.75)
-            );
-    }
-
-
-    .content {
-
-        position: relative;
-
-        z-index: 2;
-
-        display: flex;
-        flex-direction: column;
-
-        height: 100%;
-    }
-
-
-    /* HEADER */
-
-    .header {
-
-        text-align: center;
-
-        padding:
-            25px
-            0
-            12px;
-    }
-
-
-    .header h1 {
-
-        font-size: 43px;
-
-        letter-spacing: 7px;
-
-        color: #ffffff;
-
-        font-weight: 900;
-
-        text-shadow:
-            0 0 5px rgba(255,255,255,0.8),
-            0 0 18px rgba(255,255,255,0.25);
-    }
-
-
-    .header p {
-
-        font-family: monospace;
-
-        font-size: 10px;
-
-        font-weight: bold;
-
-        color: #999;
-
-        letter-spacing: 4px;
-
-        margin-top: 6px;
-    }
-
-
-    /* TRACK LIST */
-
-    .track-list {
-
-        flex: 1;
-
-        overflow-y: auto;
-
-        padding:
-            10px
-            16px
-            120px;
-
-        display: flex;
-
-        flex-direction: column;
-
-        gap: 10px;
-
-        scrollbar-width: none;
-    }
-
-
-    .track-list::-webkit-scrollbar {
-
-        display: none;
-    }
-
-
-    /* TRACK CARD */
-
-    .track-card {
-
-        display: flex;
-
-        align-items: center;
-
-        padding:
-            12px
-            16px;
-
-        background:
-            var(--card-bg);
-
-        border:
-            1px solid
-            var(--card-border);
-
-        border-radius: 14px;
-
-        cursor: pointer;
-
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-
-        transition:
-            all 0.25s ease;
-    }
-
-
-    .track-card:hover {
-
-        background:
-            rgba(255,255,255,0.08);
-
-        border-color:
-            rgba(255,255,255,0.25);
-    }
-
-
-    .track-card:active {
-
-        transform: scale(0.98);
-    }
-
-
-    .track-card.selected {
-
-        background:
-            linear-gradient(
-                110deg,
-                rgba(255,255,255,0.17),
-                rgba(255,255,255,0.05)
-            );
-
-        border-color:
-            var(--border);
-
-        box-shadow:
-            0 0 20px
-            rgba(255,255,255,0.08);
-    }
-
-
-    /* NUMBER */
-
-    .track-num {
-
-        width: 28px;
-
-        font-family: monospace;
-
-        font-size: 13px;
-
-        font-weight: bold;
-
-        color:
-            var(--text-sub);
-
-        flex-shrink: 0;
-    }
-
-
-    .track-card.selected
-    .track-num {
-
-        color: #fff;
-    }
-
-
-    /* TRACK INFO */
-
-    .track-info {
-
-        flex: 1;
-
-        display: flex;
-
-        flex-direction: column;
-
-        gap: 3px;
-
-        margin-left: 8px;
-
-        min-width: 0;
-    }
-
-
-    .track-title {
-
-        font-size: 15px;
-
-        font-weight: 500;
-
-        color:
-            var(--text-main);
-
-        white-space: nowrap;
-
-        overflow: hidden;
-
-        text-overflow: ellipsis;
-    }
-
-
-    .track-card.selected
-    .track-title {
-
-        font-weight: 700;
-
-        color: #fff;
-    }
-
-
-    .track-feat {
-
-        font-size: 11px;
-
-        color:
-            rgba(160,160,160,0.9);
-
-        white-space: nowrap;
-
-        overflow: hidden;
-
-        text-overflow: ellipsis;
-    }
-
-
-    .track-duration {
-
-        font-family: monospace;
-
-        font-size: 12px;
-
-        color:
-            var(--text-sub);
-
-        margin-left: 8px;
-
-        flex-shrink: 0;
-    }
-
-
-    /* WAVEFORM */
-
-    .waveform {
-
-        display: flex;
-
-        align-items: flex-end;
-
-        gap: 2px;
-
-        height: 16px;
-
-        width: 15px;
-    }
-
-
-    .waveform-bar {
-
-        width: 3px;
-
-        background-color: #fff;
-
-        border-radius: 2px;
-
-        animation:
-            bounce
-            0.4s
-            infinite
-            alternate
-            ease-in-out;
-    }
-
-
-    .waveform-bar:nth-child(1) {
-
-        height: 14px;
-
-        animation-delay: 0s;
-    }
-
-
-    .waveform-bar:nth-child(2) {
-
-        height: 8px;
-
-        animation-delay: 0.15s;
-    }
-
-
-    .waveform-bar:nth-child(3) {
-
-        height: 16px;
-
-        animation-delay: 0.3s;
-    }
-
-
-    @keyframes bounce {
-
-        0% {
-            transform: scaleY(0.3);
+            width: 100%;
+            max-width: 430px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: max(20px, env(safe-area-inset-top)) 16px max(90px, env(safe-area-inset-bottom));
+            position: relative;
+            overflow: hidden;
         }
 
-        100% {
-            transform: scaleY(1);
+        @media (min-height: 700px) and (min-width: 440px) {
+            .player-container {
+                height: 92vh;
+                max-height: 880px;
+                border-radius: 44px;
+                border: 1px solid rgba(255, 255, 255, 0.15);
+                box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9), 0 0 40px rgba(255, 0, 60, 0.15);
+            }
         }
-    }
 
-
-    /* BOTTOM PLAYER */
-
-    .bottom-bar {
-
-        position: absolute;
-
-        bottom: 15px;
-
-        left: 16px;
-        right: 16px;
-
-        background:
-            rgba(20,20,20,0.68);
-
-        backdrop-filter:
-            blur(25px);
-
-        -webkit-backdrop-filter:
-            blur(25px);
-
-        border:
-            1px solid
-            rgba(255,255,255,0.22);
-
-        border-radius: 22px;
-
-        padding:
-            14px
-            20px;
-
-        display: flex;
-
-        align-items: center;
-
-        justify-content: space-between;
-
-        box-shadow:
-            0 10px 30px
-            rgba(0,0,0,0.65),
-
-            inset 0 1px 0
-            rgba(255,255,255,0.08);
-
-        transition:
-            transform 0.12s ease;
-
-        z-index: 10;
-    }
-
-
-    .bottom-bar.bounce {
-
-        transform:
-            scale(0.94);
-    }
-
-
-    /* CURRENT TRACK */
-
-    .current-meta {
-
-        display: flex;
-
-        flex-direction: column;
-
-        gap: 2px;
-
-        max-width: 160px;
-
-        min-width: 0;
-    }
-
-
-    .current-title {
-
-        font-size: 15px;
-
-        font-weight: bold;
-
-        white-space: nowrap;
-
-        overflow: hidden;
-
-        text-overflow: ellipsis;
-    }
-
-
-    .current-artist {
-
-        font-size: 12px;
-
-        font-weight: 500;
-
-        color: #aaa;
-    }
-
-
-    /* CONTROLS */
-
-    .controls {
-
-        display: flex;
-
-        align-items: center;
-
-        gap: 16px;
-    }
-
-
-    .btn {
-
-        background: none;
-
-        border: none;
-
-        color: #fff;
-
-        cursor: pointer;
-
-        display: flex;
-
-        align-items: center;
-
-        justify-content: center;
-
-        padding: 0;
-    }
-
-
-    .btn-icon {
-
-        width: 20px;
-
-        height: 20px;
-
-        fill: #fff;
-    }
-
-
-    /* PLAY */
-
-    .btn-play {
-
-        width: 44px;
-
-        height: 44px;
-
-        background:
-            linear-gradient(
-                145deg,
-                #ffffff,
-                #bdbdbd
-            );
-
-        border-radius: 50%;
-
-        color: #000;
-
-        box-shadow:
-            0 0 15px
-            rgba(255,255,255,0.35),
-
-            inset 0 1px 2px
-            rgba(255,255,255,0.8);
-    }
-
-
-    .btn-play:active {
-
-        transform: scale(0.92);
-    }
-
-
-    .btn-play svg {
-
-        width: 22px;
-
-        height: 22px;
-
-        fill: #000;
-    }
-
-</style>
-
-
+        /* HEADER */
+        .header {
+            text-align: center;
+            padding: 10px 0 15px;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: 0.15em;
+            background: linear-gradient(180deg, #ffffff 40%, #888888 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .header p {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--accent-red);
+            letter-spacing: 0.3em;
+            margin-top: 2px;
+            text-transform: uppercase;
+        }
+
+        /* TRACKLIST */
+        .track-list {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            padding-right: 2px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            scrollbar-width: none;
+        }
+
+        .track-list::-webkit-scrollbar { display: none; }
+
+        .track-card {
+            display: flex;
+            align-items: center;
+            padding: 12px 14px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 16px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .track-card:active { transform: scale(0.98); }
+
+        .track-card.selected {
+            background: linear-gradient(135deg, rgba(255, 0, 60, 0.25) 0%, rgba(20, 20, 20, 0.8) 100%);
+            border-color: rgba(255, 0, 60, 0.5);
+        }
+
+        .track-num {
+            width: 28px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-sub);
+        }
+
+        .track-card.selected .track-num { color: var(--accent-red); }
+
+        .track-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            overflow: hidden;
+            margin: 0 10px;
+        }
+
+        .track-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .track-feat { font-size: 0.72rem; color: var(--text-sub); }
+        .track-duration { font-size: 0.8rem; color: var(--text-sub); }
+
+        /* WAVEFORM */
+        .waveform { display: flex; align-items: flex-end; gap: 2px; height: 14px; }
+        .waveform-bar {
+            width: 3px;
+            background-color: var(--accent-red);
+            border-radius: 2px;
+            animation: bounce 0.5s infinite alternate ease-in-out;
+        }
+        .waveform-bar:nth-child(1) { height: 100%; animation-delay: 0s; }
+        .waveform-bar:nth-child(2) { height: 50%; animation-delay: 0.2s; }
+        .waveform-bar:nth-child(3) { height: 80%; animation-delay: 0.4s; }
+        @keyframes bounce { 0% { transform: scaleY(0.2); } 100% { transform: scaleY(1); } }
+
+        /* MINI PLAYER BANDEAU */
+        .mini-player {
+            position: absolute;
+            bottom: max(12px, env(safe-area-inset-bottom));
+            left: 12px;
+            right: 12px;
+            height: 64px;
+            background: rgba(25, 25, 28, 0.85);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 8px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+            cursor: pointer;
+            z-index: 10;
+            transition: transform 0.2s ease;
+        }
+
+        .mini-player:active { transform: scale(0.98); }
+
+        .mini-cover {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            object-fit: cover;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .mini-info {
+            flex: 1;
+            margin: 0 12px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .mini-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .mini-artist {
+            font-size: 0.75rem;
+            color: var(--accent-red);
+            font-weight: 600;
+        }
+
+        .mini-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* FULL PLAYER OVERLAY */
+        .full-player {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(180deg, #1c050a 0%, #08080a 100%);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: max(20px, env(safe-area-inset-top)) 28px max(30px, env(safe-area-inset-bottom));
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+        }
+
+        .full-player.open {
+            transform: translateY(0);
+        }
+
+        .full-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 10px;
+        }
+
+        .btn-close {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .full-album-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            color: var(--text-sub);
+            text-transform: uppercase;
+        }
+
+        /* POCHETTE */
+        .full-cover-box {
+            width: 100%;
+            aspect-ratio: 1;
+            max-width: 330px;
+            margin: 20px auto;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(255, 0, 60, 0.3), 0 10px 20px rgba(0, 0, 0, 0.8);
+            transition: transform 0.3s ease;
+        }
+
+        .full-cover-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .full-player.paused .full-cover-box {
+            transform: scale(0.92);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        /* INFOS TITRE */
+        .full-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 10px;
+        }
+
+        .full-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .full-artist {
+            font-size: 1rem;
+            color: var(--accent-red);
+            font-weight: 600;
+        }
+
+        /* SLIDER */
+        .progress-box {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .slider-container {
+            position: relative;
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            cursor: pointer;
+            touch-action: none;
+        }
+
+        .progress-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ff003c, #ff4d6d);
+            border-radius: 10px;
+            box-shadow: 0 0 12px var(--accent-glow);
+        }
+
+        .time-stamps {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.78rem;
+            color: var(--text-sub);
+            font-variant-numeric: tabular-nums;
+            font-weight: 600;
+        }
+
+        /* COMMANDES FULL */
+        .full-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background: none;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            transition: transform 0.15s ease;
+        }
+
+        .btn:active { transform: scale(0.85); }
+
+        .btn-play-full {
+            width: 72px;
+            height: 72px;
+            background: #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.25);
+        }
+
+        .btn-play-full svg {
+            width: 32px;
+            height: 32px;
+            fill: #000;
+        }
+
+        .btn-icon-full {
+            width: 36px;
+            height: 36px;
+            fill: #ffffff;
+        }
+
+        .btn-icon-mini {
+            width: 26px;
+            height: 26px;
+            fill: #ffffff;
+        }
+    </style>
 </head>
-
 <body>
 
 <div class="player-container">
 
-
-<div class="background"></div>
-
-
-<div class="content">
-
-
-    <div class="header">
-
+    <!-- HEADER -->
+    <header class="header">
         <h1>THE FAME</h1>
+        <p>Lady Gaga • Album</p>
+    </header>
 
-        <p>
-            LADY GAGA • TRACKLIST
-        </p>
+    <!-- TRACKLIST -->
+    <div class="track-list" id="trackList"></div>
 
-    </div>
-
-
-    <div
-        class="track-list"
-        id="trackList">
-    </div>
-
-
-    <div
-        class="bottom-bar"
-        id="bottomBar">
-
-
-        <div class="current-meta">
-
-            <span
-                class="current-title"
-                id="currentTitle">
-
-                Just Dance
-
-            </span>
-
-
-            <span class="current-artist">
-
-                Lady Gaga
-
-            </span>
-
+    <!-- MINI PLAYER BANDEAU -->
+    <div class="mini-player" id="miniPlayer">
+        <img src="../assets/TheFame.jpg" alt="Pochette" class="mini-cover">
+        <div class="mini-info">
+            <span class="mini-title" id="miniTitle">Just Dance</span>
+            <span class="mini-artist">Lady Gaga</span>
         </div>
-
-
-        <div class="controls">
-
-
-            <button
-                class="btn"
-                id="prevBtn"
-                aria-label="Previous">
-
-                <svg
-                    class="btn-icon"
-                    viewBox="0 0 24 24">
-
-                    <path
-                        d="
-                        M6 6h2v12H6zm3.5
-                        6l8.5 6V6z
-                        "/>
-
-                </svg>
-
+        <div class="mini-controls">
+            <button class="btn" id="miniPlayBtn" aria-label="Lecture/Pause">
+                <svg id="miniPlayIcon" class="btn-icon-mini" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
             </button>
-
-
-            <button
-                class="btn btn-play"
-                id="playBtn"
-                aria-label="Play/Pause">
-
-                <svg
-                    id="playIcon"
-                    viewBox="0 0 24 24">
-
-                    <path
-                        d="M8 5v14l11-7z"/>
-
-                </svg>
-
+            <button class="btn" id="miniNextBtn" aria-label="Suivant">
+                <svg class="btn-icon-mini" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
             </button>
-
-
-            <button
-                class="btn"
-                id="nextBtn"
-                aria-label="Next">
-
-                <svg
-                    class="btn-icon"
-                    viewBox="0 0 24 24">
-
-                    <path
-                        d="
-                        M6 18l8.5-6L6 6v12z
-                        M16 6v12h2V6h-2z
-                        "/>
-
-                </svg>
-
-            </button>
-
-
         </div>
-
     </div>
 
 </div>
 
+<!-- FULL PLAYER OVERLAY -->
+<div class="full-player paused" id="fullPlayer">
+    <div class="full-header">
+        <button class="btn-close" id="btnCloseFull">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <span class="full-album-title">The Fame</span>
+        <div style="width:36px;"></div>
+    </div>
 
+    <div class="full-cover-box">
+        <img src="../assets/TheFame.jpg" alt="Lady Gaga The Fame">
+    </div>
+
+    <div>
+        <div class="full-meta">
+            <span class="full-title" id="fullTitle">Just Dance</span>
+            <span class="full-artist">Lady Gaga</span>
+        </div>
+
+        <div class="progress-box">
+            <div class="slider-container" id="sliderContainer">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="time-stamps">
+                <span id="currentTime">0:00</span>
+                <span id="totalDuration">0:00</span>
+            </div>
+        </div>
+
+        <div class="full-controls">
+            <button class="btn" id="prevBtn">
+                <svg class="btn-icon-full" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+            </button>
+
+            <button class="btn btn-play-full" id="fullPlayBtn">
+                <svg id="fullPlayIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+
+            <button class="btn" id="nextBtn">
+                <svg class="btn-icon-full" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+            </button>
+        </div>
+    </div>
 </div>
 
-<audio
- id="audioPlayer"
- preload="metadata"> </audio>
+<audio id="audioPlayer" preload="metadata"></audio>
 
 <script>
-
-
-/* =========================================
-   THE FAME TRACKLIST
-========================================= */
-
-
 const tracks = [
-
-    {
-        id: 1,
-        title: "Just Dance",
-        fileName: "Lady Gaga, Colby O'Donis - Just Dance",
-        duration: "4:01",
-        feat: "feat. Colby O'Donis"
-    },
-
-    {
-        id: 2,
-        title: "LoveGame",
-        fileName: "Lady Gaga - LoveGame",
-        duration: "3:36",
-        feat: null
-    },
-
-    {
-        id: 3,
-        title: "Paparazzi",
-        fileName: "Lady Gaga - Paparazzi",
-        duration: "3:28",
-        feat: null
-    },
-
-    {
-        id: 4,
-        title: "Poker Face",
-        fileName: "Lady Gaga - Poker Face",
-        duration: "3:57",
-        feat: null
-    },
-
-    {
-        id: 5,
-        title: "Eh, Eh (Nothing Else I Can Say)",
-        fileName: "Lady Gaga - Eh, Eh (Nothing Else I Can Say)",
-        duration: "2:57",
-        feat: null
-    },
-
-    {
-        id: 6,
-        title: "Beautiful, Dirty, Rich",
-        fileName: "Lady Gaga - Beautiful, Dirty, Rich",
-        duration: "2:52",
-        feat: null
-    },
-
-    {
-        id: 7,
-        title: "The Fame",
-        fileName: "Lady Gaga - The Fame",
-        duration: "3:42",
-        feat: null
-    },
-
-    {
-        id: 8,
-        title: "Money Honey",
-        fileName: "Lady Gaga - Money Honey",
-        duration: "3:08",
-        feat: null
-    },
-
-    {
-        id: 9,
-        title: "Starstruck",
-        fileName: "Lady Gaga, Space Cowboy, Flo Rida - Starstruck",
-        duration: "3:37",
-        feat: "feat. Space Cowboy & Flo Rida"
-    },
-
-    {
-        id: 10,
-        title: "Boys Boys Boys",
-        fileName: "Lady Gaga - Boys Boys Boys",
-        duration: "3:20",
-        feat: null
-    },
-
-    {
-        id: 11,
-        title: "Paper Gangsta",
-        fileName: "Lady Gaga - Paper Gangsta",
-        duration: "4:23",
-        feat: null
-    },
-
-    {
-        id: 12,
-        title: "Brown Eyes",
-        fileName: "Lady Gaga - Brown Eyes",
-        duration: "4:03",
-        feat: null
-    },
-
-    {
-        id: 13,
-        title: "Summerboy",
-        fileName: "Lady Gaga - Summerboy",
-        duration: "4:13",
-        feat: null
-    },
-
-    {
-        id: 14,
-        title: "I Like It Rough",
-        fileName: "Lady Gaga - I Like It Rough",
-        duration: "3:22",
-        feat: null
-    }
-
+    { id: 1, title: "Just Dance", fileName: "Lady Gaga, Colby O'Donis - Just Dance", duration: "4:01", feat: "feat. Colby O'Donis" },
+    { id: 2, title: "LoveGame", fileName: "Lady Gaga - LoveGame", duration: "3:36", feat: null },
+    { id: 3, title: "Paparazzi", fileName: "Lady Gaga - Paparazzi", duration: "3:28", feat: null },
+    { id: 4, title: "Poker Face", fileName: "Lady Gaga - Poker Face", duration: "3:57", feat: null },
+    { id: 5, title: "Eh, Eh (Nothing Else I Can Say)", fileName: "Lady Gaga - Eh, Eh (Nothing Else I Can Say)", duration: "2:57", feat: null },
+    { id: 6, title: "Beautiful, Dirty, Rich", fileName: "Lady Gaga - Beautiful, Dirty, Rich", duration: "2:52", feat: null },
+    { id: 7, title: "The Fame", fileName: "Lady Gaga - The Fame", duration: "3:42", feat: null },
+    { id: 8, title: "Money Honey", fileName: "Lady Gaga - Money Honey", duration: "3:08", feat: null },
+    { id: 9, title: "Starstruck", fileName: "Lady Gaga, Space Cowboy, Flo Rida - Starstruck", duration: "3:37", feat: "feat. Space Cowboy & Flo Rida" },
+    { id: 10, title: "Boys Boys Boys", fileName: "Lady Gaga - Boys Boys Boys", duration: "3:20", feat: null },
+    { id: 11, title: "Paper Gangsta", fileName: "Lady Gaga - Paper Gangsta", duration: "4:23", feat: null },
+    { id: 12, title: "Brown Eyes", fileName: "Lady Gaga - Brown Eyes", duration: "4:03", feat: null },
+    { id: 13, title: "Summerboy", fileName: "Lady Gaga - Summerboy", duration: "4:13", feat: null },
+    { id: 14, title: "I Like It Rough", fileName: "Lady Gaga - I Like It Rough", duration: "3:22", feat: null }
 ];
 
-
 let currentTrackIndex = 0;
-
 let isPlaying = false;
 
-
 /* ELEMENTS */
+const audioPlayer = document.getElementById("audioPlayer");
+const trackListContainer = document.getElementById("trackList");
 
+const miniPlayer = document.getElementById("miniPlayer");
+const miniTitle = document.getElementById("miniTitle");
+const miniPlayBtn = document.getElementById("miniPlayBtn");
+const miniPlayIcon = document.getElementById("miniPlayIcon");
+const miniNextBtn = document.getElementById("miniNextBtn");
 
-const audioPlayer =
-    document.getElementById(
-        "audioPlayer"
-    );
+const fullPlayer = document.getElementById("fullPlayer");
+const btnCloseFull = document.getElementById("btnCloseFull");
+const fullTitle = document.getElementById("fullTitle");
+const fullPlayBtn = document.getElementById("fullPlayBtn");
+const fullPlayIcon = document.getElementById("fullPlayIcon");
+const prevBtn = document.getElementById("prevBtn");
+const nextBtn = document.getElementById("nextBtn");
 
+const progressFill = document.getElementById("progressFill");
+const sliderContainer = document.getElementById("sliderContainer");
+const currentTimeEl = document.getElementById("currentTime");
+const totalDurationEl = document.getElementById("totalDuration");
 
-const trackListContainer =
-    document.getElementById(
-        "trackList"
-    );
-
-
-const playBtn =
-    document.getElementById(
-        "playBtn"
-    );
-
-
-const playIcon =
-    document.getElementById(
-        "playIcon"
-    );
-
-
-const prevBtn =
-    document.getElementById(
-        "prevBtn"
-    );
-
-
-const nextBtn =
-    document.getElementById(
-        "nextBtn"
-    );
-
-
-const currentTitle =
-    document.getElementById(
-        "currentTitle"
-    );
-
-
-const bottomBar =
-    document.getElementById(
-        "bottomBar"
-    );
-
-
-/* =========================================
-   RENDER TRACKS
-========================================= */
-
-
+/* RENDER TRACKLIST */
 function renderTracks() {
-
     trackListContainer.innerHTML = "";
+    tracks.forEach((track, index) => {
+        const isSelected = index === currentTrackIndex;
+        const card = document.createElement("div");
+        card.className = `track-card ${isSelected ? "selected" : ""}`;
 
+        const numContent = isSelected && isPlaying ? `
+            <div class="waveform">
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+            </div>` : String(track.id).padStart(2, "0");
 
-    tracks.forEach(
-        (track, index) => {
-
-
-            const isSelected =
-                index === currentTrackIndex;
-
-
-            const card =
-                document.createElement(
-                    "div"
-                );
-
-
-            card.className =
-                `track-card ${
-                    isSelected
-                        ? "selected"
-                        : ""
-                }`;
-
-
-            const numContent =
-
-                isSelected && isPlaying
-
-                    ? `
-                        <div class="waveform">
-
-                            <div class="waveform-bar"></div>
-
-                            <div class="waveform-bar"></div>
-
-                            <div class="waveform-bar"></div>
-
-                        </div>
-                      `
-
-                    : String(
-                        track.id
-                    ).padStart(
-                        2,
-                        "0"
-                    );
-
-
-            card.innerHTML = `
-
-                <div class="track-num">
-                    ${numContent}
-                </div>
-
-
-                <div class="track-info">
-
-                    <span class="track-title">
-                        ${track.title}
-                    </span>
-
-
-                    ${
-                        track.feat
-
-                            ? `
-                                <span class="track-feat">
-                                    ${track.feat}
-                                </span>
-                              `
-
-                            : ""
-                    }
-
-                </div>
-
-
-                <span class="track-duration">
-                    ${track.duration}
-                </span>
-
-            `;
-
-
-            card.addEventListener(
-                "click",
-                () => {
-
-                    triggerHaptic();
-
-
-                    if (
-                        isSelected
-                    ) {
-
-                        togglePlay();
-
-                    } else {
-
-                        selectAndPlayTrack(
-                            index
-                        );
-
-                    }
-
-                }
-            );
-
-
-            trackListContainer.appendChild(
-                card
-            );
-
-        }
-    );
-
-}
-
-
-/* =========================================
-   UI
-========================================= */
-
-
-function updateControlsUI() {
-
-    const track =
-        tracks[currentTrackIndex];
-
-
-    currentTitle.textContent =
-        track.title;
-
-
-    if (isPlaying) {
-
-        playIcon.innerHTML = `
-            <path
-                d="
-                M6 19h4V5H6v14zm8-14v14h4V5h-4z
-                "
-            />
+        card.innerHTML = `
+            <div class="track-num">${numContent}</div>
+            <div class="track-info">
+                <span class="track-title">${track.title}</span>
+                ${track.feat ? `<span class="track-feat">${track.feat}</span>` : ""}
+            </div>
+            <span class="track-duration">${track.duration}</span>
         `;
 
-    } else {
-
-        playIcon.innerHTML = `
-            <path
-                d="
-                M8 5v14l11-7z
-                "
-            />
-        `;
-
-    }
-
-
-    renderTracks();
-
-}
-
-
-/* =========================================
-   SELECT TRACK
-========================================= */
-
-
-function selectAndPlayTrack(
-    index
-) {
-
-    currentTrackIndex = index;
-
-
-    const track =
-        tracks[currentTrackIndex];
-
-
-    const encodedFileName =
-        encodeURIComponent(
-            track.fileName
-        );
-
-
-    audioPlayer.src =
-        `assets/audios/${encodedFileName}.mp3`;
-
-
-    audioPlayer.load();
-
-
-    audioPlayer.play()
-
-        .then(() => {
-
-            isPlaying = true;
-
-            updateControlsUI();
-
-        })
-
-        .catch(error => {
-
-            console.error(
-                "Unable to play track:",
-                error
-            );
-
-            isPlaying = false;
-
-            updateControlsUI();
-
+        card.addEventListener("click", () => {
+            triggerHaptic();
+            if (isSelected) {
+                togglePlay();
+            } else {
+                selectAndPlayTrack(index);
+            }
         });
 
+        trackListContainer.appendChild(card);
+    });
 }
 
+/* MEDIA SESSION API (ÉCRAN DE VERROUILLAGE) */
+function initMediaSessionHandlers() {
+    if ('mediaSession' in navigator) {
+        navigator.mediaSession.setActionHandler('play', () => togglePlay());
+        navigator.mediaSession.setActionHandler('pause', () => togglePlay());
+        navigator.mediaSession.setActionHandler('previoustrack', () => playPrev());
+        navigator.mediaSession.setActionHandler('nexttrack', () => playNext());
 
-/* =========================================
-   PLAY / PAUSE
-========================================= */
+        try {
+            navigator.mediaSession.setActionHandler('seekto', (details) => {
+                if (details.seekTime && audioPlayer.duration) {
+                    audioPlayer.currentTime = details.seekTime;
+                    updatePositionState();
+                }
+            });
+        } catch (e) {
+            console.log("Seekto pas supporté sur ce navigateur");
+        }
+    }
+}
 
+function updateMediaMetadata() {
+    if ('mediaSession' in navigator) {
+        const track = tracks[currentTrackIndex];
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: track.title,
+            artist: "Lady Gaga",
+            album: "The Fame",
+            artwork: [
+                { src: '../assets/TheFame.jpg', sizes: '512x512', type: 'image/jpeg' }
+            ]
+        });
+        updatePositionState();
+    }
+}
+
+function updatePositionState() {
+    if ('mediaSession' in navigator && 'setPositionState' in navigator.mediaSession) {
+        if (audioPlayer.duration && !isNaN(audioPlayer.duration)) {
+            navigator.mediaSession.setPositionState({
+                duration: audioPlayer.duration,
+                playbackRate: audioPlayer.playbackRate,
+                position: audioPlayer.currentTime
+            });
+        }
+    }
+}
+
+/* LECTURE ET COMMANDES */
+function selectAndPlayTrack(index) {
+    currentTrackIndex = index;
+    const track = tracks[currentTrackIndex];
+    audioPlayer.src = `assets/audios/${encodeURIComponent(track.fileName)}.mp3`;
+    
+    audioPlayer.load();
+    audioPlayer.play().then(() => {
+        isPlaying = true;
+        updateUI();
+        updateMediaMetadata();
+    }).catch(err => console.error("Erreur lecture:", err));
+}
 
 function togglePlay() {
-
-
-    if (
-        !audioPlayer.src
-    ) {
-
-        selectAndPlayTrack(
-            currentTrackIndex
-        );
-
+    if (!audioPlayer.src) {
+        selectAndPlayTrack(currentTrackIndex);
         return;
-
     }
-
 
     if (isPlaying) {
-
         audioPlayer.pause();
-
         isPlaying = false;
-
     } else {
-
-        audioPlayer.play()
-
-            .then(() => {
-
-                isPlaying = true;
-
-                updateControlsUI();
-
-            })
-
-            .catch(error => {
-
-                console.error(
-                    "Playback failed:",
-                    error
-                );
-
-            });
-
-        return;
+        audioPlayer.play().then(() => {
+            isPlaying = true;
+            updatePositionState();
+        }).catch(err => console.error("Erreur lecture:", err));
     }
-
-
-    updateControlsUI();
-
+    updateUI();
 }
-
-
-/* =========================================
-   NEXT
-========================================= */
-
 
 function playNext() {
-
-    currentTrackIndex =
-        (
-            currentTrackIndex + 1
-        )
-        % tracks.length;
-
-
-    selectAndPlayTrack(
-        currentTrackIndex
-    );
-
+    currentTrackIndex = (currentTrackIndex + 1) % tracks.length;
+    selectAndPlayTrack(currentTrackIndex);
 }
-
-
-/* =========================================
-   PREVIOUS
-========================================= */
-
 
 function playPrev() {
-
-    currentTrackIndex =
-        (
-            currentTrackIndex - 1
-            + tracks.length
-        )
-        % tracks.length;
-
-
-    selectAndPlayTrack(
-        currentTrackIndex
-    );
-
+    currentTrackIndex = (currentTrackIndex - 1 + tracks.length) % tracks.length;
+    selectAndPlayTrack(currentTrackIndex);
 }
 
+function updateUI() {
+    const track = tracks[currentTrackIndex];
+    miniTitle.textContent = track.title;
+    fullTitle.textContent = track.title;
 
-/* =========================================
-   HAPTIC
-========================================= */
+    const playSvg = `<path d="M8 5v14l11-7z"/>`;
+    const pauseSvg = `<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>`;
 
+    miniPlayIcon.innerHTML = isPlaying ? pauseSvg : playSvg;
+    fullPlayIcon.innerHTML = isPlaying ? pauseSvg : playSvg;
+
+    if (isPlaying) {
+        fullPlayer.classList.remove("paused");
+    } else {
+        fullPlayer.classList.add("paused");
+    }
+
+    renderTracks();
+}
+
+/* SLIDER & TIMING */
+function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+}
+
+audioPlayer.addEventListener("timeupdate", () => {
+    if (audioPlayer.duration) {
+        const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+        progressFill.style.width = `${progress}%`;
+        currentTimeEl.textContent = formatTime(audioPlayer.currentTime);
+        totalDurationEl.textContent = formatTime(audioPlayer.duration);
+    }
+});
+
+let isScrubbing = false;
+
+function handleScrub(e) {
+    const rect = sliderContainer.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    let pos = (clientX - rect.left) / rect.width;
+    pos = Math.max(0, Math.min(1, pos));
+    
+    if (audioPlayer.duration) {
+        audioPlayer.currentTime = pos * audioPlayer.duration;
+        updatePositionState();
+    }
+}
+
+sliderContainer.addEventListener("pointerdown", (e) => {
+    isScrubbing = true;
+    handleScrub(e);
+});
+
+window.addEventListener("pointermove", (e) => {
+    if (isScrubbing) handleScrub(e);
+});
+
+window.addEventListener("pointerup", () => {
+    if (isScrubbing) isScrubbing = false;
+});
 
 function triggerHaptic() {
-
-    if (
-        navigator.vibrate
-    ) {
-
-        navigator.vibrate(
-            15
-        );
-
-    }
-
+    if (navigator.vibrate) navigator.vibrate(12);
 }
 
+/* OUVERTURE ET FERMETURE DU PLEIN ÉCRAN */
+miniPlayer.addEventListener("click", () => {
+    triggerHaptic();
+    fullPlayer.classList.add("open");
+});
 
-/* =========================================
-   BOUNCE
-========================================= */
+btnCloseFull.addEventListener("click", (e) => {
+    e.stopPropagation();
+    triggerHaptic();
+    fullPlayer.classList.remove("open");
+});
 
+/* LISTENERS BOUTONS */
+miniPlayBtn.addEventListener("click", (e) => { e.stopPropagation(); triggerHaptic(); togglePlay(); });
+miniNextBtn.addEventListener("click", (e) => { e.stopPropagation(); triggerHaptic(); playNext(); });
 
-function triggerBounce() {
+fullPlayBtn.addEventListener("click", () => { triggerHaptic(); togglePlay(); });
+nextBtn.addEventListener("click", () => { triggerHaptic(); playNext(); });
+prevBtn.addEventListener("click", () => { triggerHaptic(); playPrev(); });
 
-    bottomBar.classList.add(
-        "bounce"
-    );
+audioPlayer.addEventListener("ended", playNext);
 
-
-    setTimeout(
-        () => {
-
-            bottomBar.classList.remove(
-                "bounce"
-            );
-
-        },
-        120
-    );
-
-}
-
-
-/* =========================================
-   EVENTS
-========================================= */
-
-
-playBtn.addEventListener(
-    "click",
-    event => {
-
-        event.stopPropagation();
-
-        triggerHaptic();
-
-        togglePlay();
-
-    }
-);
-
-
-nextBtn.addEventListener(
-    "click",
-    event => {
-
-        event.stopPropagation();
-
-        triggerHaptic();
-
-        playNext();
-
-    }
-);
-
-
-prevBtn.addEventListener(
-    "click",
-    event => {
-
-        event.stopPropagation();
-
-        triggerHaptic();
-
-        playPrev();
-
-    }
-);
-
-
-bottomBar.addEventListener(
-    "click",
-    event => {
-
-        if (
-            event.target.closest(
-                "button"
-            )
-        ) {
-
-            return;
-
-        }
-
-
-        triggerBounce();
-
-    }
-);
-
-
-/* =========================================
-   AUDIO EVENTS
-========================================= */
-
-
-audioPlayer.addEventListener(
-    "play",
-    () => {
-
-        isPlaying = true;
-
-        updateControlsUI();
-
-    }
-);
-
-
-audioPlayer.addEventListener(
-    "pause",
-    () => {
-
-        isPlaying = false;
-
-        updateControlsUI();
-
-    }
-);
-
-
-audioPlayer.addEventListener(
-    "ended",
-    () => {
-
-        playNext();
-
-    }
-);
-
-
-/* =========================================
-   INITIALIZATION
-========================================= */
-
-
+/* INIT */
+initMediaSessionHandlers();
 renderTracks();
-
-updateControlsUI();
-
-
+updateUI();
 </script>
-
 </body>
 </html>

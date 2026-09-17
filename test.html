@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#000000">
+    <title>Gaga Player — Discographie</title>
+
+    <link rel="manifest" href="manifest.json">
+
+    <style>
+        :root {
+            --bg-color: #000000;
+            --card-bg: rgba(255, 255, 255, 0.06);
+            --card-border: rgba(255, 255, 255, 0.12);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            
+            /* Couleurs dynamiques selon l'album */
+            --player-accent: #ff003c;
+            --player-glow: rgba(255, 0, 60, 0.4);
+            --player-bg: rgba(25, 25, 28, 0.85);
+            --player-border: rgba(255, 255, 255, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            min-height: 100vh;
+            padding-bottom: 120px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 440px;
+            margin: 0 auto;
+            padding: max(20px, env(safe-area-inset-top)) 16px 0;
+        }
+
+        .view {
+            display: none;
+            animation: fadeIn 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        header { margin-top: 10px; margin-bottom: 24px; }
+        .header-tag { font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--player-accent); letter-spacing: 0.15em; }
+        h1 { font-size: 32px; font-weight: 900; letter-spacing: -0.5px; }
+
+        /* GRID ALBUMS */
+        .albums-grid { display: flex; flex-direction: column; gap: 10px; }
+        .album-card {
+            display: flex; align-items: center; gap: 14px; padding: 12px;
+            background: var(--card-bg); border: 1px solid var(--card-border);
+            border-radius: 18px; cursor: pointer;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+        .album-card:active { transform: scale(0.98); }
+
+        .cover-container { width: 56px; height: 56px; border-radius: 12px; overflow: hidden; flex-shrink: 0; background: #222; }
+        .cover-container img { width: 100%; height: 100%; object-fit: cover; }
+        .album-info { flex: 1; min-width: 0; }
+        .album-title { font-size: 16px; font-weight: 700; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .album-meta { font-size: 13px; color: var(--text-secondary); }
+
+        /* VUE DETAIL ALBUM */
+        .nav-back { display: inline-flex; align-items: center; gap: 6px; color: var(--player-accent); font-size: 16px; font-weight: 600; cursor: pointer; margin-bottom: 16px; }
+        .album-header-detail { text-align: center; margin-bottom: 24px; }
+        .detail-cover { width: 160px; height: 160px; margin: 0 auto 14px; border-radius: 20px; overflow: hidden; box-shadow: 0 12px 35px rgba(0,0,0,0.6); }
+        .detail-cover img { width: 100%; height: 100%; object-fit: cover; }
+        .detail-title { font-size: 22px; font-weight: 800; margin-bottom: 2px; }
+        .detail-subtitle { font-size: 13px; color: var(--text-secondary); font-weight: 500; }
+
+        /* TRACKLIST */
+        .track-item { display: flex; align-items: center; gap: 12px; padding: 12px 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); cursor: pointer; border-radius: 12px; }
+        .track-item:active { background: rgba(255, 255, 255, 0.08); }
+        .track-item.active .track-num, .track-item.active .track-name { color: var(--player-accent); font-weight: 700; }
+        .track-num { font-size: 13px; font-weight: 700; color: var(--text-secondary); width: 22px; text-align: center; flex-shrink: 0; }
+        .track-details { flex: 1; min-width: 0; }
+        .track-name { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .track-artist { font-size: 12px; color: var(--text-secondary); }
+
+        /* ANIMATION WAVEFORM */
+        .waveform { display: flex; align-items: flex-end; justify-content: center; gap: 2px; height: 14px; }
+        .waveform-bar { width: 3px; background-color: var(--player-accent); border-radius: 2px; animation: bounce 0.5s infinite alternate ease-in-out; }
+        .waveform-bar:nth-child(1) { height: 100%; animation-delay: 0s; }
+        .waveform-bar:nth-child(2) { height: 50%; animation-delay: 0.2s; }
+        .waveform-bar:nth-child(3) { height: 80%; animation-delay: 0.4s; }
+        @keyframes bounce { 0% { transform: scaleY(0.2); } 100% { transform: scaleY(1); } }
+
+        /* BOUTONS D'ACTION SVG */
+        .btn { background: none; border: none; color: #fff; cursor: pointer; display: grid; place-items: center; transition: transform 0.15s ease; }
+        .btn:active { transform: scale(0.88); }
+        .btn-icon-mini { width: 24px; height: 24px; fill: #ffffff; }
+        .btn-icon-full { width: 34px; height: 34px; fill: #ffffff; }
+
+        /* MINI PLAYER BANDEAU */
+        .mini-player {
+            position: fixed;
+            bottom: max(12px, env(safe-area-inset-bottom));
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 24px);
+            max-width: 410px;
+            height: 64px;
+            background: var(--player-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--player-border);
+            border-radius: 20px;
+            padding: 8px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+            cursor: pointer;
+            z-index: 100;
+            transition: transform 0.2s ease, background 0.4s ease, border-color 0.4s ease;
+        }
+
+        .mini-player:active { transform: translateX(-50%) scale(0.98); }
+
+        .mini-cover { width: 48px; height: 48px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); flex-shrink: 0; }
+        .mini-info { flex: 1; margin: 0 12px; display: flex; flex-direction: column; overflow: hidden; }
+        .mini-title { font-size: 0.9rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #fff; }
+        .mini-artist { font-size: 0.75rem; color: var(--player-accent); font-weight: 600; }
+        .mini-controls { display: flex; align-items: center; gap: 10px; }
+
+        /* FULL PLAYER OVERLAY */
+        .full-player {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: linear-gradient(180deg, #140509 0%, #08080a 100%);
+            z-index: 1000;
+            display: flex; flex-direction: column; justify-content: space-between;
+            padding: max(20px, env(safe-area-inset-top)) 28px max(30px, env(safe-area-inset-bottom));
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+        }
+
+        .full-player.open { transform: translateY(0); }
+
+        .full-header { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; }
+        .btn-close { background: rgba(255, 255, 255, 0.1); border: none; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; color: #fff; cursor: pointer; }
+        .full-album-title { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.15em; color: var(--text-secondary); text-transform: uppercase; }
+
+        .full-cover-box {
+            width: 100%; aspect-ratio: 1; max-width: 320px;
+            margin: 20px auto; border-radius: 24px; overflow: hidden;
+            box-shadow: 0 20px 50px var(--player-glow), 0 10px 20px rgba(0, 0, 0, 0.8);
+            transition: transform 0.3s ease;
+        }
+
+        .full-cover-box img { width: 100%; height: 100%; object-fit: cover; }
+        .full-player.paused .full-cover-box { transform: scale(0.92); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); }
+
+        .full-meta { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+        .full-title { font-size: 1.4rem; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .full-artist { font-size: 0.95rem; color: var(--player-accent); font-weight: 600; }
+
+        /* PROGRESS BAR SUR-MESURE */
+        .progress-box { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+        .slider-container {
+            position: relative; width: 100%; height: 8px;
+            background: rgba(255, 255, 255, 0.15); border-radius: 10px;
+            cursor: pointer; touch-action: none;
+        }
+        .progress-fill {
+            position: absolute; left: 0; top: 0; height: 100%; width: 0%;
+            background: linear-gradient(90deg, var(--player-accent), #ffffff);
+            border-radius: 10px; box-shadow: 0 0 12px var(--player-glow);
+        }
+        .time-stamps { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--text-secondary); font-variant-numeric: tabular-nums; font-weight: 600; }
+
+        /* COMMANDES DU PLAYER PRINCIPAL */
+        .full-controls { display: flex; align-items: center; justify-content: space-evenly; margin-bottom: 20px; }
+        .btn-play-full {
+            width: 72px; height: 72px; background: #ffffff; border-radius: 50%;
+            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.25);
+        }
+        .btn-play-full svg { width: 32px; height: 32px; fill: #000; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="view-home" class="view active">
+        <header>
+            <div class="header-tag">Discographie</div>
+            <h1>Lady Gaga</h1>
+        </header>
+        <div class="albums-grid" id="albums-list"></div>
+    </div>
+
+    <div id="view-album" class="view">
+        <div class="nav-back" onclick="showHome()">‹ Discographie</div>
+        <div class="album-header-detail">
+            <div class="detail-cover"><img id="detail-img" src="" alt="Cover"></div>
+            <div class="detail-title" id="detail-title">Album</div>
+            <div class="detail-subtitle" id="detail-subtitle"></div>
+        </div>
+        <div class="tracklist" id="tracklist"></div>
+    </div>
+</div>
+
+<!-- MINI PLAYER BANDEAU STYLISÉ -->
+<div class="mini-player" id="miniPlayer" onclick="openFullPlayer()">
+    <img id="mini-img" src="Players/assets/TheFame.jpg" alt="Pochette" class="mini-cover">
+    <div class="mini-info">
+        <span class="mini-title" id="miniTitle">Choisis un morceau</span>
+        <span class="mini-artist" id="miniArtist">Lady Gaga</span>
+    </div>
+    <div class="mini-controls" onclick="event.stopPropagation()">
+        <button class="btn" id="miniPlayBtn" onclick="togglePlay()" aria-label="Lecture/Pause">
+            <svg id="miniPlayIcon" class="btn-icon-mini" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <button class="btn" onclick="nextTrack()" aria-label="Suivant">
+            <svg class="btn-icon-mini" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+        </button>
+    </div>
+</div>
+
+<!-- FULL PLAYER OVERLAY COMPATIBLE -->
+<div class="full-player paused" id="fullPlayer">
+    <div class="full-header">
+        <button class="btn-close" onclick="closeFullPlayer()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <span class="full-album-title" id="fullAlbumTitle">Lady Gaga</span>
+        <div style="width:36px;"></div>
+    </div>
+
+    <div class="full-cover-box">
+        <img id="full-img" src="Players/assets/TheFame.jpg" alt="Cover">
+    </div>
+
+    <div>
+        <div class="full-meta">
+            <span class="full-title" id="fullTitle">Choisis un morceau</span>
+            <span class="full-artist" id="fullArtist">Lady Gaga</span>
+        </div>
+
+        <div class="progress-box">
+            <div class="slider-container" id="sliderContainer">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="time-stamps">
+                <span id="currentTime">0:00</span>
+                <span id="totalDuration">0:00</span>
+            </div>
+        </div>
+
+        <div class="full-controls">
+            <button class="btn" onclick="prevTrack()">
+                <svg class="btn-icon-full" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+            </button>
+
+            <button class="btn btn-play-full" onclick="togglePlay()">
+                <svg id="fullPlayIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+
+            <button class="btn" onclick="nextTrack()">
+                <svg class="btn-icon-full" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+            </button>
+        </div>
+    </div>
+</div>
+
+<audio id="audio"></audio>
+
+<script>
+const albumThemes = {
+    "the-fame": { accent: "#ff003c", glow: "rgba(255, 0, 60, 0.4)", bg: "rgba(35, 15, 20, 0.9)" },
+    "the-fame-monster": { accent: "#e63946", glow: "rgba(230, 57, 70, 0.4)", bg: "rgba(25, 20, 22, 0.9)" },
+    "born-this-way": { accent: "#a855f7", glow: "rgba(168, 85, 247, 0.4)", bg: "rgba(28, 18, 38, 0.9)" },
+    "artpop": { accent: "#00d2ff", glow: "rgba(0, 210, 255, 0.4)", bg: "rgba(10, 28, 45, 0.9)" },
+    "joanne": { accent: "#f472b6", glow: "rgba(244, 114, 182, 0.4)", bg: "rgba(38, 20, 28, 0.9)" },
+    "chromatica": { accent: "#ff416c", glow: "rgba(255, 65, 108, 0.4)", bg: "rgba(40, 15, 25, 0.9)" },
+    "mayhem": { accent: "#00ff88", glow: "rgba(0, 255, 136, 0.4)", bg: "rgba(15, 30, 22, 0.9)" }
+};
+
+const albumsData = {
+    "the-fame": {
+        title: "The Fame", year: "2008", cover: "Players/assets/TheFame.jpg", folder: "Players/TheFame/assets/audios/",
+        tracks: [
+            { title: "Just Dance", artist: "Lady Gaga, Colby O'Donis", file: "Lady Gaga, Colby O'Donis - Just Dance.mp3" },
+            { title: "LoveGame", artist: "Lady Gaga", file: "Lady Gaga - LoveGame.mp3" },
+            { title: "Paparazzi", artist: "Lady Gaga", file: "Lady Gaga - Paparazzi.mp3" },
+            { title: "Poker Face", artist: "Lady Gaga", file: "Lady Gaga - Poker Face.mp3" },
+            { title: "Eh, Eh (Nothing Else I Can Say)", artist: "Lady Gaga", file: "Lady Gaga - Eh, Eh (Nothing Else I Can Say).mp3" },
+            { title: "Beautiful, Dirty, Rich", artist: "Lady Gaga", file: "Lady Gaga - Beautiful, Dirty, Rich.mp3" },
+            { title: "The Fame", artist: "Lady Gaga", file: "Lady Gaga - The Fame.mp3" },
+            { title: "Money Honey", artist: "Lady Gaga", file: "Lady Gaga - Money Honey.mp3" },
+            { title: "Starstruck", artist: "Lady Gaga, Space Cowboy, Flo Rida", file: "Lady Gaga, Space Cowboy, Flo Rida - Starstruck.mp3" },
+            { title: "Boys Boys Boys", artist: "Lady Gaga", file: "Lady Gaga - Boys Boys Boys.mp3" },
+            { title: "Paper Gangsta", artist: "Lady Gaga", file: "Lady Gaga - Paper Gangsta.mp3" },
+            { title: "Brown Eyes", artist: "Lady Gaga", file: "Lady Gaga - Brown Eyes.mp3" },
+            { title: "I Like It Rough", artist: "Lady Gaga", file: "Lady Gaga - I Like It Rough.mp3" },
+            { title: "Summerboy", artist: "Lady Gaga", file: "Lady Gaga - Summerboy.mp3" }
+        ]
+    },
+    "the-fame-monster": {
+        title: "The Fame Monster", year: "2009", cover: "Players/assets/TheFameMonster2.jpg", folder: "Players/TheFameMonster/assets/audios/",
+        tracks: [
+            { title: "Bad Romance", artist: "Lady Gaga", file: "Lady Gaga - Bad Romance.mp3" },
+            { title: "Alejandro", artist: "Lady Gaga", file: "Lady Gaga - Alejandro.mp3" },
+            { title: "Monster", artist: "Lady Gaga", file: "Lady Gaga - Monster.mp3" },
+            { title: "Speechless", artist: "Lady Gaga", file: "Lady Gaga - Speechless.mp3" },
+            { title: "Dance In The Dark", artist: "Lady Gaga", file: "Lady Gaga - Dance In The Dark.mp3" },
+            { title: "Telephone", artist: "Lady Gaga, Beyoncé", file: "Lady Gaga, Beyoncé - Telephone.mp3" },
+            { title: "So Happy I Could Die", artist: "Lady Gaga", file: "Lady Gaga - So Happy I Could Die.mp3" },
+            { title: "Teeth", artist: "Lady Gaga", file: "Lady Gaga - Teeth.mp3" }
+        ]
+    },
+    "born-this-way": {
+        title: "Born This Way", year: "2011", cover: "Players/assets/bornthisway.jpg", folder: "Players/BornThisWay/assets/audios/",
+        tracks: [
+            { title: "Marry The Night", artist: "Lady Gaga", file: "Lady Gaga - Marry The Night.mp3" },
+            { title: "Born This Way", artist: "Lady Gaga", file: "Lady Gaga - Born This Way.mp3" },
+            { title: "Government Hooker", artist: "Lady Gaga", file: "Lady Gaga - Government Hooker.mp3" },
+            { title: "Judas", artist: "Lady Gaga", file: "Lady Gaga - Judas.mp3" },
+            { title: "Hair", artist: "Lady Gaga", file: "Lady Gaga - Hair.mp3" },
+            { title: "Scheiße", artist: "Lady Gaga", file: "Lady Gaga - ScheiBe.mp3" },
+            { title: "Bloody Mary", artist: "Lady Gaga", file: "Lady Gaga - Bloody Mary.mp3" },
+            { title: "Bad Kids", artist: "Lady Gaga", file: "Lady Gaga - Bad Kids.mp3" },
+            { title: "Highway Unicorn (Road To Love)", artist: "Lady Gaga", file: "Lady Gaga - Highway Unicorn (Road To Love).mp3" },
+            { title: "Heavy Metal Lover", artist: "Lady Gaga", file: "Lady Gaga - Heavy Metal Lover.mp3" },
+            { title: "Electric Chapel", artist: "Lady Gaga", file: "Lady Gaga - Electric Chapel.mp3" },
+            { title: "Yoü and I", artist: "Lady Gaga", file: "Lady Gaga - You And I.mp3" },
+            { title: "The Edge Of Glory", artist: "Lady Gaga", file: "Lady Gaga - The Edge Of Glory.mp3" }
+        ]
+    },
+    "artpop": {
+        title: "ARTPOP", year: "2013", cover: "Players/assets/artpop.jpg", folder: "Players/ArtPop/assets/audios/",
+        tracks: [
+            { title: "Aura", artist: "Lady Gaga", file: "Lady Gaga - Aura.mp3" },
+            { title: "Venus", artist: "Lady Gaga", file: "Lady Gaga - Venus.mp3" },
+            { title: "G.U.Y.", artist: "Lady Gaga", file: "Lady Gaga - G.U.Y..mp3" },
+            { title: "Sexxx Dreams", artist: "Lady Gaga", file: "Lady Gaga - Sexxx Dreams.mp3" },
+            { title: "Jewels N' Drugs", artist: "Lady Gaga, T.I., Too $hort, Twista", file: "Lady Gaga, T.I., Too $hort, Twista - Jewels N' Drugs.mp3" },
+            { title: "MANiCURE", artist: "Lady Gaga", file: "Lady Gaga - MANiCURE.mp3" },
+            { title: "ARTPOP", artist: "Lady Gaga", file: "Lady Gaga - ARTPOP.mp3" },
+            { title: "Swine", artist: "Lady Gaga", file: "Lady Gaga - Swine.mp3" },
+            { title: "Donatella", artist: "Lady Gaga", file: "Lady Gaga - Donatella.mp3" },
+            { title: "Fashion!", artist: "Lady Gaga", file: "Lady Gaga - Fashion!.mp3" },
+            { title: "Mary Jane Holland", artist: "Lady Gaga", file: "Lady Gaga - Mary Jane Holland.mp3" },
+            { title: "Dope", artist: "Lady Gaga", file: "Lady Gaga - Dope.mp3" },
+            { title: "Gypsy", artist: "Lady Gaga", file: "Lady Gaga - Gypsy.mp3" },
+            { title: "Applause", artist: "Lady Gaga", file: "Lady Gaga - Applause.mp3" }
+        ]
+    },
+    "joanne": {
+        title: "Joanne", year: "2016", cover: "Players/assets/joanne.jpg", folder: "Players/Joanne/assets/audios/",
+        tracks: [
+            { title: "Diamond Heart", artist: "Lady Gaga", file: "Lady Gaga - Diamond Heart.mp3" },
+            { title: "A-YO", artist: "Lady Gaga", file: "Lady Gaga - A-YO.mp3" },
+            { title: "Joanne", artist: "Lady Gaga", file: "Lady Gaga - Joanne.mp3" },
+            { title: "John Wayne", artist: "Lady Gaga", file: "Lady Gaga - John Wayne.mp3" },
+            { title: "Dancin' In Circles", artist: "Lady Gaga", file: "Lady Gaga - Dancin' In Circles.mp3" },
+            { title: "Perfect Illusion", artist: "Lady Gaga", file: "Lady Gaga - Perfect Illusion.mp3" },
+            { title: "Million Reasons", artist: "Lady Gaga", file: "Lady Gaga - Million Reasons.mp3" },
+            { title: "Sinner's Prayer", artist: "Lady Gaga", file: "Lady Gaga - Sinner’s Prayer.mp3" },
+            { title: "Hey Girl", artist: "Lady Gaga, Florence Welch", file: "Lady Gaga, Florence Welch - Hey Girl.mp3" },
+            { title: "Come To Mama", artist: "Lady Gaga", file: "Lady Gaga - Come To Mama.mp3" },
+            { title: "Angel Down", artist: "Lady Gaga", file: "Lady Gaga - Angel Down - Work Tape.mp3" }
+        ]
+    },
+    "chromatica": {
+        title: "Chromatica", year: "2020", cover: "Players/assets/chromatica.jpg", folder: "Players/Chromatica/assets/audios/",
+        tracks: [
+            { title: "Chromatica I", artist: "Lady Gaga", file: "Lady Gaga - Chromatica I.mp3" },
+            { title: "Alice", artist: "Lady Gaga", file: "Lady Gaga - Alice.mp3" },
+            { title: "Stupid Love", artist: "Lady Gaga", file: "Lady Gaga - Stupid Love.mp3" },
+            { title: "Rain On Me", artist: "Lady Gaga, Ariana Grande", file: "Lady Gaga, Ariana Grande - Rain On Me (with Ariana Grande).mp3" },
+            { title: "Free Woman", artist: "Lady Gaga", file: "Lady Gaga - Free Woman.mp3" },
+            { title: "911", artist: "Lady Gaga", file: "Lady Gaga - 911.mp3" },
+            { title: "Plastic Doll", artist: "Lady Gaga", file: "Lady Gaga - Plastic Doll.mp3" },
+            { title: "Sour Candy", artist: "Lady Gaga, BLACKPINK", file: "Lady Gaga, BLACKPINK - Sour Candy (with BLACKPINK).mp3" },
+            { title: "Enigma", artist: "Lady Gaga", file: "Lady Gaga - Enigma.mp3" },
+            { title: "Babylon", artist: "Lady Gaga", file: "Lady Gaga - Babylon.mp3" }
+        ]
+    },
+    "mayhem": {
+        title: "MAYHEM", year: "2025", cover: "Players/assets/mayhem.jpg", folder: "Players/Mayhem/assets/audios/",
+        tracks: [
+            { title: "Disease", artist: "Lady Gaga", file: "Disease.mp3" },
+            { title: "Abracadabra", artist: "Lady Gaga", file: "Abracadabra.mp3" },
+            { title: "Garden Of Eden", artist: "Lady Gaga", file: "Garden Of Eden.mp3" },
+            { title: "Perfect Celebrity", artist: "Lady Gaga", file: "Perfect Celebrity.mp3" },
+            { title: "Vanish Into You", artist: "Lady Gaga", file: "Vanish Into You.mp3" },
+            { title: "Killah", artist: "Lady Gaga", file: "Killah.mp3" },
+            { title: "Zombieboy", artist: "Lady Gaga", file: "Zombieboy.mp3" },
+            { title: "LoveDrug", artist: "Lady Gaga", file: "LoveDrug.mp3" },
+            { title: "How Bad Do U Want", artist: "Lady Gaga", file: "How Bad Do U Want.mp3" },
+            { title: "Die With A Smile", artist: "Lady Gaga", file: "Die With A Smile.mp3" }
+        ]
+    }
+};
+
+let activeAlbumKey = null;
+let currentAlbumKey = null;
+let currentTrackIndex = -1;
+let isPlaying = false;
+let isScrubbing = false;
+
+const audio = document.getElementById('audio');
+
+function renderHome() {
+    const grid = document.getElementById('albums-list');
+    grid.innerHTML = '';
+    Object.keys(albumsData).forEach(key => {
+        const alb = albumsData[key];
+        const card = document.createElement('div');
+        card.className = 'album-card';
+        card.onclick = () => openAlbum(key);
+        card.innerHTML = `
+            <div class="cover-container"><img src="${alb.cover}" alt="${alb.title}"></div>
+            <div class="album-info">
+                <div class="album-title">${alb.title}</div>
+                <div class="album-meta">${alb.year} • ${alb.tracks.length} titres</div>
+            </div>
+            <div style="font-size:20px; color:var(--text-secondary)">›</div>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+function showHome() {
+    document.getElementById('view-album').classList.remove('active');
+    document.getElementById('view-home').classList.add('active');
+}
+
+function openAlbum(key) {
+    activeAlbumKey = key;
+    const alb = albumsData[key];
+    document.getElementById('detail-img').src = alb.cover;
+    document.getElementById('detail-title').textContent = alb.title;
+    document.getElementById('detail-subtitle').textContent = `${alb.year} • ${alb.tracks.length} titres`;
+    renderTracklist();
+    document.getElementById('view-home').classList.remove('active');
+    document.getElementById('view-album').classList.add('active');
+    window.scrollTo(0,0);
+}
+
+function renderTracklist() {
+    const container = document.getElementById('tracklist');
+    container.innerHTML = '';
+    const alb = albumsData[activeAlbumKey];
+
+    alb.tracks.forEach((track, idx) => {
+        const item = document.createElement('div');
+        const isCurrent = (activeAlbumKey === currentAlbumKey && idx === currentTrackIndex);
+        item.className = `track-item ${isCurrent ? 'active' : ''}`;
+        item.onclick = () => playTrack(activeAlbumKey, idx);
+
+        const numContent = (isCurrent && isPlaying) ? `
+            <div class="waveform">
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+            </div>` : String(idx + 1).padStart(2, '0');
+
+        item.innerHTML = `
+            <div class="track-num">${numContent}</div>
+            <div class="track-details">
+                <div class="track-name">${track.title}</div>
+                <div class="track-artist">${track.artist}</div>
+            </div>
+        `;
+        container.appendChild(item);
+    });
+}
+
+function applyTheme(albumKey) {
+    const theme = albumThemes[albumKey] || { accent: "#ff003c", glow: "rgba(255, 0, 60, 0.4)", bg: "rgba(25, 25, 28, 0.85)" };
+    document.documentElement.style.setProperty('--player-accent', theme.accent);
+    document.documentElement.style.setProperty('--player-glow', theme.glow);
+    document.documentElement.style.setProperty('--player-bg', theme.bg);
+}
+
+function playTrack(albumKey, index) {
+    triggerHaptic();
+    const alb = albumsData[albumKey];
+    const track = alb.tracks[index];
+
+    currentAlbumKey = albumKey;
+    currentTrackIndex = index;
+
+    applyTheme(albumKey);
+
+    audio.src = alb.folder + encodeURIComponent(track.file);
+    audio.load();
+
+    audio.play().then(() => {
+        isPlaying = true;
+        updatePlayerUI();
+    }).catch(err => console.error("Erreur audio :", err));
+
+    if (activeAlbumKey === albumKey) renderTracklist();
+}
+
+function togglePlay() {
+    triggerHaptic();
+    if (!audio.src) {
+        if (activeAlbumKey) playTrack(activeAlbumKey, 0);
+        return;
+    }
+
+    if (isPlaying) {
+        audio.pause();
+        isPlaying = false;
+    } else {
+        audio.play();
+        isPlaying = true;
+    }
+    updatePlayerUI();
+}
+
+function prevTrack() {
+    triggerHaptic();
+    if (!currentAlbumKey) return;
+    if (currentTrackIndex > 0) playTrack(currentAlbumKey, currentTrackIndex - 1);
+}
+
+function nextTrack() {
+    triggerHaptic();
+    if (!currentAlbumKey) return;
+    const alb = albumsData[currentAlbumKey];
+    if (currentTrackIndex < alb.tracks.length - 1) playTrack(currentAlbumKey, currentTrackIndex + 1);
+}
+
+function updatePlayerUI() {
+    const playSvg = `<path d="M8 5v14l11-7z"/>`;
+    const pauseSvg = `<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>`;
+
+    document.getElementById('miniPlayIcon').innerHTML = isPlaying ? pauseSvg : playSvg;
+    document.getElementById('fullPlayIcon').innerHTML = isPlaying ? pauseSvg : playSvg;
+
+    const fullPlayer = document.getElementById('fullPlayer');
+    if (isPlaying) {
+        fullPlayer.classList.remove('paused');
+    } else {
+        fullPlayer.classList.add('paused');
+    }
+
+    if (currentAlbumKey !== null && currentTrackIndex !== -1) {
+        const alb = albumsData[currentAlbumKey];
+        const track = alb.tracks[currentTrackIndex];
+
+        document.getElementById('mini-img').src = alb.cover;
+        document.getElementById('miniTitle').textContent = track.title;
+        document.getElementById('miniArtist').textContent = track.artist;
+
+        document.getElementById('full-img').src = alb.cover;
+        document.getElementById('fullTitle').textContent = track.title;
+        document.getElementById('fullArtist').textContent = track.artist;
+        document.getElementById('fullAlbumTitle').textContent = alb.title;
+    }
+
+    if (activeAlbumKey === currentAlbumKey) renderTracklist();
+}
+
+function openFullPlayer() {
+    if (!currentAlbumKey) return;
+    triggerHaptic();
+    document.getElementById('fullPlayer').classList.add('open');
+}
+
+function closeFullPlayer() {
+    triggerHaptic();
+    document.getElementById('fullPlayer').classList.remove('open');
+}
+
+/* SCRUBBER AVANCÉ EN POINTER EVENTS */
+const sliderContainer = document.getElementById('sliderContainer');
+const progressFill = document.getElementById('progressFill');
+
+function handleScrub(e) {
+    const rect = sliderContainer.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    let pos = (clientX - rect.left) / rect.width;
+    pos = Math.max(0, Math.min(1, pos));
+    
+    progressFill.style.width = `${pos * 100}%`;
+
+    if (audio.duration) {
+        audio.currentTime = pos * audio.duration;
+    }
+}
+
+sliderContainer.addEventListener("pointerdown", (e) => {
+    isScrubbing = true;
+    handleScrub(e);
+});
+
+window.addEventListener("pointermove", (e) => {
+    if (isScrubbing) handleScrub(e);
+});
+
+window.addEventListener("pointerup", () => {
+    if (isScrubbing) isScrubbing = false;
+});
+
+audio.addEventListener('timeupdate', () => {
+    if (!audio.duration || isScrubbing) return;
+    const pct = (audio.currentTime / audio.duration) * 100;
+    progressFill.style.width = `${pct}%`;
+    document.getElementById('currentTime').textContent = formatTime(audio.currentTime);
+    document.getElementById('totalDuration').textContent = formatTime(audio.duration);
+});
+
+audio.addEventListener('ended', () => nextTrack());
+
+function formatTime(sec) {
+    if (isNaN(sec)) return "0:00";
+    const m = Math.floor(sec / 60);
+    const s = Math.floor(sec % 60);
+    return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+function triggerHaptic() {
+    if (navigator.vibrate) navigator.vibrate(12);
+}
+
+renderHome();
+</script>
+</body>
+</html>
