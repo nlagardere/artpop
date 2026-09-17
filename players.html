@@ -178,18 +178,47 @@
         .full-title { font-size: 1.4rem; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .full-artist { font-size: 0.95rem; color: var(--player-accent); font-weight: 600; }
 
-        /* PROGRESS BAR SUR-MESURE */
+        /* PROGRESS BAR / SCRUBBER DU DOIGT */
         .progress-box { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
         .slider-container {
-            position: relative; width: 100%; height: 8px;
-            background: rgba(255, 255, 255, 0.15); border-radius: 10px;
-            cursor: pointer; touch-action: none;
+            position: relative;
+            width: 100%;
+            height: 24px; /* Zone tactile agrandie */
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            touch-action: none;
+        }
+        .slider-track {
+            position: relative;
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            overflow: visible;
         }
         .progress-fill {
             position: absolute; left: 0; top: 0; height: 100%; width: 0%;
             background: linear-gradient(90deg, var(--player-accent), #ffffff);
             border-radius: 10px; box-shadow: 0 0 12px var(--player-glow);
         }
+        .slider-thumb {
+            position: absolute;
+            top: 50%;
+            left: 0%;
+            width: 18px;
+            height: 18px;
+            background: #ffffff;
+            border-radius: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+            transition: transform 0.1s ease;
+        }
+        .slider-container:active .slider-thumb,
+        .slider-container.dragging .slider-thumb {
+            transform: translate(-50%, -50%) scale(1.2);
+        }
+
         .time-stamps { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--text-secondary); font-variant-numeric: tabular-nums; font-weight: 600; }
 
         /* COMMANDES DU PLAYER PRINCIPAL */
@@ -223,9 +252,9 @@
     </div>
 </div>
 
-<!-- MINI PLAYER BANDEAU STYLISÉ -->
+<!-- MINI PLAYER BANDEAU -->
 <div class="mini-player" id="miniPlayer" onclick="openFullPlayer()">
-    <img id="mini-img" src="Players/assets/TheFame.jpg" alt="Pochette" class="mini-cover">
+    <img id="mini-img" src="assets/artworks/TheFame.jpg" alt="Pochette" class="mini-cover">
     <div class="mini-info">
         <span class="mini-title" id="miniTitle">Choisis un morceau</span>
         <span class="mini-artist" id="miniArtist">Lady Gaga</span>
@@ -240,7 +269,7 @@
     </div>
 </div>
 
-<!-- FULL PLAYER OVERLAY COMPATIBLE -->
+<!-- FULL PLAYER OVERLAY -->
 <div class="full-player paused" id="fullPlayer">
     <div class="full-header">
         <button class="btn-close" onclick="closeFullPlayer()">
@@ -251,7 +280,7 @@
     </div>
 
     <div class="full-cover-box">
-        <img id="full-img" src="Players/assets/TheFame.jpg" alt="Cover">
+        <img id="full-img" src="assets/artworks/TheFame.jpg" alt="Cover">
     </div>
 
     <div>
@@ -262,7 +291,10 @@
 
         <div class="progress-box">
             <div class="slider-container" id="sliderContainer">
-                <div class="progress-fill" id="progressFill"></div>
+                <div class="slider-track">
+                    <div class="progress-fill" id="progressFill"></div>
+                    <div class="slider-thumb" id="sliderThumb"></div>
+                </div>
             </div>
             <div class="time-stamps">
                 <span id="currentTime">0:00</span>
@@ -301,7 +333,7 @@ const albumThemes = {
 
 const albumsData = {
     "the-fame": {
-        title: "The Fame", year: "2008", cover: "Players/assets/TheFame.jpg", folder: "Players/TheFame/assets/audios/",
+        title: "The Fame", year: "2008", cover: "assets/artworks/TheFame.jpg", folder: "assets/audio/TheFame/",
         tracks: [
             { title: "Just Dance", artist: "Lady Gaga, Colby O'Donis", file: "Lady Gaga, Colby O'Donis - Just Dance.mp3" },
             { title: "LoveGame", artist: "Lady Gaga", file: "Lady Gaga - LoveGame.mp3" },
@@ -316,11 +348,12 @@ const albumsData = {
             { title: "Paper Gangsta", artist: "Lady Gaga", file: "Lady Gaga - Paper Gangsta.mp3" },
             { title: "Brown Eyes", artist: "Lady Gaga", file: "Lady Gaga - Brown Eyes.mp3" },
             { title: "I Like It Rough", artist: "Lady Gaga", file: "Lady Gaga - I Like It Rough.mp3" },
-            { title: "Summerboy", artist: "Lady Gaga", file: "Lady Gaga - Summerboy.mp3" }
+            { title: "Summerboy", artist: "Lady Gaga", file: "Lady Gaga - Summerboy.mp3" },
+            { title: "Disco Heaven", artist: "Lady Gaga", file: "Lady Gaga - Disco Heaven.mp3" }
         ]
     },
     "the-fame-monster": {
-        title: "The Fame Monster", year: "2009", cover: "Players/assets/TheFameMonster2.jpg", folder: "Players/TheFameMonster/assets/audios/",
+        title: "The Fame Monster", year: "2009", cover: "assets/artworks/TheFameMonster2.jpg", folder: "assets/audio/TheFameMonster/",
         tracks: [
             { title: "Bad Romance", artist: "Lady Gaga", file: "Lady Gaga - Bad Romance.mp3" },
             { title: "Alejandro", artist: "Lady Gaga", file: "Lady Gaga - Alejandro.mp3" },
@@ -333,7 +366,7 @@ const albumsData = {
         ]
     },
     "born-this-way": {
-        title: "Born This Way", year: "2011", cover: "Players/assets/bornthisway.jpg", folder: "Players/BornThisWay/assets/audios/",
+        title: "Born This Way", year: "2011", cover: "assets/artworks/bornthisway.jpg", folder: "assets/audio/BornThisWay/",
         tracks: [
             { title: "Marry The Night", artist: "Lady Gaga", file: "Lady Gaga - Marry The Night.mp3" },
             { title: "Born This Way", artist: "Lady Gaga", file: "Lady Gaga - Born This Way.mp3" },
@@ -351,7 +384,7 @@ const albumsData = {
         ]
     },
     "artpop": {
-        title: "ARTPOP", year: "2013", cover: "Players/assets/artpop.jpg", folder: "Players/ArtPop/assets/audios/",
+        title: "ARTPOP", year: "2013", cover: "assets/artworks/artpop.jpg", folder: "assets/audio/ArtPop/",
         tracks: [
             { title: "Aura", artist: "Lady Gaga", file: "Lady Gaga - Aura.mp3" },
             { title: "Venus", artist: "Lady Gaga", file: "Lady Gaga - Venus.mp3" },
@@ -370,7 +403,7 @@ const albumsData = {
         ]
     },
     "joanne": {
-        title: "Joanne", year: "2016", cover: "Players/assets/joanne.jpg", folder: "Players/Joanne/assets/audios/",
+        title: "Joanne", year: "2016", cover: "assets/artworks/joanne.jpg", folder: "assets/audio/Joanne/",
         tracks: [
             { title: "Diamond Heart", artist: "Lady Gaga", file: "Lady Gaga - Diamond Heart.mp3" },
             { title: "A-YO", artist: "Lady Gaga", file: "Lady Gaga - A-YO.mp3" },
@@ -386,7 +419,7 @@ const albumsData = {
         ]
     },
     "chromatica": {
-        title: "Chromatica", year: "2020", cover: "Players/assets/chromatica.jpg", folder: "Players/Chromatica/assets/audios/",
+        title: "Chromatica", year: "2020", cover: "assets/artworks/chromatica.jpg", folder: "assets/audio/Chromatica/",
         tracks: [
             { title: "Chromatica I", artist: "Lady Gaga", file: "Lady Gaga - Chromatica I.mp3" },
             { title: "Alice", artist: "Lady Gaga", file: "Lady Gaga - Alice.mp3" },
@@ -401,7 +434,7 @@ const albumsData = {
         ]
     },
     "mayhem": {
-        title: "MAYHEM", year: "2025", cover: "Players/assets/mayhem.jpg", folder: "Players/Mayhem/assets/audios/",
+        title: "MAYHEM", year: "2025", cover: "assets/artworks/mayhem.jpg", folder: "assets/audio/Mayhem/",
         tracks: [
             { title: "Disease", artist: "Lady Gaga", file: "Disease.mp3" },
             { title: "Abracadabra", artist: "Lady Gaga", file: "Abracadabra.mp3" },
@@ -591,40 +624,67 @@ function closeFullPlayer() {
     document.getElementById('fullPlayer').classList.remove('open');
 }
 
-/* SCRUBBER AVANCÉ EN POINTER EVENTS */
+/* SCRUBBER AVANCÉ AVEC DRAG AU DOIGT ET RECHERCHE TACTILE */
 const sliderContainer = document.getElementById('sliderContainer');
 const progressFill = document.getElementById('progressFill');
+const sliderThumb = document.getElementById('sliderThumb');
 
-function handleScrub(e) {
+function getPercentageFromEvent(e) {
     const rect = sliderContainer.getBoundingClientRect();
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
     let pos = (clientX - rect.left) / rect.width;
-    pos = Math.max(0, Math.min(1, pos));
-    
-    progressFill.style.width = `${pos * 100}%`;
+    return Math.max(0, Math.min(1, pos));
+}
 
+function updateScrubberVisual(percentage) {
+    const pctString = `${percentage * 100}%`;
+    progressFill.style.width = pctString;
+    sliderThumb.style.left = pctString;
+}
+
+function startScrubbing(e) {
+    isScrubbing = true;
+    sliderContainer.classList.add('dragging');
+    const pct = getPercentageFromEvent(e);
+    updateScrubberVisual(pct);
     if (audio.duration) {
-        audio.currentTime = pos * audio.duration;
+        document.getElementById('currentTime').textContent = formatTime(pct * audio.duration);
     }
 }
 
-sliderContainer.addEventListener("pointerdown", (e) => {
-    isScrubbing = true;
-    handleScrub(e);
-});
+function moveScrubbing(e) {
+    if (!isScrubbing) return;
+    const pct = getPercentageFromEvent(e);
+    updateScrubberVisual(pct);
+    if (audio.duration) {
+        document.getElementById('currentTime').textContent = formatTime(pct * audio.duration);
+    }
+}
 
-window.addEventListener("pointermove", (e) => {
-    if (isScrubbing) handleScrub(e);
-});
+function stopScrubbing(e) {
+    if (!isScrubbing) return;
+    isScrubbing = false;
+    sliderContainer.classList.remove('dragging');
+    const pct = getPercentageFromEvent(e.changedTouches ? e.changedTouches[0] : e);
+    if (audio.duration) {
+        audio.currentTime = pct * audio.duration;
+    }
+}
 
-window.addEventListener("pointerup", () => {
-    if (isScrubbing) isScrubbing = false;
-});
+// Support tactile et souris unifié via Pointer/Touch Events
+sliderContainer.addEventListener('mousedown', startScrubbing);
+sliderContainer.addEventListener('touchstart', startScrubbing, { passive: true });
+
+window.addEventListener('mousemove', moveScrubbing);
+window.addEventListener('touchmove', moveScrubbing, { passive: true });
+
+window.addEventListener('mouseup', stopScrubbing);
+window.addEventListener('touchend', stopScrubbing);
 
 audio.addEventListener('timeupdate', () => {
     if (!audio.duration || isScrubbing) return;
-    const pct = (audio.currentTime / audio.duration) * 100;
-    progressFill.style.width = `${pct}%`;
+    const pct = audio.currentTime / audio.duration;
+    updateScrubberVisual(pct);
     document.getElementById('currentTime').textContent = formatTime(audio.currentTime);
     document.getElementById('totalDuration').textContent = formatTime(audio.duration);
 });
